@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "kyaniteportals",
+  "version": "0.1.0",
+  "name": "Kyanite Portals",
+  "description": "An API for creating portals",
+  "authors": [
+    "Kyanite Mods (Pedro Ricardo)"
+  ],
+  "contact": {
+    "website": "https://kyanitemods.dev"
+  },
+  "license": "MIT",
+  "icon": "assets/kyaniteportals/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-datagen": [
+      "dev.kyanitemods.kyaniteportals.client.KyanitePortalsDataGenerator"
+    ],
+    "client": [
+      "dev.kyanitemods.kyaniteportals.client.KyanitePortalsClient"
+    ],
+    "main": [
+      "dev.kyanitemods.kyaniteportals.KyanitePortals"
+    ]
+  },
+  "mixins": [
+    "kyaniteportals.mixins.json",
+    {
+      "config": "kyaniteportals.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "accessWidener": "kyaniteportals.classtweaker",
+  "depends": {
+    "fabricloader": ">=0.18.2",
+    "fabric": "*",
+    "minecraft": "${minecraft}"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "kyanite_portals:block/custom_portal_ns"
+    },
+    "axis=z": {
+      "model": "kyanite_portals:block/custom_portal_ew"
+    }
+  }
+}

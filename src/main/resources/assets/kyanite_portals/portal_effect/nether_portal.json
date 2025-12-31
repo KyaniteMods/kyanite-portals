@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "type": "kyanite_portals:nausea"
+    },
+    {
+      "type": "kyanite_portals:texture_overlay",
+      "atlas": "minecraft:textures/atlas/blocks.png",
+      "texture": "minecraft:block/nether_portal"
+    }
+  ]
+}

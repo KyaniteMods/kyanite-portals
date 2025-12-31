@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.kyanitemods.kyaniteportals.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "AddPortalToRegistryMixin",
+    "EntityAccessor",
+    "EntityMixin",
+    "LevelMixin",
+    "PlayerMixin",
+    "ServerPlayerAccessor",
+    "ServerPlayerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

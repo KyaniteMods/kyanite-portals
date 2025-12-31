@@ -1,0 +1,55 @@
+{
+  "travel_time": {
+    "game_modes": {
+      "creative": 0,
+      "survival": 0,
+      "adventure": 0,
+      "spectator": 0
+    },
+    "non_player": 0,
+    "default_time": 0
+  },
+  "travel_actions": [
+    {
+      "environment": "server",
+      "action": "kyanite_portals:store_action_location",
+      "key": "end_entrance",
+      "settings": {
+        "location_options": {
+          "dimension": {
+            "in": "tag",
+            "tag": "#kyanite_portals:end_portal_destinations"
+          },
+          "position": {
+            "from": "world_origin",
+            "offset": [100.5, 49.0, 0.5]
+          }
+        }
+      }
+    },
+    {
+      "action": "kyanite_portals:win_game",
+      "settings": {
+        "predicate": {
+          "location": {
+            "dimension": "minecraft:the_end"
+          }
+        },
+        "on_failure": [
+          {
+            "action": "kyanite_portals:set_position",
+            "settings": {
+              "failure_reason": "predicate",
+              "location_options": {
+                "load": "end_entrance"
+              }
+            },
+            "yaw": 90.0,
+            "pitch": 0.0
+          }
+        ]
+      },
+      "show_credits": true
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.kyanitemods.kyaniteportals.mixin.client",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "AbstractClientPlayerMixin",
+    "BlockPredictionFixMixin",
+    "BlockPredictionFixMixin$ServerVerifiedStateAccessor",
+    "ClientPacketListenerMixin",
+    "LocalPlayerMixin",
+    "LocalPlayerMixin$DistortionIntensityAccessor",
+    "LocalPlayerMixin$MinecraftAccessor",
+    "NauseaMixin",
+    "PortalOverlayMixin",
+    "PortalOverlayMixin$EntityAccessor",
+    "PortalOverlayMixin$GuiAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  },
+  "mixinextras": {
+    "minVersion": "0.5.0"
+  },
+  "mixins": [
+    "LocalPlayerMixin$PortalCooldownAccessor"
+  ]
+}
