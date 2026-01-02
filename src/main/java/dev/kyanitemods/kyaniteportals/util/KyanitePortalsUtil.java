@@ -15,7 +15,6 @@ import net.minecraft.world.entity.EntityDimensions;
 /*import net.minecraft.world.entity.RelativeMovement;
 *///? } else
 import net.minecraft.world.entity.Relative;
-import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 //? if <1.21 {
@@ -28,8 +27,6 @@ import net.minecraft.world.level.portal.PortalShape;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.Set;
-
 public class KyanitePortalsUtil {
     public static Identifier getIdentifier(ResourceKey<?> resourceKey) {
         //? if <1.21.11 {
@@ -39,7 +36,7 @@ public class KyanitePortalsUtil {
     }
 
     @ApiStatus.Internal
-    public static /*? if <1.21 {*//*PortalInfo*//*? } else if <1.21.3 { *//*DimensionTransition*//*? } else */TeleportTransition createTeleport(ServerLevel serverLevel, BlockUtil.FoundRectangle foundRectangle, Direction.Axis axis, Vec3 vec3, Entity entity) {
+    public static /*? if <1.21 {*//*PortalInfo*//*? } else if <1.21.3 { *//*DimensionTransition*//*? } else {*/TeleportTransition/*? }*/ createTeleport(ServerLevel serverLevel, BlockUtil.FoundRectangle foundRectangle, Direction.Axis axis, Vec3 vec3, Entity entity) {
         BlockPos blockPos = foundRectangle.minCorner;
         BlockState blockState = serverLevel.getBlockState(blockPos);
         Direction.Axis axis2 = blockState.getOptionalValue(BlockStateProperties.HORIZONTAL_AXIS).orElse(Direction.Axis.X);
@@ -68,7 +65,7 @@ public class KyanitePortalsUtil {
         return new TeleportTransition(serverLevel, vec33, Vec3.ZERO, i, 0.0f, Relative.union(Relative.DELTA, Relative.ROTATION), TeleportTransition.DO_NOTHING);
     }
 
-    public static void teleport(Entity entity, ServerLevel level, /*? if <1.21 {*//*PortalInfo*//*? } else if <1.21.3 { *//*DimensionTransition*//*? } else */TeleportTransition info) {
+    public static void teleport(Entity entity, ServerLevel level, /*? if <1.21 {*//*PortalInfo*//*? } else if <1.21.3 { *//*DimensionTransition*//*? } else {*/TeleportTransition/*? }*/ info) {
         //? if <1.21 {
         /*entity.teleportTo(level, info.pos.x(), info.pos.y(), info.pos.z(), Set.of(), info.yRot, info.xRot);
         entity.setDeltaMovement(info.speed);

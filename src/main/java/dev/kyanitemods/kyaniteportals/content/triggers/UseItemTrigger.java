@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class UseItemTrigger extends SimplePortalTrigger<UseItemTrigger.UseItemTriggerInstance> {
     @Override
-    public /*? if <1.20.6 {*//*Codec<UseItemTriggerInstance>*//*? } else*/MapCodec<UseItemTriggerInstance> codec() {
+    public /*? if <1.20.6 {*//*Codec<UseItemTriggerInstance>*//*? } else {*/MapCodec<UseItemTriggerInstance>/*? }*/ codec() {
         return UseItemTriggerInstance.CODEC;
     }
 
@@ -38,13 +38,13 @@ public class UseItemTrigger extends SimplePortalTrigger<UseItemTrigger.UseItemTr
         return create(predicate, 0);
     }
 
-    public UseItemTriggerInstance create(/*? if >=1.21.3*/HolderGetter<Item> itemLookup, Item item) {
-        return create(/*? if >=1.21.3*/itemLookup, item, 0);
+    public UseItemTriggerInstance create(/*? if >=1.21.3 {*/HolderGetter<Item> itemLookup, /*? }*/Item item) {
+        return create(/*? if >=1.21.3 {*/itemLookup, /*? }*/item, 0);
 
     }
 
-    public UseItemTriggerInstance create(/*? if >=1.21.3*/HolderGetter<Item> itemLookup, Item item, int damage) {
-        return create(ItemPredicate.Builder.item().of(/*? if >=1.21.3*/itemLookup, item).build(), damage);
+    public UseItemTriggerInstance create(/*? if >=1.21.3 {*/HolderGetter<Item> itemLookup, /*? }*/Item item, int damage) {
+        return create(ItemPredicate.Builder.item().of(/*? if >=1.21.3 {*/itemLookup, /*? }*/item).build(), damage);
     }
 
     public static class UseItemTriggerInstance extends AbstractPortalTriggerInstance<UseItemTriggerInstance> {

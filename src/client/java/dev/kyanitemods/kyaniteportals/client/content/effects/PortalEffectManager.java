@@ -11,6 +11,7 @@ import dev.kyanitemods.kyaniteportals.util.KyanitePortalsUtil;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 //? if <1.21.5
 //import net.minecraft.client.renderer.texture.TextureAtlas;
+//? if >=1.21.3
 import net.minecraft.data.AtlasIds;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceKey;
@@ -18,12 +19,17 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
+//? if <1.21.3 {
+/*import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.mojang.serialization.JsonOps;
+*///? }
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class PortalEffectManager extends /*? if <1.21.3 {*//*SimpleJsonResourceReloadListener*//*? } else*/SimpleJsonResourceReloadListener<Set<PortalEffectOptions<?>>> implements SimpleSynchronousResourceReloadListener {
+public class PortalEffectManager extends /*? if <1.21.3 {*//*SimpleJsonResourceReloadListener*//*? } else {*/SimpleJsonResourceReloadListener<Set<PortalEffectOptions<?>>>/*? }*/ implements SimpleSynchronousResourceReloadListener {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     public static final Identifier ID = KyanitePortals.id("portal_effect");
     public static final Codec<Set<PortalEffectOptions<?>>> CODEC = PortalEffects.CODEC.listOf().xmap(Set::copyOf, List::copyOf).fieldOf("values").codec();
@@ -50,7 +56,7 @@ public class PortalEffectManager extends /*? if <1.21.3 {*//*SimpleJsonResourceR
         }
         for (Map.Entry<ResourceKey<Portal>, Integer> entry : CustomPortalBlockEntity.COLORS.entrySet()) {
             if (object.containsKey(entry.getKey().location())) continue;
-            builder.put(entry.getKey().location(), Set.of(PortalEffects.NAUSEA, PortalEffects.CLOSE_SCREENS, new TextureOverlayPortalEffectOptions(TextureAtlas.BLOCK_ATLAS, KyanitePortals.id("block/custom_portal"), entry.getValue())));
+            builder.put(entry.getKey().location(), Set.of(PortalEffects.NAUSEA, PortalEffects.CLOSE_SCREENS, new TextureOverlayPortalEffectOptions(TextureAtlas.LOCATION_BLOCKS, KyanitePortals.id("block/custom_portal"), entry.getValue())));
         }
         map = builder.build();
         KyanitePortals.LOGGER.info("Loaded portal effects for {} {}", map.size(), map.size() == 1 ? "portal" : "portals");
@@ -65,7 +71,7 @@ public class PortalEffectManager extends /*? if <1.21.3 {*//*SimpleJsonResourceR
         ImmutableMap.Builder<Identifier, Set<PortalEffectOptions<?>>> builder = ImmutableMap.builder();
         for (Map.Entry<ResourceKey<Portal>, Integer> entry : CustomPortalBlockEntity.COLORS.entrySet()) {
             if (map.containsKey(KyanitePortalsUtil.getIdentifier(entry.getKey()))) continue;
-            builder.put(KyanitePortalsUtil.getIdentifier(entry.getKey()), Set.of(PortalEffects.NAUSEA, PortalEffects.CLOSE_SCREENS, new TextureOverlayPortalEffectOptions(/*? if >=1.21.5 {*/AtlasIds.BLOCKS/*? } else*//*TextureAtlas.BLOCK_ATLAS*/, KyanitePortals.id("block/custom_portal"), entry.getValue())));
+            builder.put(KyanitePortalsUtil.getIdentifier(entry.getKey()), Set.of(PortalEffects.NAUSEA, PortalEffects.CLOSE_SCREENS, new TextureOverlayPortalEffectOptions(/*? if >=1.21.5 {*/AtlasIds.BLOCKS/*? } else*//*TextureAtlas.LOCATION_BLOCKS*/, KyanitePortals.id("block/custom_portal"), entry.getValue())));
         }
         builder.putAll(map);
         this.map = builder.build();

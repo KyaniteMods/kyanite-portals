@@ -54,16 +54,16 @@ public class LocalPlayerMixin implements PortalOverlayPlayer {
 
     @Mixin(LocalPlayer.class)
     private interface DistortionIntensityAccessor {
-        @Accessor(/*? if <1.21.5 {*//*"oSpinningEffectIntensity"*//*? } else*/"oPortalEffectIntensity")
+        @Accessor(/*? if <1.21.5 {*//*"oSpinningEffectIntensity"*//*? } else {*/"oPortalEffectIntensity"/*? }*/)
         float getOldDistortionIntensity();
 
-        @Accessor(/*? if <1.21.5 {*//*"spinningEffectIntensity"*//*? } else*/"portalEffectIntensity")
+        @Accessor(/*? if <1.21.5 {*//*"spinningEffectIntensity"*//*? } else {*/"portalEffectIntensity"/*? }*/)
         float getDistortionIntensity();
 
-        @Accessor(/*? if <1.21.5 {*//*"oSpinningEffectIntensity"*//*? } else*/"oPortalEffectIntensity")
+        @Accessor(/*? if <1.21.5 {*//*"oSpinningEffectIntensity"*//*? } else {*/"oPortalEffectIntensity"/*? }*/)
         void setOldDistortionIntensity(float value);
 
-        @Accessor(/*? if <1.21.5 {*//*"spinningEffectIntensity"*//*? } else*/"portalEffectIntensity")
+        @Accessor(/*? if <1.21.5 {*//*"spinningEffectIntensity"*//*? } else {*/"portalEffectIntensity"/*? }*/)
         void setDistortionIntensity(float value);
     }
 
@@ -100,7 +100,7 @@ public class LocalPlayerMixin implements PortalOverlayPlayer {
         if (((EntityInPortal) this).isInsidePortal()) {
             if (((EntityInPortal) this).getPortal() != null) {
                 if (PortalEffects.get(((EntityInPortal) this).getPortal(), PortalEffects.CLOSE_SCREENS).isPresent()) {
-                    if (((MinecraftAccessor) this).getMinecraft().screen != null && /*? if <1.21.9 {*//*!((MinecraftAccessor) this).getMinecraft().screen.isPauseScreen() && !(((MinecraftAccessor) this).getMinecraft().screen instanceof DeathScreen) && !(((MinecraftAccessor) this).getMinecraft().screen instanceof WinScreen) *//*? } else */!((MinecraftAccessor) this).getMinecraft().screen.isAllowedInPortal()) {
+                    if (((MinecraftAccessor) this).getMinecraft().screen != null && /*? if <1.21.9 {*//*!((MinecraftAccessor) this).getMinecraft().screen.isPauseScreen() && !(((MinecraftAccessor) this).getMinecraft().screen instanceof DeathScreen) && !(((MinecraftAccessor) this).getMinecraft().screen instanceof WinScreen) *//*? } else {*/!((MinecraftAccessor) this).getMinecraft().screen.isAllowedInPortal()/*? }*/) {
                         if (((MinecraftAccessor) this).getMinecraft().screen instanceof AbstractContainerScreen) {
                             ((LocalPlayer) (Object) this).closeContainer();
                         }

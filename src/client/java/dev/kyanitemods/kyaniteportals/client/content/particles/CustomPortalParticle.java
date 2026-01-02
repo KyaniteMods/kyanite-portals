@@ -11,7 +11,7 @@ import net.minecraft.client.particle.SpriteSet;
 //? if >=1.21.9
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.RandomSource;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class CustomPortalParticle extends PortalParticle {

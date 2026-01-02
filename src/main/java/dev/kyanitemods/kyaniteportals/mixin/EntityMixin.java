@@ -10,12 +10,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 //? if <1.21.6 {
 /*import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 *///? } else {
-import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 //? }
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -30,7 +30,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Optional;
 
@@ -92,7 +91,6 @@ public abstract class EntityMixin implements EntityInPortal {
 
     @Unique
     private void portalEntered(Level level, BlockPos pos) {
-        if (((Object) this) instanceof AbstractMinecart) System.out.println("Portal entered!");
         Optional<Portal> optional = level.registryAccess().lookupOrThrow(KyanitePortals.RESOURCE_KEY).get(getPortal()).map(Holder.Reference::value);
         optional.ifPresent(value -> {
             Portal.executeAll(level, pos, (Entity) (Object) this, value.enterActions());
@@ -101,7 +99,6 @@ public abstract class EntityMixin implements EntityInPortal {
 
     @Unique
     private void portalTraveled(Level level, BlockPos pos) {
-        if (((Object) this) instanceof AbstractMinecart) System.out.println("Portal traveled!");
         Optional<Portal> optional = level.registryAccess().lookupOrThrow(KyanitePortals.RESOURCE_KEY).get(getPortal()).map(Holder.Reference::value);
         optional.ifPresent(value -> {
             Portal.executeAll(level, pos, (Entity) (Object) this, value.travelActions());
@@ -234,7 +231,6 @@ public abstract class EntityMixin implements EntityInPortal {
     //? if <1.21.6 {
     /*@Inject(method = "load", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/CompoundTag;getList(Ljava/lang/String;I)Lnet/minecraft/nbt/ListTag;", ordinal = 0))
     private void kyanitePortals$addPortalData(CompoundTag tag, CallbackInfo ci) {
-        setCooldown(tag.getInt("kyanite_portals:cooldown"));
         setHasTraveled(tag.getBoolean("kyanite_portals:has_traveled"));
         setPortalTeleportTime(tag.getInt("kyanite_portals:portal_teleport_time"));
         setTimeInPortal(tag.getInt("kyanite_portals:time_in_portal"));
