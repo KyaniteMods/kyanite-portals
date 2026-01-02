@@ -20,7 +20,6 @@ public class ClientPacketListenerMixin {
         ((EntityInPortal) newPlayer).setInsidePortal(((EntityInPortal) oldPlayer).isInsidePortal());
         ((EntityInPortal) newPlayer).setTimeInPortal(((EntityInPortal) oldPlayer).getTimeInPortal());
         ((EntityInPortal) newPlayer).setPortalTeleportTime(((EntityInPortal) oldPlayer).getPortalTeleportTime());
-        ((EntityInPortal) newPlayer).setCooldown(((EntityInPortal) oldPlayer).getCooldown());
         ((PortalOverlayPlayer) newPlayer).setPortalIntensity(((PortalOverlayPlayer) oldPlayer).getPortalIntensity());
         ((PortalOverlayPlayer) newPlayer).setOldPortalIntensity(((PortalOverlayPlayer) oldPlayer).getOldPortalIntensity());
     }

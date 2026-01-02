@@ -16,11 +16,11 @@ import net.fabricmc.fabric.api.object.builder.v1.world.poi.PointOfInterestHelper
 import net.minecraft.core.*;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 //? if <1.21.2 {
-import net.minecraft.world.InteractionResultHolder;
-//? } else
-//import net.minecraft.world.InteractionResult;
+/*import net.minecraft.world.InteractionResultHolder;
+*///? } else
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ClipContext;
@@ -57,30 +57,30 @@ public class KyanitePortals implements ModInitializer {
             ItemStack stack = player.getItemInHand(hand);
             if (player.isSpectator()) {
                 //? if <1.21.2 {
-                return InteractionResultHolder.pass(stack);
-                //? } else
-                //return InteractionResult.PASS;
+                /*return InteractionResultHolder.pass(stack);
+                *///? } else
+                return InteractionResult.PASS;
             }
 
             BlockHitResult hit = ItemPov.getPlayerHitResult(world, player, ClipContext.Fluid.NONE);
             if (hit.getType() != HitResult.Type.BLOCK || !world.mayInteract(player, hit.getBlockPos()) || !player.mayUseItemAt(hit.getBlockPos(), hit.getDirection(), stack)) {
                 //? if <1.21.2 {
-                return InteractionResultHolder.pass(stack);
-                //? } else
-                //return InteractionResult.PASS;
+                /*return InteractionResultHolder.pass(stack);
+                *///? } else
+                return InteractionResult.PASS;
             }
 
             BlockPos pos = hit.getBlockPos().relative(hit.getDirection());
             if (PortalTriggers.USE_ITEM.trigger(world, pos, player, stack) == TriggerResult.FAIL) {
                 //? if <1.21.2 {
-                return InteractionResultHolder.pass(stack);
-                //? } else
-                //return InteractionResult.PASS;
+                /*return InteractionResultHolder.pass(stack);
+                *///? } else
+                return InteractionResult.PASS;
             }
             //? if <1.21.2 {
-            return InteractionResultHolder.success(stack);
-            //? } else
-            //return InteractionResult.SUCCESS;
+            /*return InteractionResultHolder.success(stack);
+            *///? } else
+            return InteractionResult.SUCCESS;
         });
 
         ServerWorldEvents.LOAD.register((server, world) -> {
@@ -116,10 +116,10 @@ public class KyanitePortals implements ModInitializer {
         });
     }
 
-    public static ResourceLocation id(String path) {
+    public static Identifier id(String path) {
         //? if <1.21 {
-        return new ResourceLocation(MOD_ID, path);
-        //? } else
-        //return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+        /*return new ResourceLocation(MOD_ID, path);
+        *///? } else
+        return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
 }

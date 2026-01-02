@@ -6,7 +6,7 @@ import dev.kyanitemods.kyaniteportals.content.portalactions.*;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public final class PortalActions {
     private PortalActions() {}
@@ -29,7 +29,7 @@ public final class PortalActions {
         return register(KyanitePortals.id(id), type);
     }
 
-    public static <T extends PortalAction<T>, U extends PortalActionType<T>> U register(ResourceLocation id, U type) {
+    public static <T extends PortalAction<T>, U extends PortalActionType<T>> U register(Identifier id, U type) {
         return Registry.register(REGISTRY, id, type);
     }
 

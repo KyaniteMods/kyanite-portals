@@ -7,8 +7,6 @@ import net.minecraft.world.level.Level;
 
 public interface EntityInPortal {
     void tick(Level level, BlockPos pos, ResourceKey<Portal> portal);
-    void setCooldown(int value);
-    int getCooldown();
     void setInsidePortal(boolean value);
     boolean isInsidePortal();
     void setHasTraveled(boolean value);

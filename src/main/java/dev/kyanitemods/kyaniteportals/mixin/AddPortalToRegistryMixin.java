@@ -5,7 +5,7 @@ import com.mojang.serialization.Lifecycle;
 import dev.kyanitemods.kyaniteportals.KyanitePortals;
 import dev.kyanitemods.kyaniteportals.content.Portal;
 //? if >=1.20.6
-//import net.minecraft.core.RegistrationInfo;
+import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.WritableRegistry;
@@ -24,7 +24,7 @@ import java.util.function.Function;
 @Mixin(RegistryDataLoader.class)
 public class AddPortalToRegistryMixin {
     //? if <1.20.6 {
-    @Inject(method = "loadRegistryContents", at = @At("HEAD"))
+    /*@Inject(method = "loadRegistryContents", at = @At("HEAD"))
     private static void kyanitePortals$addPortalsToRegistry(RegistryOps.RegistryInfoLookup registryInfoLookup, ResourceManager resourceManager, ResourceKey<? extends Registry> resourceKey, WritableRegistry writableRegistry, Decoder decoder, Map<ResourceKey<?>, Exception> map, CallbackInfo ci) {
         if (resourceKey == KyanitePortals.RESOURCE_KEY) {
             for (Map.Entry<ResourceKey<Portal>, Function<RegistryOps.RegistryInfoLookup, Portal>> entry : KyanitePortals.PORTAL_REGISTRY_OVERRIDES.entrySet()) {
@@ -32,14 +32,14 @@ public class AddPortalToRegistryMixin {
             }
         }
     }
-    //? } else {
-    /*@Inject(method = "Lnet/minecraft/resources/RegistryDataLoader;loadContentsFromManager(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/resources/RegistryOps$RegistryInfoLookup;Lnet/minecraft/core/WritableRegistry;Lcom/mojang/serialization/Decoder;Ljava/util/Map;)V", at = @At("HEAD"))
+    *///? } else {
+    @Inject(method = "loadContentsFromManager(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/resources/RegistryOps$RegistryInfoLookup;Lnet/minecraft/core/WritableRegistry;Lcom/mojang/serialization/Decoder;Ljava/util/Map;)V", at = @At("HEAD"))
     private static void kyanitePortals$addPortalsToRegistry(ResourceManager resourceManager, RegistryOps.RegistryInfoLookup registryInfoLookup, WritableRegistry writableRegistry, Decoder decoder, Map<ResourceKey<?>, Exception> map, CallbackInfo ci) {
         if (writableRegistry.key() == KyanitePortals.RESOURCE_KEY) {
             for (Map.Entry<ResourceKey<Portal>, Function<RegistryOps.RegistryInfoLookup, Portal>> entry : KyanitePortals.PORTAL_REGISTRY_OVERRIDES.entrySet()) {
-                writableRegistry.register(entry.getKey(), entry.getValue(), RegistrationInfo.BUILT_IN);
+                writableRegistry.register(entry.getKey(), entry.getValue().apply(registryInfoLookup), RegistrationInfo.BUILT_IN);
             }
         }
-    }*/
+    }
     //? }
 }

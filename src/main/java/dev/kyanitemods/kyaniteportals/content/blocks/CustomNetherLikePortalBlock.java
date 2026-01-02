@@ -1,7 +1,7 @@
 package dev.kyanitemods.kyaniteportals.content.blocks;
 
 //? if >=1.20.4
-//import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.MapCodec;
 import dev.kyanitemods.kyaniteportals.KyanitePortals;
 import dev.kyanitemods.kyaniteportals.content.Portal;
 import dev.kyanitemods.kyaniteportals.content.blocks.entities.CustomPortalBlockEntity;
@@ -15,7 +15,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 //? if >=1.21.5
-//import net.minecraft.world.entity.InsideBlockEffectApplier;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -28,7 +29,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 //? if >=1.21.5
-//import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,11 +41,11 @@ import java.util.function.Function;
 public class CustomNetherLikePortalBlock extends Block implements EntityBlock {
     public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.HORIZONTAL_AXIS;
     //? if <1.21.5 {
-    private static final Map<Direction.Axis, VoxelShape> SHAPES = Map.of(
+    /*private static final Map<Direction.Axis, VoxelShape> SHAPES = Map.of(
             Direction.Axis.X, Block.box(0.0, 0.0, 6.0, 16.0, 16.0, 10.0),
             Direction.Axis.Z, Block.box(6.0, 0.0, 0.0, 10.0, 16.0, 16.0));
-    //? } else
-    //private static final Map<Direction.Axis, VoxelShape> SHAPES = Shapes.rotateHorizontalAxis(Block.column(4.0, 16.0, 0.0, 16.0));
+    *///? } else
+    private static final Map<Direction.Axis, VoxelShape> SHAPES = Shapes.rotateHorizontalAxis(Block.column(4.0, 16.0, 0.0, 16.0));
 
     public CustomNetherLikePortalBlock(Properties properties) {
         super(properties);
@@ -82,11 +83,11 @@ public class CustomNetherLikePortalBlock extends Block implements EntityBlock {
     }
 
     //? if >=1.20.4 {
-    /*public static final MapCodec<CustomNetherLikePortalBlock> CODEC = simpleCodec(CustomNetherLikePortalBlock::new);
+    public static final MapCodec<CustomNetherLikePortalBlock> CODEC = simpleCodec(CustomNetherLikePortalBlock::new);
 
     public MapCodec<CustomNetherLikePortalBlock> codec() {
         return CODEC;
-    }*/
+    }
     //? }
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
@@ -121,12 +122,14 @@ public class CustomNetherLikePortalBlock extends Block implements EntityBlock {
 
     @Override
     //? if <1.21.5 {
-    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-    //? } else if <1.21.10 {
+    /*public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    *///? } else if <1.21.10 {
     //public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier insideBlockEffectApplier) {
     //? } else
-    //public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier insideBlockEffectApplier, boolean bl) {
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier insideBlockEffectApplier, boolean bl) {
         if (!(level.getBlockEntity(pos) instanceof CustomPortalBlockEntity blockEntity)) return;
+        if (!entity.canUsePortal(false)) return;
+
         Optional<? extends HolderLookup.RegistryLookup<Portal>> lookup = level.registryAccess().lookup(KyanitePortals.RESOURCE_KEY);
         if (lookup.isEmpty()) return;
         Optional<Holder.Reference<Portal>> portalReference = lookup.get().get(blockEntity.getPortalKey());

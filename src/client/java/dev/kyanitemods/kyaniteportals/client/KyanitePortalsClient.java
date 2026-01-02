@@ -9,11 +9,11 @@ import dev.kyanitemods.kyaniteportals.content.registry.KyanitePortalsParticleTyp
 import net.fabricmc.api.ClientModInitializer;
 // 26.1 Fabric API changes BlockRenderLayerMap to ChunkSectionLayerMap
 //? if <1.21.6 {
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+/*import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.minecraft.client.renderer.RenderType;
-//? } else {
-/*import net.fabricmc.fabric.api.client.rendering.v1.BlockRenderLayerMap;
-import net.minecraft.client.renderer.chunk.ChunkSectionLayer;*/
+*///? } else {
+import net.fabricmc.fabric.api.client.rendering.v1.BlockRenderLayerMap;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 //? }
 import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
@@ -35,9 +35,9 @@ public class KyanitePortalsClient implements ClientModInitializer {
         });
 
         //? if <1.21.6 {
-        BlockRenderLayerMap.INSTANCE.putBlock(KyanitePortalsBlocks.CUSTOM_PORTAL, RenderType.translucent());
-        //? } else
-        //BlockRenderLayerMap.putBlock(KyanitePortalsBlocks.CUSTOM_PORTAL, ChunkSectionLayer.TRANSLUCENT);
+        /*BlockRenderLayerMap.INSTANCE.putBlock(KyanitePortalsBlocks.CUSTOM_PORTAL, RenderType.translucent());
+        *///? } else
+        BlockRenderLayerMap.putBlock(KyanitePortalsBlocks.CUSTOM_PORTAL, ChunkSectionLayer.TRANSLUCENT);
         ColorProviderRegistry.BLOCK.register((blockState, blockAndTintGetter, blockPos, i) -> {
             if (blockAndTintGetter == null || !(blockAndTintGetter.getBlockEntity(blockPos) instanceof CustomPortalBlockEntity blockEntity)) return 0xFFFFFF;
             return blockEntity.getColor();

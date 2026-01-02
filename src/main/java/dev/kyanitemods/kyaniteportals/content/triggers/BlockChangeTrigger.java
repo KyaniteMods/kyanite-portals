@@ -2,7 +2,7 @@ package dev.kyanitemods.kyaniteportals.content.triggers;
 
 import com.mojang.serialization.Codec;
 //? if >=1.20.6
-//import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.blocks.entities.CustomPortalBlockEntity;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalTriggers;
@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 @ApiStatus.Experimental
 public class BlockChangeTrigger extends SimplePortalTrigger<BlockChangeTrigger.BlockChangeTriggerInstance> {
     @Override
-    public /*? if <1.20.6 {*/Codec<BlockChangeTriggerInstance>/*? } else*//*MapCodec<BlockChangeTriggerInstance>*/ codec() {
+    public /*? if <1.20.6 {*//*Codec<BlockChangeTriggerInstance>*//*? } else*/MapCodec<BlockChangeTriggerInstance> codec() {
         return BlockChangeTriggerInstance.CODEC;
     }
 
@@ -35,7 +35,7 @@ public class BlockChangeTrigger extends SimplePortalTrigger<BlockChangeTrigger.B
 
     public static class BlockChangeTriggerInstance extends AbstractPortalTriggerInstance<BlockChangeTriggerInstance> {
         //$ map_codec_swap BlockChangeTriggerInstance
-        public static final Codec<BlockChangeTriggerInstance> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        public static final MapCodec<BlockChangeTriggerInstance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 BlockState.CODEC.fieldOf("block").forGetter(i -> i.blockState)
         ).apply(instance, BlockChangeTriggerInstance::new));
 

@@ -9,7 +9,7 @@ import dev.kyanitemods.kyaniteportals.client.KyanitePortalsClient;
 import dev.kyanitemods.kyaniteportals.content.Portal;
 import dev.kyanitemods.kyaniteportals.util.KyanitePortalsUtil;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Optional;
 import java.util.Set;
@@ -17,13 +17,13 @@ import java.util.Set;
 public final class PortalEffects {
     private PortalEffects() {}
 
-    private static final BiMap<ResourceLocation, PortalEffectType<?>> EFFECTS = HashBiMap.create();
+    private static final BiMap<Identifier, PortalEffectType<?>> EFFECTS = HashBiMap.create();
 
-    public static final Codec<PortalEffectType<?>> TYPE_CODEC = ResourceLocation.CODEC.flatXmap(id -> {
+    public static final Codec<PortalEffectType<?>> TYPE_CODEC = Identifier.CODEC.flatXmap(id -> {
         PortalEffectType<?> type = EFFECTS.get(id);
         return type != null ? DataResult.success(type) : DataResult.error(() -> "Unknown portal effect: " + id);
     }, type -> {
-        ResourceLocation id = EFFECTS.inverse().get(type);
+        Identifier id = EFFECTS.inverse().get(type);
         return type != null ? DataResult.success(id) : DataResult.error(() -> "Unknown portal effect: " + id);
     });
 
@@ -37,7 +37,7 @@ public final class PortalEffects {
         return register(KyanitePortals.id(id), type);
     }
 
-    public static <T extends PortalEffectOptions<T>, P extends PortalEffectType<T>> P register(ResourceLocation id, P type) {
+    public static <T extends PortalEffectOptions<T>, P extends PortalEffectType<T>> P register(Identifier id, P type) {
         EFFECTS.put(id, type);
         return type;
     }

@@ -1,15 +1,15 @@
 package dev.kyanitemods.kyaniteportals.content.portalactions;
 
 //? if <1.20.6 {
-import com.mojang.serialization.Codec;
-//? } else
-//import com.mojang.serialization.MapCodec;
+/*import com.mojang.serialization.Codec;
+*///? } else
+import com.mojang.serialization.MapCodec;
 
 import java.util.Objects;
 
 public final class CodecPortalActionType<T extends PortalAction<T>> extends PortalActionType<T> {
     //? if <1.20.6 {
-    private final Codec<T> codec;
+    /*private final Codec<T> codec;
 
     public CodecPortalActionType(Codec<T> codec) {
         this.codec = codec;
@@ -19,8 +19,8 @@ public final class CodecPortalActionType<T extends PortalAction<T>> extends Port
     public Codec<T> codec() {
         return codec;
     }
-    //? } else {
-    /*private final MapCodec<T> codec;
+    *///? } else {
+    private final MapCodec<T> codec;
 
     public CodecPortalActionType(MapCodec<T> codec) {
         this.codec = codec;
@@ -29,7 +29,7 @@ public final class CodecPortalActionType<T extends PortalAction<T>> extends Port
     @Override
     public MapCodec<T> codec() {
         return codec;
-    }*/
+    }
     //? }
 
     @Override

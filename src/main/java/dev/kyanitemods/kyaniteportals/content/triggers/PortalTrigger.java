@@ -1,9 +1,9 @@
 package dev.kyanitemods.kyaniteportals.content.triggers;
 
 //? if <1.20.6 {
-import com.mojang.serialization.Codec;
-//? } else
-//import com.mojang.serialization.MapCodec;
+/*import com.mojang.serialization.Codec;
+*///? } else
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,7 +18,7 @@ public interface PortalTrigger<I extends PortalTriggerInstance<I>> {
 
     void removeListeners();
 
-    /*? if <1.20.6 {*/Codec<I>/*? } else*//*MapCodec<I>*/ codec();
+    /*? if <1.20.6 {*//*Codec<I>*//*? } else*/MapCodec<I> codec();
 
     class Listener<I extends PortalTriggerInstance<I>> {
         private final I instance;

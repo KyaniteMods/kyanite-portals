@@ -1,9 +1,9 @@
 package dev.kyanitemods.kyaniteportals.content.portalactions;
 
 //? if <1.20.6 {
-import com.mojang.serialization.Codec;
-//? } else
-//import com.mojang.serialization.MapCodec;
+/*import com.mojang.serialization.Codec;
+*///? } else
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.portalactions.location.ActionLocation;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalActions;
@@ -12,13 +12,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.valueproviders.FloatProvider;
 import net.minecraft.world.entity.Entity;
 //? if <1.21.2 {
-import net.minecraft.world.entity.RelativeMovement;
-//? } else
-//import net.minecraft.world.entity.Relative;
+/*import net.minecraft.world.entity.RelativeMovement;
+*///? } else
+import net.minecraft.world.entity.Relative;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 //? if >=1.21.3 {
-//import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.world.level.portal.TeleportTransition;
 //? } else if >=1.21
 //import net.minecraft.world.level.portal.DimensionTransition;
 
@@ -27,7 +27,7 @@ import java.util.Set;
 
 public final class SetPositionAction extends PortalAction<SetPositionAction> {
     //$ map_codec_swap SetPositionAction
-    public static final Codec<SetPositionAction> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<SetPositionAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Settings.REQUIRED_LOCATION_CODEC.fieldOf("settings").forGetter(SetPositionAction::getSettings),
             FloatProvider.CODEC.optionalFieldOf("yaw").forGetter(SetPositionAction::getYRot),
             FloatProvider.CODEC.optionalFieldOf("pitch").forGetter(SetPositionAction::getXRot)
@@ -68,11 +68,11 @@ public final class SetPositionAction extends PortalAction<SetPositionAction> {
         float yRot = getYRot().map(provider -> provider.sample(level.getRandom())).orElse(entity.getYRot());
         float xRot = getXRot().map(provider -> provider.sample(level.getRandom())).orElse(entity.getXRot());
         //? if <1.21 {
-        entity.teleportTo(serverLevel, location.position().x(), location.position().y(), location.position().z(), Set.of(), yRot, xRot);
-        //? } else if <1.21.3 {
+        /*entity.teleportTo(serverLevel, location.position().x(), location.position().y(), location.position().z(), Set.of(), yRot, xRot);
+        *///? } else if <1.21.3 {
         //entity.changeDimension(new DimensionTransition(serverLevel, location.position(), entity.getDeltaMovement(), yRot, xRot, DimensionTransition.DO_NOTHING));
         //? } else
-        //entity.teleport(new TeleportTransition(serverLevel, location.position(), entity.getDeltaMovement(), yRot, xRot, Relative.union(Relative.DELTA, Relative.ROTATION), TeleportTransition.DO_NOTHING));
+        entity.teleport(new TeleportTransition(serverLevel, location.position(), entity.getDeltaMovement(), yRot, xRot, Relative.union(Relative.DELTA, Relative.ROTATION), TeleportTransition.DO_NOTHING));
         return PortalActionResult.SUCCESS;
     }
 }

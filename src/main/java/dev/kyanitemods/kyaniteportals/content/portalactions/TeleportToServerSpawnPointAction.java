@@ -1,9 +1,9 @@
 package dev.kyanitemods.kyaniteportals.content.portalactions;
 
 //? if <1.20.6 {
-import com.mojang.serialization.Codec;
-//? } else
-//import com.mojang.serialization.MapCodec;
+/*import com.mojang.serialization.Codec;
+*///? } else
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.portalactions.location.ActionLocation;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalActions;
@@ -20,20 +20,20 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 //? if <1.21 {
-import net.minecraft.world.level.portal.PortalInfo;
-//? } else if <1.21.3 {
+/*import net.minecraft.world.level.portal.PortalInfo;
+*///? } else if <1.21.3 {
 /*
 import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.portal.DimensionTransition;
  */
 //? } else {
-/*
+
 import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.entity.Relative;
- */
+ 
 //? }
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -44,7 +44,7 @@ import java.util.Set;
 
 public class TeleportToServerSpawnPointAction extends PortalAction<TeleportToServerSpawnPointAction> {
     //$ map_codec_swap TeleportToServerSpawnPointAction
-    public static final Codec<TeleportToServerSpawnPointAction> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<TeleportToServerSpawnPointAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Settings.optionalLocation()
     ).apply(instance, TeleportToServerSpawnPointAction::new));
 
@@ -65,11 +65,11 @@ public class TeleportToServerSpawnPointAction extends PortalAction<TeleportToSer
         if (optional.isEmpty()) return PortalActionResult.FAILURE;
         ServerLevel serverLevel = optional.get();
         //? if <1.21 {
-        PortalInfo info = ((EntityAccessor) entity).callFindDimensionEntryPoint(serverLevel);
+        /*PortalInfo info = ((EntityAccessor) entity).callFindDimensionEntryPoint(serverLevel);
 
         if (info == null) return PortalActionResult.FAILURE;
         entity.teleportTo(serverLevel, info.pos.x(), info.pos.y(), info.pos.z(), Set.of(), info.yRot, info.xRot);
-        //? } else if <1.21.3 {
+        *///? } else if <1.21.3 {
         /*BlockPos blockPos = serverLevel.getSharedSpawnPos();
         Vec3 vec3 = blockPos.getBottomCenter();
         float f = entity.getYRot();
@@ -81,7 +81,7 @@ public class TeleportToServerSpawnPointAction extends PortalAction<TeleportToSer
         vec3 = entity.adjustSpawnLocation(serverLevel, blockPos).getBottomCenter();
         entity.changeDimension(new DimensionTransition(serverLevel, vec3, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND.then(DimensionTransition.PLACE_PORTAL_TICKET)));*/
         //? } else {
-        /*if (entity instanceof ServerPlayer player) {
+        if (entity instanceof ServerPlayer player) {
             player.teleport(player.findRespawnPositionAndUseSpawnBlock(false, TeleportTransition.DO_NOTHING));
             return PortalActionResult.SUCCESS;
         }
@@ -94,7 +94,7 @@ public class TeleportToServerSpawnPointAction extends PortalAction<TeleportToSer
         float g = respawnData.pitch();
         Set<Relative> set = Relative.union(Relative.DELTA, Relative.ROTATION);
         vec3 = entity.adjustSpawnLocation(serverLevel, blockPos).getBottomCenter();
-        entity.teleport(new TeleportTransition(serverLevel, vec3, Vec3.ZERO, f, g, set, TeleportTransition.PLAY_PORTAL_SOUND.then(TeleportTransition.PLACE_PORTAL_TICKET)));*/
+        entity.teleport(new TeleportTransition(serverLevel, vec3, Vec3.ZERO, f, g, set, TeleportTransition.PLAY_PORTAL_SOUND.then(TeleportTransition.PLACE_PORTAL_TICKET)));
         //? }
         return PortalActionResult.SUCCESS;
     }

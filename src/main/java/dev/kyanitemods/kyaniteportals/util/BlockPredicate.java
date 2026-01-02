@@ -3,8 +3,8 @@ package dev.kyanitemods.kyaniteportals.util;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.advancements.critereon.NbtPredicate;
-import net.minecraft.advancements.critereon.StatePropertiesPredicate;
+import net.minecraft.advancements.criterion.NbtPredicate;
+import net.minecraft.advancements.criterion.StatePropertiesPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -50,7 +50,7 @@ public class BlockPredicate {
             } else {
                 if (nbt.isPresent()) {
                     BlockEntity blockEntity = level.getBlockEntity(blockPos);
-                    if (blockEntity == null || !nbt.get().matches(blockEntity.saveWithFullMetadata(/*? if >=1.21*//*level.registryAccess()*/))) {
+                    if (blockEntity == null || !nbt.get().matches(blockEntity.saveWithFullMetadata(/*? if >=1.21*/level.registryAccess()))) {
                         return false;
                     }
                 }

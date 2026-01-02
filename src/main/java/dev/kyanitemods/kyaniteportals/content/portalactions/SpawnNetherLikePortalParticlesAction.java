@@ -1,9 +1,9 @@
 package dev.kyanitemods.kyaniteportals.content.portalactions;
 
 //? if <1.20.6 {
-import com.mojang.serialization.Codec;
-//? } else
-//import com.mojang.serialization.MapCodec;
+/*import com.mojang.serialization.Codec;
+*///? } else
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.portalactions.location.ActionLocation;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalActions;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SpawnNetherLikePortalParticlesAction extends PortalAction<SpawnNetherLikePortalParticlesAction> {
     //$ map_codec_swap SpawnNetherLikePortalParticlesAction
-    public static final Codec<SpawnNetherLikePortalParticlesAction> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<SpawnNetherLikePortalParticlesAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Settings.optionalLocation(),
             IntProvider.POSITIVE_CODEC.fieldOf("amount").forGetter(SpawnNetherLikePortalParticlesAction::getAmount),
             ParticleTypes.CODEC.fieldOf("particle_options").forGetter(SpawnNetherLikePortalParticlesAction::getParticleOptions)

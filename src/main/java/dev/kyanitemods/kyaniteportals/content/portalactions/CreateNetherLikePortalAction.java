@@ -2,16 +2,16 @@ package dev.kyanitemods.kyaniteportals.content.portalactions;
 
 import com.mojang.serialization.Codec;
 //? if >=1.20.6
-//import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.portalactions.location.ActionLocation;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalActions;
 import dev.kyanitemods.kyaniteportals.util.BlockEntityPair;
 import dev.kyanitemods.kyaniteportals.util.KyanitePortalsUtil;
 //? if <1.21.11 {
-import net.minecraft.BlockUtil;
-//? } else
-//import net.minecraft.util.BlockUtil;
+/*import net.minecraft.BlockUtil;
+*///? } else
+import net.minecraft.util.BlockUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -32,7 +32,7 @@ import java.util.Set;
 
 public class CreateNetherLikePortalAction extends PortalAction<CreateNetherLikePortalAction> {
     //$ map_codec_swap CreateNetherLikePortalAction
-    public static final Codec<CreateNetherLikePortalAction> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<CreateNetherLikePortalAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Settings.optionalLocation(),
             BlockEntityPair.CODEC.fieldOf("frame_block").forGetter(CreateNetherLikePortalAction::getFrameBlock),
             BlockEntityPair.CODEC.fieldOf("portal_block").forGetter(CreateNetherLikePortalAction::getPortalBlock),
@@ -100,7 +100,7 @@ public class CreateNetherLikePortalAction extends PortalAction<CreateNetherLikeP
         double distance2 = -1.0;
         BlockPos blockPos3 = null;
         WorldBorder worldBorder = serverLevel.getWorldBorder();
-        int maxHeight = Math.min(serverLevel.getMaxBuildHeight(), serverLevel.getMinBuildHeight() + serverLevel.getLogicalHeight()) - 1;
+        int maxHeight = Math.min(serverLevel.getMaxY(), serverLevel.getMinY() + serverLevel.getLogicalHeight()) - 1;
         BlockPos.MutableBlockPos mutablePos = startPos.mutable();
 
         for (BlockPos.MutableBlockPos currentPos : BlockPos.spiralAround(startPos, 16, Direction.EAST, Direction.SOUTH)) {
@@ -108,12 +108,12 @@ public class CreateNetherLikePortalAction extends PortalAction<CreateNetherLikeP
             if (worldBorder.isWithinBounds(currentPos) && worldBorder.isWithinBounds(currentPos.move(direction, 1))) {
                 currentPos.move(direction.getOpposite(), 1);
 
-                for (int currentY = placementHeight; currentY >= serverLevel.getMinBuildHeight(); currentY--) {
+                for (int currentY = placementHeight; currentY >= serverLevel.getMinY(); currentY--) {
                     currentPos.setY(currentY);
                     if (canPortalReplaceBlock(serverLevel, currentPos)) {
                         int startY = currentY;
 
-                        while (currentY > serverLevel.getMinBuildHeight() && canPortalReplaceBlock(serverLevel, currentPos.move(Direction.DOWN))) {
+                        while (currentY > serverLevel.getMinY() && canPortalReplaceBlock(serverLevel, currentPos.move(Direction.DOWN))) {
                             currentY--;
                         }
 
@@ -148,7 +148,7 @@ public class CreateNetherLikePortalAction extends PortalAction<CreateNetherLikeP
         }
 
         if (distance1 == -1.0) {
-            int lowY = Math.max(serverLevel.getMinBuildHeight() + 1, 70);
+            int lowY = Math.max(serverLevel.getMinY() + 1, 70);
             int highY = maxHeight - 9;
             if (highY < lowY) {
                 return Optional.empty();

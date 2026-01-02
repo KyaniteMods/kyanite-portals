@@ -8,11 +8,15 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.PortalParticle;
 import net.minecraft.client.particle.SpriteSet;
+//? if >=1.21.9
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.RandomSource;
+import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class CustomPortalParticle extends PortalParticle {
-    protected CustomPortalParticle(ClientLevel clientLevel, double d, double e, double f, double g, double h, double i, CustomPortalParticleOptions options) {
-        super(clientLevel, d, e, f, g, h, i);
+    protected CustomPortalParticle(ClientLevel clientLevel, double x, double y, double z, double xd, double yd, double zd, CustomPortalParticleOptions options/*? if >=1.21.9 {*/, TextureAtlasSprite sprite/*? }*/) {
+        super(clientLevel, x, y, z, xd, yd, zd/*? if >=1.21.9 {*/, sprite/*? }*/);
         float brightness = this.random.nextFloat() * 0.6F + 0.4F;
         rCol = brightness * options.getColor().x();
         gCol = brightness * options.getColor().y();
@@ -27,10 +31,17 @@ public class CustomPortalParticle extends PortalParticle {
             this.sprite = spriteSet;
         }
 
-        public Particle createParticle(CustomPortalParticleOptions options, ClientLevel clientLevel, double d, double e, double f, double g, double h, double i) {
-            PortalParticle portalParticle = new CustomPortalParticle(clientLevel, d, e, f, g, h, i, options);
+        //? if <1.21.9 {
+        /*public Particle createParticle(CustomPortalParticleOptions options, ClientLevel clientLevel, double x, double y, double z, double xd, double yd, double zd) {
+            PortalParticle portalParticle = new CustomPortalParticle(clientLevel, x, y, z, xd, yd, zd, options);
             portalParticle.pickSprite(this.sprite);
             return portalParticle;
+        }*/
+        //? } else {
+        @Override
+        public @Nullable Particle createParticle(CustomPortalParticleOptions options, ClientLevel clientLevel, double x, double y, double z, double xd, double yd, double zd, RandomSource random) {
+            return new CustomPortalParticle(clientLevel, x, y, z, xd, yd, zd, options, sprite.get(random));
         }
+        //? }
     }
 }

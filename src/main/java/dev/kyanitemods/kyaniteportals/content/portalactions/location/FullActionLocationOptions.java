@@ -11,9 +11,9 @@ import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
 //? if <1.21.11 {
-import net.minecraft.Util;
-//? } else
-//import net.minecraft.util.Util;
+/*import net.minecraft.Util;
+*///? } else
+import net.minecraft.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
@@ -103,7 +103,7 @@ public record FullActionLocationOptions(DimensionContext dimension, PositionCont
     }
 
     public interface DimensionContext {
-        Codec<DimensionContext> CODEC = DimensionContextType.CODEC.dispatch("in", DimensionContext::getType, /*? if <1.20.6 {*/DimensionContextType::codec/*? } else {*//*DimensionContextType::mapCodec*//*? }*/);
+        Codec<DimensionContext> CODEC = DimensionContextType.CODEC.dispatch("in", DimensionContext::getType, /*? if <1.20.6 {*//*DimensionContextType::codec*//*? } else {*/DimensionContextType::mapCodec/*? }*/);
         DimensionContext DEFAULT = InEntryPoint.INSTANCE;
 
         ResourceKey<LevelStem> get(Level level, @Nullable Entity entity, RandomSource random);

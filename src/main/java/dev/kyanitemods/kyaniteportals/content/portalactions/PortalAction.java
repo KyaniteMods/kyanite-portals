@@ -6,7 +6,7 @@ import dev.kyanitemods.kyaniteportals.content.portalactions.location.ActionLocat
 import dev.kyanitemods.kyaniteportals.content.portalactions.location.FullActionLocationOptions;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalActions;
 import dev.kyanitemods.kyaniteportals.util.CodecHelper;
-import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;

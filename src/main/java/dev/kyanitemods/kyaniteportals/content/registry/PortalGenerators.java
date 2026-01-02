@@ -9,7 +9,7 @@ import dev.kyanitemods.kyaniteportals.content.generators.PortalGeneratorType;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public final class PortalGenerators {
     private PortalGenerators() {}
@@ -24,7 +24,7 @@ public final class PortalGenerators {
         return register(KyanitePortals.id(id), type);
     }
 
-    public static <T extends PortalGenerator<T>, U extends PortalGeneratorType<T>> U register(ResourceLocation id, U type) {
+    public static <T extends PortalGenerator<T>, U extends PortalGeneratorType<T>> U register(Identifier id, U type) {
         return Registry.register(REGISTRY, id, type);
     }
 

@@ -12,7 +12,7 @@ import dev.kyanitemods.kyaniteportals.content.portalactions.PortalActionResult;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalActions;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalGenerators;
 import dev.kyanitemods.kyaniteportals.util.CodecHelper;
-import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;

@@ -2,16 +2,16 @@ package dev.kyanitemods.kyaniteportals.content.portalactions;
 
 import com.mojang.serialization.Codec;
 //? if >=1.20.6
-//import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.portalactions.location.ActionLocation;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalActions;
 import dev.kyanitemods.kyaniteportals.util.BlockPredicate;
 import dev.kyanitemods.kyaniteportals.util.KyanitePortalsUtil;
 //? if <1.21.11 {
-import net.minecraft.BlockUtil;
-//? } else
-//import net.minecraft.util.BlockUtil;
+/*import net.minecraft.BlockUtil;
+*///? } else
+import net.minecraft.util.BlockUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -22,9 +22,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 //? if <1.21.2 {
-import net.minecraft.world.entity.RelativeMovement;
-//? } else
-//import net.minecraft.world.entity.Relative;
+/*import net.minecraft.world.entity.RelativeMovement;
+*///? } else
+import net.minecraft.world.entity.Relative;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.ai.village.poi.PoiRecord;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
@@ -34,11 +34,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.border.WorldBorder;
 //? if <1.21 {
-import net.minecraft.world.level.portal.PortalInfo;
-//? } else if <1.21.3 {
+/*import net.minecraft.world.level.portal.PortalInfo;
+*///? } else if <1.21.3 {
 //import net.minecraft.world.level.portal.DimensionTransition;
 //? } else
-//import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.level.portal.PortalShape;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -47,7 +47,7 @@ import java.util.*;
 
 public class TeleportToNetherLikePortalPoiAction extends PortalAction<TeleportToNetherLikePortalPoiAction> {
     //$ map_codec_swap TeleportToNetherLikePortalPoiAction
-    public static final Codec<TeleportToNetherLikePortalPoiAction> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<TeleportToNetherLikePortalPoiAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Settings.optionalLocation(),
             TagKey.hashedCodec(Registries.POINT_OF_INTEREST_TYPE).fieldOf("point_of_interest_types").forGetter(TeleportToNetherLikePortalPoiAction::getPoiTypes),
             BlockPredicate.CODEC.optionalFieldOf("portal_predicate").xmap(optional -> optional.orElse(BlockPredicate.ANY), predicate -> predicate == BlockPredicate.ANY ? Optional.empty() : Optional.of(predicate)).forGetter(TeleportToNetherLikePortalPoiAction::getPortalPredicate),
@@ -129,9 +129,9 @@ public class TeleportToNetherLikePortalPoiAction extends PortalAction<TeleportTo
                 poiRecord -> {
                     BlockPos blockPosx = poiRecord.getPos();
                     //? if <1.21.3 {
-                    level.getChunkSource().addRegionTicket(TicketType.PORTAL, new ChunkPos(blockPosx), 3, blockPosx);
-                    //? } else
-                    //level.getChunkSource().addTicketWithRadius(TicketType.PORTAL, new ChunkPos(blockPosx), 3);
+                    /*level.getChunkSource().addRegionTicket(TicketType.PORTAL, new ChunkPos(blockPosx), 3, blockPosx);
+                    *///? } else
+                    level.getChunkSource().addTicketWithRadius(TicketType.PORTAL, new ChunkPos(blockPosx), 3);
                     BlockState blockState = level.getBlockState(blockPosx);
                     return BlockUtil.getLargestRectangleAround(
                             blockPosx,

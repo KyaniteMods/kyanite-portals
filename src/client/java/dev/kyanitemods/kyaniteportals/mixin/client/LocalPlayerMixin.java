@@ -14,7 +14,7 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.util.Mth;
 //? if >=1.21
-//import net.minecraft.world.entity.PortalProcessor;
+import net.minecraft.world.entity.PortalProcessor;
 import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -54,16 +54,16 @@ public class LocalPlayerMixin implements PortalOverlayPlayer {
 
     @Mixin(LocalPlayer.class)
     private interface DistortionIntensityAccessor {
-        @Accessor(/*? if <1.21.5 {*/"oSpinningEffectIntensity"/*? } else*//*"oPortalEffectIntensity"*/)
+        @Accessor(/*? if <1.21.5 {*//*"oSpinningEffectIntensity"*//*? } else*/"oPortalEffectIntensity")
         float getOldDistortionIntensity();
 
-        @Accessor(/*? if <1.21.5 {*/"spinningEffectIntensity"/*? } else*//*"portalEffectIntensity"*/)
+        @Accessor(/*? if <1.21.5 {*//*"spinningEffectIntensity"*//*? } else*/"portalEffectIntensity")
         float getDistortionIntensity();
 
-        @Accessor(/*? if <1.21.5 {*/"oSpinningEffectIntensity"/*? } else*//*"oPortalEffectIntensity"*/)
+        @Accessor(/*? if <1.21.5 {*//*"oSpinningEffectIntensity"*//*? } else*/"oPortalEffectIntensity")
         void setOldDistortionIntensity(float value);
 
-        @Accessor(/*? if <1.21.5 {*/"spinningEffectIntensity"/*? } else*//*"portalEffectIntensity"*/)
+        @Accessor(/*? if <1.21.5 {*//*"spinningEffectIntensity"*//*? } else*/"portalEffectIntensity")
         void setDistortionIntensity(float value);
     }
 
@@ -79,20 +79,15 @@ public class LocalPlayerMixin implements PortalOverlayPlayer {
         void invokeProcessPortalCooldown();
     }
 
-    @Inject(method = /*? if <1.21 {*/"handleNetherPortalClient"/*? } else if <1.21.5 { *//*"Lnet/minecraft/client/player/LocalPlayer;handleConfusionTransitionEffect()V"*//*? } else*//*"Lnet/minecraft/client/player/LocalPlayer;handlePortalTransitionEffect(Z)V"*/, at = @At("TAIL"))
-    private void kyanitePortals$handlePortalClient(CallbackInfo ci) {
-
-    }
-
     //? if <1.21 {
-    @Inject(method = "handleNetherPortalClient", at = @At(value = "HEAD"), cancellable = true)
+    /*@Inject(method = "handleNetherPortalClient", at = @At(value = "HEAD"))
     private void kyanitePortals$setDistortionIntensity(CallbackInfo ci) {
-    //? } else if <1.21.5 {
-    /*@Inject(method = "Lnet/minecraft/client/player/LocalPlayer;handleConfusionTransitionEffect()V", at = @At("HEAD"), cancellable = true)
+    *///? } else if <1.21.5 {
+    /*@Inject(method = "handleConfusionTransitionEffect()V", at = @At("HEAD"))
     private void kyanitePortals$setDistortionIntensity(CallbackInfo ci) {*/
     //? } else {
-    /*@Inject(method = "Lnet/minecraft/client/player/LocalPlayer;handlePortalTransitionEffect(Z)V", at = @At("HEAD"), cancellable = true)
-    private void kyanitePortals$setDistortionIntensity(boolean effect, CallbackInfo ci) {*/
+    @Inject(method = "handlePortalTransitionEffect(Z)V", at = @At("HEAD"))
+    private void kyanitePortals$setDistortionIntensity(boolean effect, CallbackInfo ci) {
     //? }
         setOldPortalIntensity(getPortalIntensity());
 
@@ -105,7 +100,7 @@ public class LocalPlayerMixin implements PortalOverlayPlayer {
         if (((EntityInPortal) this).isInsidePortal()) {
             if (((EntityInPortal) this).getPortal() != null) {
                 if (PortalEffects.get(((EntityInPortal) this).getPortal(), PortalEffects.CLOSE_SCREENS).isPresent()) {
-                    if (((MinecraftAccessor) this).getMinecraft().screen != null && /*? if <1.21.9 {*/!((MinecraftAccessor) this).getMinecraft().screen.isPauseScreen() && !(((MinecraftAccessor) this).getMinecraft().screen instanceof DeathScreen) && !(((MinecraftAccessor) this).getMinecraft().screen instanceof WinScreen) /*? } else *//*!((MinecraftAccessor) this).getMinecraft().screen.isAllowedInPortal()*/) {
+                    if (((MinecraftAccessor) this).getMinecraft().screen != null && /*? if <1.21.9 {*//*!((MinecraftAccessor) this).getMinecraft().screen.isPauseScreen() && !(((MinecraftAccessor) this).getMinecraft().screen instanceof DeathScreen) && !(((MinecraftAccessor) this).getMinecraft().screen instanceof WinScreen) *//*? } else */!((MinecraftAccessor) this).getMinecraft().screen.isAllowedInPortal()) {
                         if (((MinecraftAccessor) this).getMinecraft().screen instanceof AbstractContainerScreen) {
                             ((LocalPlayer) (Object) this).closeContainer();
                         }
@@ -115,15 +110,5 @@ public class LocalPlayerMixin implements PortalOverlayPlayer {
             }
             ((EntityInPortal) this).setInsidePortal(false);
         }
-    }
-
-    @WrapOperation(method = /*? if <1.21 {*/"handleNetherPortalClient"/*? } else if <1.21.5 { *//*"Lnet/minecraft/client/player/LocalPlayer;handleConfusionTransitionEffect()V"*//*? } else*//*"Lnet/minecraft/client/player/LocalPlayer;handlePortalTransitionEffect(Z)V"*/, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sounds/SoundManager;play(Lnet/minecraft/client/resources/sounds/SoundInstance;)V"))
-    private void kyanitePortals$doNotPlayPortalSound(SoundManager instance, SoundInstance soundInstance, Operation<Void> original) {
-        if (((EntityInPortal) this).isInsidePortal() && !((EntityInPortal) this).hasTraveled()
-                && ((EntityInPortal) this).getPortal() != null
-                && PortalEffects.get(((EntityInPortal) this).getPortal(), PortalEffects.NAUSEA).isPresent()) {
-            return;
-        }
-        original.call(instance, soundInstance);
     }
 }

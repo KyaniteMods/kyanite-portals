@@ -2,7 +2,7 @@ package dev.kyanitemods.kyaniteportals.content.portalactions;
 
 import com.mojang.serialization.Codec;
 //? if >=1.20.6
-//import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalActions;
 import dev.kyanitemods.kyaniteportals.mixin.ServerPlayerAccessor;
@@ -18,7 +18,7 @@ import java.util.Optional;
 
 public class WinGamePortalAction extends PortalAction<WinGamePortalAction> {
     //$ map_codec_swap WinGamePortalAction
-    public static final Codec<WinGamePortalAction> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<WinGamePortalAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Settings.optionalLocation(),
             Codec.BOOL.optionalFieldOf("show_credits").forGetter(WinGamePortalAction::shouldShowCredits)
     ).apply(instance, WinGamePortalAction::new));

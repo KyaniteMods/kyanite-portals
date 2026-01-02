@@ -13,13 +13,13 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.util.GsonHelper;
 //? if >=1.21
-//import net.minecraft.util.ProblemReporter;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 //? if >=1.21.6
-//import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueInput;
 
 public record BlockEntityPair(BlockState state, CompoundTag nbt) {
     public static final Codec<BlockState> BLOCK_STATE_CODEC = Codec.either(
@@ -56,13 +56,13 @@ public record BlockEntityPair(BlockState state, CompoundTag nbt) {
         if (nbt().isEmpty()) return;
         if (blockEntity != null) {
             //? if <1.21 {
-            blockEntity.load(nbt());
-            //? } else if <1.21.6 {
+            /*blockEntity.load(nbt());
+            *///? } else if <1.21.6 {
             //blockEntity.loadWithComponents(nbt(), level.registryAccess());
             //? } else {
-            /*try (ProblemReporter.ScopedCollector scopedCollector = new ProblemReporter.ScopedCollector(KyanitePortals.LOGGER);){
+            try (ProblemReporter.ScopedCollector scopedCollector = new ProblemReporter.ScopedCollector(KyanitePortals.LOGGER);){
                 blockEntity.loadWithComponents(TagValueInput.create(scopedCollector, level.registryAccess(), nbt()));
-            }*/
+            }
             //? }
             blockEntity.setChanged();
         } else {

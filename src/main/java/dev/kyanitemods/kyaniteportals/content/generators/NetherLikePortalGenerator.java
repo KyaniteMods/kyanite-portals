@@ -2,7 +2,7 @@ package dev.kyanitemods.kyaniteportals.content.generators;
 
 import com.mojang.serialization.Codec;
 //? if >=1.20.6
-//import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalGenerators;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalTriggers;
@@ -22,7 +22,7 @@ import java.util.List;
 
 public class NetherLikePortalGenerator extends PortalGenerator<NetherLikePortalGenerator> {
     //$ map_codec_swap NetherLikePortalGenerator
-    public static final Codec<NetherLikePortalGenerator> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<NetherLikePortalGenerator> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             PortalTriggers.CODEC.listOf().fieldOf("triggers").forGetter(NetherLikePortalGenerator::getTriggers),
             DimensionList.CODEC.optionalFieldOf("valid_in", DimensionList.EMPTY).forGetter(NetherLikePortalGenerator::getValidDimensions),
             BlockPredicate.CODEC.optionalFieldOf("frame_block", BlockPredicate.ANY).forGetter(NetherLikePortalGenerator::getFrame),

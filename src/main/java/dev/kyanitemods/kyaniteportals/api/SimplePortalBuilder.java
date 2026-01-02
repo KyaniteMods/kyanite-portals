@@ -15,11 +15,11 @@ import dev.kyanitemods.kyaniteportals.util.BlockEntityPair;
 import dev.kyanitemods.kyaniteportals.util.DimensionList;
 import dev.kyanitemods.kyaniteportals.util.Range;
 import dev.kyanitemods.kyaniteportals.util.BlockPredicate;
-import net.minecraft.advancements.critereon.EntityPredicate;
-import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.criterion.EntityPredicate;
+import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.core.Holder;
 //? if >=1.21.3 {
-/*import net.minecraft.core.HolderGetter;*/
+import net.minecraft.core.HolderGetter;
 //? }
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleOptions;
@@ -27,7 +27,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.valueproviders.ConstantFloat;
@@ -107,24 +107,24 @@ public final class SimplePortalBuilder {
 
     public SimplePortalBuilder ignition(Item item, int damage) {
         //? if <1.21.3 {
-        ignition.add(provider -> PortalTriggers.USE_ITEM.create(ItemPredicate.Builder.item().of(item).build(), damage));
-        //? } else {
-        /*ignition.add(provider -> {
+        /*ignition.add(provider -> PortalTriggers.USE_ITEM.create(ItemPredicate.Builder.item().of(item).build(), damage));
+        *///? } else {
+        ignition.add(provider -> {
             HolderGetter<Item> itemLookup = provider.lookup(Registries.ITEM).orElseThrow().getter();
             return PortalTriggers.USE_ITEM.create(ItemPredicate.Builder.item().of(itemLookup, item).build(), damage);
-        });*/
+        });
         //? }
         return this;
     }
 
     public SimplePortalBuilder ignition(Item... items) {
         //? if <1.21.3 {
-        ignition.add(provider -> PortalTriggers.USE_ITEM.create(ItemPredicate.Builder.item().of(items).build()));
-        //? } else {
-        /*ignition.add(provider -> {
+        /*ignition.add(provider -> PortalTriggers.USE_ITEM.create(ItemPredicate.Builder.item().of(items).build()));
+        *///? } else {
+        ignition.add(provider -> {
             HolderGetter<Item> itemLookup = provider.lookup(Registries.ITEM).orElseThrow().getter();
             return PortalTriggers.USE_ITEM.create(ItemPredicate.Builder.item().of(itemLookup, items).build());
-        });*/
+        });
         //? }
         return this;
     }
@@ -163,12 +163,12 @@ public final class SimplePortalBuilder {
         return this;
     }
 
-    public ResourceKey<Portal> register(ResourceLocation id) {
+    public ResourceKey<Portal> register(Identifier id) {
         ResourceKey<Portal> key = ResourceKey.create(KyanitePortals.RESOURCE_KEY, id);
         CustomPortalBlockEntity.COLORS.put(key, color);
         KyanitePortals.PORTAL_REGISTRY_OVERRIDES.put(key, provider -> {
             //? if >=1.21.3
-            //HolderGetter<EntityType<?>> entityLookup = provider.lookup(Registries.ENTITY_TYPE).orElseThrow().getter();
+            HolderGetter<EntityType<?>> entityLookup = provider.lookup(Registries.ENTITY_TYPE).orElseThrow().getter();
             CompoundTag tag = new CompoundTag();
             tag.putString("portal", id.toString());
             Portal.Builder builder = Portal.Builder.create()
@@ -198,7 +198,7 @@ public final class SimplePortalBuilder {
                                             .onFailure(
                                                     new CreateNetherLikePortalAction(
                                                             PortalAction.Settings.Builder.create()
-                                                                    .predicate(EntityPredicate.Builder.entity().of(/*? if >=1.21.3 {*//*entityLookup, *//*? }*/EntityType.PLAYER).build())
+                                                                    .predicate(EntityPredicate.Builder.entity().of(/*? if >=1.21.3 {*/entityLookup, /*? }*/EntityType.PLAYER).build())
                                                                     .locationOptions(new LoadActionLocationOptions("location"))
                                                                     .build(),
                                                             new BlockEntityPair(Blocks.OBSIDIAN.defaultBlockState(), new CompoundTag()),

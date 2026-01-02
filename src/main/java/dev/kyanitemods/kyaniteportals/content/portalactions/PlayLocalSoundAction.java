@@ -1,9 +1,9 @@
 package dev.kyanitemods.kyaniteportals.content.portalactions;
 
 //? if <1.20.6 {
-import com.mojang.serialization.Codec;
-//? } else
-//import com.mojang.serialization.MapCodec;
+/*import com.mojang.serialization.Codec;
+*///? } else
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.Portal;
 import dev.kyanitemods.kyaniteportals.content.portalactions.location.ActionLocation;
@@ -11,7 +11,7 @@ import dev.kyanitemods.kyaniteportals.content.portalactions.location.ActionLocat
 import dev.kyanitemods.kyaniteportals.content.registry.PortalActions;
 import dev.kyanitemods.kyaniteportals.util.CodecHelper;
 import dev.kyanitemods.kyaniteportals.util.KyanitePortalsUtil;
-import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
@@ -30,7 +30,7 @@ import java.util.Optional;
 
 public final class PlayLocalSoundAction extends PortalAction<PlayLocalSoundAction> {
     //$ map_codec_swap PlayLocalSoundAction
-    public static final Codec<PlayLocalSoundAction> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<PlayLocalSoundAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Settings.optionalLocation(),
             SoundEvent.CODEC.fieldOf("sound_event").forGetter(PlayLocalSoundAction::soundEvent),
             FloatProvider.CODEC.fieldOf("volume").forGetter(PlayLocalSoundAction::volume),
