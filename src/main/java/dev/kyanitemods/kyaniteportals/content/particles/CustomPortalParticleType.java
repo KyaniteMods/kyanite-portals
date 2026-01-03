@@ -20,7 +20,7 @@ public class CustomPortalParticleType extends ParticleType<CustomPortalParticleO
     }
 
     @Override
-    public @NotNull /*? if <1.20.5 { *//*Codec<CustomPortalParticleOptions>*//*? } else */MapCodec<CustomPortalParticleOptions> codec() {
+    public @NotNull /*? if <1.20.5 { *//*Codec<CustomPortalParticleOptions>*//*? } else {*/MapCodec<CustomPortalParticleOptions>/*? }*/ codec() {
         return CustomPortalParticleOptions.CODEC;
     }
 

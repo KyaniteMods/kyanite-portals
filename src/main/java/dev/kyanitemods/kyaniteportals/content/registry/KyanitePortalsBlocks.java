@@ -18,8 +18,8 @@ public class KyanitePortalsBlocks {
 
     private static Block register(String id, Function<BlockBehaviour.Properties, Block> function, BlockBehaviour.Properties properties) {
         //? if <1.21.3 {
-        //return Registry.register(BuiltInRegistries.BLOCK, KyanitePortals.id(id), function.apply(properties));
-        //? } else
+        /*return Registry.register(BuiltInRegistries.BLOCK, KyanitePortals.id(id), function.apply(properties));
+        *///? } else
         return Blocks.register(ResourceKey.create(Registries.BLOCK, KyanitePortals.id(id)), function, properties);
     }
 

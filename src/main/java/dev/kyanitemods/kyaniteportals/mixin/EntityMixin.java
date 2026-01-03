@@ -73,7 +73,7 @@ public abstract class EntityMixin implements EntityInPortal {
     @Override
     public void tick(Level level, BlockPos pos, ResourceKey<Portal> portal) {
         portalLevel = level;
-        portalPos = pos;
+        portalPos = pos.immutable();
         if (getPortal() == null || !KyanitePortalsUtil.getIdentifier(portal).equals(KyanitePortalsUtil.getIdentifier(getPortal()))) {
             setPortal(portal);
             setTimeInPortal(0);
@@ -93,7 +93,7 @@ public abstract class EntityMixin implements EntityInPortal {
     private void portalEntered(Level level, BlockPos pos) {
         Optional<Portal> optional = level.registryAccess().lookupOrThrow(KyanitePortals.RESOURCE_KEY).get(getPortal()).map(Holder.Reference::value);
         optional.ifPresent(value -> {
-            Portal.executeAll(level, pos, (Entity) (Object) this, value.enterActions());
+            Portal.executeAll(level, pos.immutable(), (Entity) (Object) this, value.enterActions());
         });
     }
 
@@ -101,7 +101,7 @@ public abstract class EntityMixin implements EntityInPortal {
     private void portalTraveled(Level level, BlockPos pos) {
         Optional<Portal> optional = level.registryAccess().lookupOrThrow(KyanitePortals.RESOURCE_KEY).get(getPortal()).map(Holder.Reference::value);
         optional.ifPresent(value -> {
-            Portal.executeAll(level, pos, (Entity) (Object) this, value.travelActions());
+            Portal.executeAll(level, pos.immutable(), (Entity) (Object) this, value.travelActions());
         });
     }
 
@@ -155,7 +155,7 @@ public abstract class EntityMixin implements EntityInPortal {
         return portal;
     }
 
-    @Inject(method = /*? if <1.21 {*//*"handleNetherPortal"*//*? } else*/"handlePortal", at = @At(value = "HEAD"), cancellable = true)
+    @Inject(method = /*? if <1.21 {*//*"handleNetherPortal"*//*? } else {*/"handlePortal"/*? }*/, at = @At(value = "HEAD"), cancellable = true)
     private void kyanitePortals$tick(CallbackInfo ci) {
         if (((Entity) (Object) this).level().isClientSide()) return;
         if (isInsidePortal()) {

@@ -22,13 +22,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.portal.PortalShape;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.Optional;
-import java.util.Set;
 
 public class CreateNetherLikePortalAction extends PortalAction<CreateNetherLikePortalAction> {
     //$ map_codec_swap CreateNetherLikePortalAction
@@ -68,26 +66,16 @@ public class CreateNetherLikePortalAction extends PortalAction<CreateNetherLikeP
         if (optional.isEmpty()) return PortalActionResult.FAILURE;
         final ServerLevel serverLevel = optional.get();
 
-        Direction.Axis axis = level.getBlockState(pos).getOptionalValue(BlockStateProperties.HORIZONTAL_AXIS).orElse(Direction.Axis.X);
+        EnumProperty<Direction.Axis> axisProperty = level.getBlockState(pos).hasProperty(BlockStateProperties.AXIS) ? BlockStateProperties.AXIS : BlockStateProperties.HORIZONTAL_AXIS;
+        Direction.Axis axis = level.getBlockState(pos).getOptionalValue(axisProperty).orElse(Direction.Axis.X);
 
         BlockPos searchPos = BlockPos.containing(location.position().x(), location.position().y(), location.position().z());
         Optional<BlockUtil.FoundRectangle> optionalPortal = createPortal(serverLevel, searchPos, axis);
 
         if (shouldTeleportPlayerToPortal() && entity != null) {
-            optionalPortal.map(foundRectangle -> {
-                BlockState blockState = level.getBlockState(pos);
-                Vec3 vec3;
-                if (blockState.hasProperty(BlockStateProperties.HORIZONTAL_AXIS)) {
-                    BlockUtil.FoundRectangle foundRectangle2 = BlockUtil.getLargestRectangleAround(
-                            pos, axis, 21, Direction.Axis.Y, 21, blockPos -> level.getBlockState(blockPos) == blockState
-                    );
-                    vec3 = PortalShape.getRelativePosition(foundRectangle2, axis, entity.position(), entity.getDimensions(entity.getPose()));
-                } else {
-                    vec3 = new Vec3(0.5, 0.0, 0.0);
-                }
-
-                return KyanitePortalsUtil.createTeleport(serverLevel, foundRectangle, axis, vec3, entity);
-            }).ifPresent(info -> KyanitePortalsUtil.teleport(entity, serverLevel, info));
+            optionalPortal.map(foundRectangle ->
+                    KyanitePortalsUtil.getDimensionTransitionFromExit(level, pos, serverLevel, foundRectangle, axis, entity)
+            ).ifPresent(info -> KyanitePortalsUtil.teleport(entity, serverLevel, info));
         }
 
         return PortalActionResult.SUCCESS;

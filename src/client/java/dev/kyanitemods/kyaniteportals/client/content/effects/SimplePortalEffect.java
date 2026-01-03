@@ -7,7 +7,7 @@ import com.mojang.serialization.MapCodec;
 import dev.kyanitemods.kyaniteportals.util.CodecHelper;
 
 public class SimplePortalEffect extends PortalEffectOptions<SimplePortalEffect> implements PortalEffectType<SimplePortalEffect> {
-    private final /*? if <1.20.6 {*//*Codec<SimplePortalEffect>*//*? } else*/MapCodec<SimplePortalEffect> codec;
+    private final /*? if <1.20.6 {*//*Codec<SimplePortalEffect>*//*? } else {*/MapCodec<SimplePortalEffect>/*? }*/ codec;
 
     public SimplePortalEffect() {
         //? if <1.20.6 {
@@ -22,7 +22,7 @@ public class SimplePortalEffect extends PortalEffectOptions<SimplePortalEffect> 
     }
 
     @Override
-    public /*? if <1.20.6 {*//*Codec<SimplePortalEffect>*//*? } else*/MapCodec<SimplePortalEffect> codec() {
+    public /*? if <1.20.6 {*//*Codec<SimplePortalEffect>*//*? } else {*/MapCodec<SimplePortalEffect>/*? }*/ codec() {
         return codec;
     }
 }

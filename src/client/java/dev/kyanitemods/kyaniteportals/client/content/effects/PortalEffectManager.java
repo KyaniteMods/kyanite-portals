@@ -71,7 +71,7 @@ public class PortalEffectManager extends /*? if <1.21.3 {*//*SimpleJsonResourceR
         ImmutableMap.Builder<Identifier, Set<PortalEffectOptions<?>>> builder = ImmutableMap.builder();
         for (Map.Entry<ResourceKey<Portal>, Integer> entry : CustomPortalBlockEntity.COLORS.entrySet()) {
             if (map.containsKey(KyanitePortalsUtil.getIdentifier(entry.getKey()))) continue;
-            builder.put(KyanitePortalsUtil.getIdentifier(entry.getKey()), Set.of(PortalEffects.NAUSEA, PortalEffects.CLOSE_SCREENS, new TextureOverlayPortalEffectOptions(/*? if >=1.21.5 {*/AtlasIds.BLOCKS/*? } else*//*TextureAtlas.LOCATION_BLOCKS*/, KyanitePortals.id("block/custom_portal"), entry.getValue())));
+            builder.put(KyanitePortalsUtil.getIdentifier(entry.getKey()), Set.of(PortalEffects.NAUSEA, PortalEffects.CLOSE_SCREENS, new TextureOverlayPortalEffectOptions(/*? if >=1.21.5 {*/AtlasIds.BLOCKS/*? } else {*//*TextureAtlas.LOCATION_BLOCKS*//*? }*/, KyanitePortals.id("block/custom_portal"), entry.getValue())));
         }
         builder.putAll(map);
         this.map = builder.build();

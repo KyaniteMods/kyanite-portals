@@ -50,7 +50,7 @@ public class BlockPredicate {
             } else {
                 if (nbt.isPresent()) {
                     BlockEntity blockEntity = level.getBlockEntity(blockPos);
-                    if (blockEntity == null || !nbt.get().matches(blockEntity.saveWithFullMetadata(/*? if >=1.21*/level.registryAccess()))) {
+                    if (blockEntity == null || !nbt.get().matches(blockEntity.saveWithFullMetadata(/*? if >=1.21 {*/level.registryAccess()/*? }*/))) {
                         return false;
                     }
                 }

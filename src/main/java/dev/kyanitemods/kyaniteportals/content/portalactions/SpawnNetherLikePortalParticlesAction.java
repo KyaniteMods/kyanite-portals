@@ -54,19 +54,19 @@ public class SpawnNetherLikePortalParticlesAction extends PortalAction<SpawnNeth
         BlockState state = level.getBlockState(blockPos);
         int amount = getAmount().sample(level.getRandom());
         for (int i = 0; i < amount; i++) {
-            double x = location.position().x() + level.getRandom().nextDouble();
-            double y = location.position().y() + level.getRandom().nextDouble();
-            double z = location.position().z() + level.getRandom().nextDouble();
+            double x = location.position().x() + level.getRandom().nextDouble() - 0.5;
+            double y = location.position().y() + level.getRandom().nextDouble() - 0.5;
+            double z = location.position().z() + level.getRandom().nextDouble() - 0.5;
             double xd = (level.getRandom().nextFloat() - 0.5) * 0.5;
             double yd = (level.getRandom().nextFloat() - 0.5) * 0.5;
             double zd = (level.getRandom().nextFloat() - 0.5) * 0.5;
             int k = level.getRandom().nextInt(2) * 2 - 1;
             // mad code from Mojang, this doesn't even work properly in the left and right edges of the portal
             if (!level.getBlockState(blockPos.west()).is(state.getBlock()) && !level.getBlockState(blockPos.east()).is(state.getBlock())) {
-                x = location.position().x() + 0.5 + 0.25 * k;
+                x = location.position().x() + 0.25 * k;
                 xd = level.getRandom().nextFloat() * 2.0F * k;
             } else {
-                z = location.position().z() + 0.5 + 0.25 * k;
+                z = location.position().z() + 0.25 * k;
                 zd = level.getRandom().nextFloat() * 2.0F * k;
             }
 

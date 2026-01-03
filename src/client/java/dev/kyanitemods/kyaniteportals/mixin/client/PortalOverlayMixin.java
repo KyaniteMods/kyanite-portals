@@ -47,8 +47,8 @@ public class PortalOverlayMixin {
         *///? }
     }
 
-    @WrapOperation(method = /*? if <1.20.6 {*//*"render"*//*? } else*/"renderCameraOverlays", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderPortalOverlay(Lnet/minecraft/client/gui/GuiGraphics;F)V"))
-    private void kyanitePortals$checkPortalOverlay(Gui instance, GuiGraphics guiGraphics, float f, Operation<Void> original, @Local(argsOnly = true) /*? if <1.21 {*//*float tickDelta*//*? } else*/DeltaTracker deltaTracker) {
+    @WrapOperation(method = /*? if <1.20.6 {*//*"render"*//*? } else {*/"renderCameraOverlays"/*? }*/, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderPortalOverlay(Lnet/minecraft/client/gui/GuiGraphics;F)V"))
+    private void kyanitePortals$checkPortalOverlay(Gui instance, GuiGraphics guiGraphics, float f, Operation<Void> original, @Local(argsOnly = true) /*? if <1.21 {*//*float tickDelta*//*? } else {*/DeltaTracker deltaTracker/*? }*/) {
         //? if >=1.21
         float tickDelta = deltaTracker.getGameTimeDeltaPartialTick(false);
         Player player = ((GuiAccessor) this).getMinecraft().player;
@@ -64,8 +64,8 @@ public class PortalOverlayMixin {
         //? }
     }
 
-    @Inject(method = /*? if <1.20.6 {*//*"render"*//*? } else*/"renderCameraOverlays", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;lerp(FFF)F", ordinal = 1))
-    private void kyanitePortals$renderPortalOverlay(GuiGraphics guiGraphics, /*? if <1.21 {*//*float tickDelta*//*? } else*/DeltaTracker deltaTracker, CallbackInfo ci) {
+    @Inject(method = /*? if <1.20.6 {*//*"render"*//*? } else {*/"renderCameraOverlays"/*? }*/, at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;lerp(FFF)F", ordinal = 1))
+    private void kyanitePortals$renderPortalOverlay(GuiGraphics guiGraphics, /*? if <1.21 {*//*float tickDelta*//*? } else {*/DeltaTracker deltaTracker/*? }*/, CallbackInfo ci) {
         //? if >=1.21
         float tickDelta = deltaTracker.getGameTimeDeltaPartialTick(false);
         Player player = ((GuiAccessor) this).getMinecraft().player;

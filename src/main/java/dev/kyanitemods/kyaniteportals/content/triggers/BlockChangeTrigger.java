@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 @ApiStatus.Experimental
 public class BlockChangeTrigger extends SimplePortalTrigger<BlockChangeTrigger.BlockChangeTriggerInstance> {
     @Override
-    public /*? if <1.20.6 {*//*Codec<BlockChangeTriggerInstance>*//*? } else*/MapCodec<BlockChangeTriggerInstance> codec() {
+    public /*? if <1.20.6 {*//*Codec<BlockChangeTriggerInstance>*//*? } else {*/MapCodec<BlockChangeTriggerInstance>/*? }*/ codec() {
         return BlockChangeTriggerInstance.CODEC;
     }
 

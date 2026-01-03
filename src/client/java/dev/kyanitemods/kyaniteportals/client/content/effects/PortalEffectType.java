@@ -6,5 +6,5 @@ package dev.kyanitemods.kyaniteportals.client.content.effects;
 import com.mojang.serialization.MapCodec;
 
 public interface PortalEffectType<T extends PortalEffectOptions<T>> {
-    /*? if <1.20.6 {*//*Codec<T>*//*? } else*/MapCodec<T> codec();
+    /*? if <1.20.6 {*//*Codec<T>*//*? } else {*/MapCodec<T>/*? }*/ codec();
 }

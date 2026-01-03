@@ -248,10 +248,10 @@ public final class SimplePortalBuilder {
                                         FullActionLocationOptions.InEntryPoint.INSTANCE,
                                         new FullActionLocationOptions.PositionContext(
                                                 FullActionLocationOptions.PositionContext.From.PORTAL,
-                                                FullActionLocationOptions.PositionContext.RoundingMode.DOWN,
+                                                FullActionLocationOptions.PositionContext.RoundingMode.NONE,
                                                 false,
                                                 false,
-                                                new Vec3(0.5f, 0.5f, 0.5f))
+                                                Vec3.ZERO)
                                 ))
                                 .environment(PortalActionEnvironment.CLIENT)
                                 .build(),

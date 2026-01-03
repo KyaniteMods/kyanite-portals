@@ -36,8 +36,8 @@ public class CustomPortalParticle extends PortalParticle {
             PortalParticle portalParticle = new CustomPortalParticle(clientLevel, x, y, z, xd, yd, zd, options);
             portalParticle.pickSprite(this.sprite);
             return portalParticle;
-        }*/
-        //? } else {
+        }
+        *///? } else {
         @Override
         public @Nullable Particle createParticle(CustomPortalParticleOptions options, ClientLevel clientLevel, double x, double y, double z, double xd, double yd, double zd, RandomSource random) {
             return new CustomPortalParticle(clientLevel, x, y, z, xd, yd, zd, options, sprite.get(random));

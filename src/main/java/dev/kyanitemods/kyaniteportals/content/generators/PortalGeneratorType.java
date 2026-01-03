@@ -6,5 +6,5 @@ package dev.kyanitemods.kyaniteportals.content.generators;
 import com.mojang.serialization.MapCodec;
 
 public interface PortalGeneratorType<T extends PortalGenerator<T>> {
-    /*? if <1.20.6 {*//*Codec<T>*//*? } else*/MapCodec<T> codec();
+    /*? if <1.20.6 {*//*Codec<T>*//*? } else {*/MapCodec<T>/*? }*/ codec();
 }

@@ -18,7 +18,7 @@ public interface PortalTrigger<I extends PortalTriggerInstance<I>> {
 
     void removeListeners();
 
-    /*? if <1.20.6 {*//*Codec<I>*//*? } else*/MapCodec<I> codec();
+    /*? if <1.20.6 {*//*Codec<I>*//*? } else {*/MapCodec<I>/*? }*/ codec();
 
     class Listener<I extends PortalTriggerInstance<I>> {
         private final I instance;

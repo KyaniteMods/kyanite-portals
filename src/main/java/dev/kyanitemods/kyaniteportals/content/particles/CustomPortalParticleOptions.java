@@ -5,7 +5,6 @@ package dev.kyanitemods.kyaniteportals.content.particles;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
-//? if >=1.20.5
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.registry.KyanitePortalsParticleTypes;
 import net.minecraft.core.particles.*;
@@ -21,9 +20,8 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
- 
-//? }
 
+//? }
 import java.util.Locale;
 
 public class CustomPortalParticleOptions implements ParticleOptions {
