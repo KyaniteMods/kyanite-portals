@@ -108,8 +108,10 @@ public class TeleportToNetherLikePortalPoiAction extends PortalAction<TeleportTo
         Optional<PoiRecord> optional = poiManager.getInSquare(holder -> holder.is(poiType), searchPos, i, PoiManager.Occupancy.ANY)
                 .filter(poiRecord -> worldBorder.isWithinBounds(poiRecord.getPos()))
                 .sorted(Comparator.comparingDouble((PoiRecord poiRecord) -> poiRecord.getPos().distSqr(searchPos)).thenComparingInt((PoiRecord poiRecord) -> poiRecord.getPos().getY()))
-                .filter(poiRecord -> level.getBlockState(poiRecord.getPos()).hasProperty(BlockStateProperties.AXIS) || level.getBlockState(poiRecord.getPos()).hasProperty(BlockStateProperties.HORIZONTAL_AXIS))
-                .filter(poiRecord -> predicate.matches(level, poiRecord.getPos()))
+                .filter(poiRecord -> {
+                    level.getBlockState(poiRecord.getPos());
+                    return predicate.matches(level, poiRecord.getPos());
+                })
                 .findFirst();
         return optional.map(
                 poiRecord -> {
@@ -119,11 +121,12 @@ public class TeleportToNetherLikePortalPoiAction extends PortalAction<TeleportTo
                     *///? } else
                     level.getChunkSource().addTicketWithRadius(TicketType.PORTAL, new ChunkPos(poiPos), 3);
                     BlockState blockState = level.getBlockState(poiPos);
+                    Direction.Axis axis = blockState.getOptionalValue(BlockStateProperties.AXIS).orElse(blockState.getOptionalValue(BlockStateProperties.HORIZONTAL_AXIS).orElse(Direction.Axis.X));
                     return BlockUtil.getLargestRectangleAround(
                             poiPos,
-                            blockState.getOptionalValue(BlockStateProperties.AXIS).orElse(blockState.getOptionalValue(BlockStateProperties.HORIZONTAL_AXIS).orElse(Direction.Axis.X)),
+                            axis,
                             21,
-                            Direction.Axis.Y,
+                            axis == Direction.Axis.Y ? Direction.Axis.Z : Direction.Axis.Y,
                             21,
                             pos -> level.getBlockState(pos) == blockState
                     );
