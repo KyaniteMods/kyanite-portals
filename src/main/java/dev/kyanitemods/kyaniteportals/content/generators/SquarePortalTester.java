@@ -35,7 +35,7 @@ public class SquarePortalTester {
             test = test(level, pos, axis1);
             if (test.isSuccess()) return test;
         }
-        return test;
+        return FailResult.INSTANCE;
     }
 
     public Result test(Level level, BlockPos pos, Direction.Axis axis) {
