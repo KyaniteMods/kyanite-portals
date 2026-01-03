@@ -29,11 +29,11 @@ public class SquarePortalTester {
     }
 
     public Result test(Level level, BlockPos pos, Direction.Axis axis, Direction.Axis... axes) {
-        Result test = test(level, pos, axis);
-        if (test.isSuccess()) return test;
+        Result result = test(level, pos, axis);
+        if (result.isSuccess()) return result;
         for (Direction.Axis axis1 : axes) {
-            test = test(level, pos, axis1);
-            if (test.isSuccess()) return test;
+            result = test(level, pos, axis1);
+            if (result.isSuccess()) return result;
         }
         return FailResult.INSTANCE;
     }
