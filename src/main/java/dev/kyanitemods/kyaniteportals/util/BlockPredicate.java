@@ -75,7 +75,10 @@ public class BlockPredicate {
             CodecHelper.NBT_PREDICATE_CODEC
                     .optionalFieldOf("nbt")
                     .forGetter(predicate -> predicate.nbt)
-    ).apply(instance, BlockPredicate::new));
+    ).apply(instance, (tag, blocks, state, nbt) -> {
+        if (tag.isEmpty() && blocks.isEmpty() && state.isEmpty() && nbt.isEmpty()) return ANY;
+        return new BlockPredicate(tag, blocks, state, nbt);
+    }));
 
     public static class Builder {
         private Optional<Set<Block>> blocks = Optional.empty();
