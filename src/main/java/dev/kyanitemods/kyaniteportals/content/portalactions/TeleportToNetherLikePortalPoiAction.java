@@ -102,29 +102,30 @@ public class TeleportToNetherLikePortalPoiAction extends PortalAction<TeleportTo
     }
 
     //TODO: refactor
-    private static Optional<BlockUtil.FoundRectangle> findPortalAround(final ServerLevel level, TagKey<PoiType> poiType, int i, BlockPos blockPos, WorldBorder worldBorder, BlockPredicate predicate) {
+    private static Optional<BlockUtil.FoundRectangle> findPortalAround(final ServerLevel level, TagKey<PoiType> poiType, int i, BlockPos searchPos, WorldBorder worldBorder, BlockPredicate predicate) {
         PoiManager poiManager = level.getPoiManager();
-        poiManager.ensureLoadedAndValid(level, blockPos, i);
-        Optional<PoiRecord> optional = poiManager.getInSquare(holder -> holder.is(poiType), blockPos, i, PoiManager.Occupancy.ANY)
+        poiManager.ensureLoadedAndValid(level, searchPos, i);
+        Optional<PoiRecord> optional = poiManager.getInSquare(holder -> holder.is(poiType), searchPos, i, PoiManager.Occupancy.ANY)
                 .filter(poiRecord -> worldBorder.isWithinBounds(poiRecord.getPos()))
-                .sorted(Comparator.comparingDouble((PoiRecord poiRecord) -> poiRecord.getPos().distSqr(blockPos)).thenComparingInt((PoiRecord poiRecord) -> poiRecord.getPos().getY()))
+                .sorted(Comparator.comparingDouble((PoiRecord poiRecord) -> poiRecord.getPos().distSqr(searchPos)).thenComparingInt((PoiRecord poiRecord) -> poiRecord.getPos().getY()))
+                .filter(poiRecord -> level.getBlockState(poiRecord.getPos()).hasProperty(BlockStateProperties.AXIS) || level.getBlockState(poiRecord.getPos()).hasProperty(BlockStateProperties.HORIZONTAL_AXIS))
                 .filter(poiRecord -> predicate.matches(level, poiRecord.getPos()))
                 .findFirst();
         return optional.map(
                 poiRecord -> {
-                    BlockPos blockPosx = poiRecord.getPos();
+                    BlockPos poiPos = poiRecord.getPos();
                     //? if <1.21.3 {
-                    /*level.getChunkSource().addRegionTicket(TicketType.PORTAL, new ChunkPos(blockPosx), 3, blockPosx);
+                    /*level.getChunkSource().addRegionTicket(TicketType.PORTAL, new ChunkPos(poiPos), 3, poiPos);
                     *///? } else
-                    level.getChunkSource().addTicketWithRadius(TicketType.PORTAL, new ChunkPos(blockPosx), 3);
-                    BlockState blockState = level.getBlockState(blockPosx);
+                    level.getChunkSource().addTicketWithRadius(TicketType.PORTAL, new ChunkPos(poiPos), 3);
+                    BlockState blockState = level.getBlockState(poiPos);
                     return BlockUtil.getLargestRectangleAround(
-                            blockPosx,
+                            poiPos,
                             blockState.getOptionalValue(BlockStateProperties.AXIS).orElse(blockState.getOptionalValue(BlockStateProperties.HORIZONTAL_AXIS).orElse(Direction.Axis.X)),
                             21,
                             Direction.Axis.Y,
                             21,
-                            blockPosxx -> level.getBlockState(blockPosxx) == blockState
+                            pos -> level.getBlockState(pos) == blockState
                     );
                 }
         );
