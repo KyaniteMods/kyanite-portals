@@ -101,13 +101,13 @@ public class TeleportToNetherLikePortalPoiAction extends PortalAction<TeleportTo
         return PortalActionResult.SUCCESS;
     }
 
+    //TODO: refactor
     private static Optional<BlockUtil.FoundRectangle> findPortalAround(final ServerLevel level, TagKey<PoiType> poiType, int i, BlockPos blockPos, WorldBorder worldBorder, BlockPredicate predicate) {
         PoiManager poiManager = level.getPoiManager();
         poiManager.ensureLoadedAndValid(level, blockPos, i);
         Optional<PoiRecord> optional = poiManager.getInSquare(holder -> holder.is(poiType), blockPos, i, PoiManager.Occupancy.ANY)
                 .filter(poiRecord -> worldBorder.isWithinBounds(poiRecord.getPos()))
                 .sorted(Comparator.comparingDouble((PoiRecord poiRecord) -> poiRecord.getPos().distSqr(blockPos)).thenComparingInt((PoiRecord poiRecord) -> poiRecord.getPos().getY()))
-                .filter(poiRecord -> level.getBlockState(poiRecord.getPos()).hasProperty(BlockStateProperties.HORIZONTAL_AXIS))
                 .filter(poiRecord -> predicate.matches(level, poiRecord.getPos()))
                 .findFirst();
         return optional.map(
@@ -120,7 +120,7 @@ public class TeleportToNetherLikePortalPoiAction extends PortalAction<TeleportTo
                     BlockState blockState = level.getBlockState(blockPosx);
                     return BlockUtil.getLargestRectangleAround(
                             blockPosx,
-                            blockState.getValue(BlockStateProperties.HORIZONTAL_AXIS),
+                            blockState.getOptionalValue(BlockStateProperties.AXIS).orElse(blockState.getOptionalValue(BlockStateProperties.HORIZONTAL_AXIS).orElse(Direction.Axis.X)),
                             21,
                             Direction.Axis.Y,
                             21,
