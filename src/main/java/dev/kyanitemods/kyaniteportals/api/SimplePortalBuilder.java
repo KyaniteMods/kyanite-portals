@@ -17,6 +17,7 @@ import dev.kyanitemods.kyaniteportals.util.BlockEntityPair;
 import dev.kyanitemods.kyaniteportals.util.DimensionList;
 import dev.kyanitemods.kyaniteportals.util.Range;
 import dev.kyanitemods.kyaniteportals.util.BlockPredicate;
+import io.netty.util.internal.UnstableApi;
 import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.core.Holder;
@@ -29,6 +30,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.valueproviders.ConstantFloat;
@@ -76,6 +78,9 @@ public final class SimplePortalBuilder {
     };
     private Range.Int width = Range.Int.create(4, 23);
     private Range.Int height = Range.Int.create(5, 23);
+    private Optional<Holder<SoundEvent>> ambientSound = Optional.of(Holder.direct(SoundEvents.PORTAL_AMBIENT));
+    private Optional<Holder<SoundEvent>> travelSound = Optional.of(Holder.direct(SoundEvents.PORTAL_TRAVEL));
+    private Optional<Holder<SoundEvent>> triggerSound = Optional.of(Holder.direct(SoundEvents.PORTAL_TRIGGER));
 
     public static SimplePortalBuilder create() {
         return new SimplePortalBuilder();
@@ -164,20 +169,45 @@ public final class SimplePortalBuilder {
         return this;
     }
 
+    public SimplePortalBuilder ambientSound(Holder<SoundEvent> sound) {
+        ambientSound = Optional.ofNullable(sound);
+        return this;
+    }
+
+    public SimplePortalBuilder travelSound(Holder<SoundEvent> sound) {
+        travelSound = Optional.ofNullable(sound);
+        return this;
+    }
+
+    public SimplePortalBuilder triggerSound(Holder<SoundEvent> sound) {
+        triggerSound = Optional.ofNullable(sound);
+        return this;
+    }
+
     public ResourceKey<Portal> register(Identifier id) {
-        ResourceKey<Portal> key = ResourceKey.create(KyanitePortals.RESOURCE_KEY, id);
+        CompoundTag tag = new CompoundTag();
+        tag.putString("portal", id.toString());
+        BlockEntityPair pair = new BlockEntityPair(KyanitePortalsBlocks.CUSTOM_PORTAL.defaultBlockState(), tag);
+        BlockPredicate portalPredicate = BlockPredicate.Builder.block().of(KyanitePortalsBlocks.CUSTOM_PORTAL).hasNbt(tag).build();
+        ResourceKey<Portal> key = register(pair, portalPredicate, id);
         CustomPortalBlockEntity.COLORS.put(key, color);
+        return key;
+    }
+
+    public ResourceKey<Portal> register(Block block, Identifier id) {
+        return register(new BlockEntityPair(block.defaultBlockState(), new CompoundTag()), BlockPredicate.Builder.block().of(block).build(), id);
+    }
+
+    public ResourceKey<Portal> register(BlockEntityPair portal, BlockPredicate portalPredicate, Identifier id) {
+        ResourceKey<Portal> key = ResourceKey.create(KyanitePortals.RESOURCE_KEY, id);
         KyanitePortals.PORTAL_REGISTRY_OVERRIDES.put(key, provider -> {
             //? if >=1.21.3
             HolderGetter<EntityType<?>> entityLookup = provider.lookup(Registries.ENTITY_TYPE).orElseThrow().getter();
-            CompoundTag tag = new CompoundTag();
-            tag.putString("portal", id.toString());
-            BlockPredicate portalPredicate = BlockPredicate.Builder.block().of(KyanitePortalsBlocks.CUSTOM_PORTAL).hasNbt(tag).build();
             Portal.Builder builder = Portal.Builder.create()
                     .withGenerator(new NetherLikePortalGenerator(
                             ignition.stream().map(f -> f.apply(provider)).collect(Collectors.toUnmodifiableList()),
                             new DimensionList(Set.of(fromDimension, toDimension), Optional.empty()),
-                            new BlockEntityPair(KyanitePortalsBlocks.CUSTOM_PORTAL.defaultBlockState(), tag)))
+                            portal))
                     .withTester(new RectanglePortalTester(
                             width,
                             height,
@@ -185,7 +215,6 @@ public final class SimplePortalBuilder {
                             replaceable.get(),
                             portalPredicate
                     ))
-                    .withEnterActions(new PlayLocalSoundAction(PortalAction.Settings.DEFAULT, Holder.direct(SoundEvents.PORTAL_TRIGGER), ConstantFloat.of(0.25f), UniformFloat.of(0.8f, 1.2f)))
                     .withTravelActions(
                             new StoreActionLocationAction(
                                     PortalAction.Settings.Builder.create().locationOptions(
@@ -206,7 +235,7 @@ public final class SimplePortalBuilder {
                                                                     .locationOptions(new LoadActionLocationOptions("location"))
                                                                     .build(),
                                                             new BlockEntityPair(Blocks.OBSIDIAN.defaultBlockState(), new CompoundTag()),
-                                                            new BlockEntityPair(KyanitePortalsBlocks.CUSTOM_PORTAL.defaultBlockState(), tag),
+                                                            portal,
                                                             new CreateNetherLikePortalAction.Size(4, 5),
                                                             true
                                                     )
@@ -216,35 +245,42 @@ public final class SimplePortalBuilder {
                                     portalPredicate,
                                     128,
                                     true
-                            ),
-                            new PlayLocalSoundAction(
-                                    PortalAction.Settings.Builder.create()
-                                            .locationOptions(
-                                                    new FullActionLocationOptions(
-                                                            FullActionLocationOptions.InEntityDimension.INSTANCE,
-                                                            new FullActionLocationOptions.PositionContext(
-                                                                    FullActionLocationOptions.PositionContext.From.ENTITY,
-                                                                    FullActionLocationOptions.PositionContext.RoundingMode.NONE,
-                                                                    false,
-                                                                    false,
-                                                                    Vec3.ZERO)))
-                                            .build(),
-                                    Holder.direct(SoundEvents.PORTAL_TRAVEL),
-                                    ConstantFloat.of(0.25f),
-                                    UniformFloat.of(0.8f, 1.2f)
-                            )
-                    )
-                    .withAnimationTickActions(
-                            new PlayLocalSoundAction(
-                                    PortalAction.Settings.Builder.create()
-                                            .probability(0.01f)
-                                            .environment(PortalActionEnvironment.CLIENT)
-                                            .build(),
-                                    Holder.direct(SoundEvents.PORTAL_AMBIENT),
-                                    ConstantFloat.of(0.25f),
-                                    UniformFloat.of(0.8f, 1.2f)
                             )
                     );
+            if (triggerSound.isPresent()) {
+                builder.withEnterActions(new PlayLocalSoundAction(PortalAction.Settings.DEFAULT, Holder.direct(SoundEvents.PORTAL_TRIGGER), ConstantFloat.of(0.25f), UniformFloat.of(0.8f, 1.2f)));
+            }
+            if (travelSound.isPresent()) {
+                builder.withTravelActions(new PlayLocalSoundAction(
+                        PortalAction.Settings.Builder.create()
+                                .locationOptions(
+                                        new FullActionLocationOptions(
+                                                FullActionLocationOptions.InEntityDimension.INSTANCE,
+                                                new FullActionLocationOptions.PositionContext(
+                                                        FullActionLocationOptions.PositionContext.From.ENTITY,
+                                                        FullActionLocationOptions.PositionContext.RoundingMode.NONE,
+                                                        false,
+                                                        false,
+                                                        Vec3.ZERO)))
+                                .build(),
+                        Holder.direct(SoundEvents.PORTAL_TRAVEL),
+                        ConstantFloat.of(0.25f),
+                        UniformFloat.of(0.8f, 1.2f)
+                ));
+            }
+            if (ambientSound.isPresent()) {
+                builder.withAnimationTickActions(
+                        new PlayLocalSoundAction(
+                                PortalAction.Settings.Builder.create()
+                                        .probability(0.01f)
+                                        .environment(PortalActionEnvironment.CLIENT)
+                                        .build(),
+                                Holder.direct(SoundEvents.PORTAL_AMBIENT),
+                                ConstantFloat.of(0.25f),
+                                UniformFloat.of(0.8f, 1.2f)
+                        )
+                );
+            }
             if (particleOptions.get().isPresent()) {
                 builder.withAnimationTickActions(new SpawnNetherLikePortalParticlesAction(
                         PortalAction.Settings.Builder.create()
