@@ -32,6 +32,7 @@ public final class PortalEffects {
     public static final SimplePortalEffect NAUSEA = register("nausea", new SimplePortalEffect());
     public static final SimplePortalEffect CLOSE_SCREENS = register("close_screens", new SimplePortalEffect());
     public static final CodecPortalEffectType<TextureOverlayPortalEffectOptions> TEXTURE_OVERLAY = register("texture_overlay", new CodecPortalEffectType<>(TextureOverlayPortalEffectOptions.CODEC));
+    public static final CodecPortalEffectType<NetherLikeLoadingBackgroundOptions> NETHER_LIKE_LOADING_BACKGROUND = register("loading_background/nether_like", new CodecPortalEffectType<>(NetherLikeLoadingBackgroundOptions.CODEC));
 
     private static <T extends PortalEffectOptions<T>, P extends PortalEffectType<T>> P register(String id, P type) {
         return register(KyanitePortals.id(id), type);

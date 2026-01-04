@@ -22,12 +22,12 @@ import net.minecraft.world.level.levelgen.Heightmap;
 //? if <1.21 {
 /*import net.minecraft.world.level.portal.PortalInfo;
 *///? } else if <1.21.3 {
-/*
-import net.minecraft.world.level.storage.LevelData;
+
+/*import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.portal.DimensionTransition;
- */
-//? } else {
+ 
+*///? } else {
 
 import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.phys.Vec3;
@@ -79,8 +79,8 @@ public class TeleportToServerSpawnPointAction extends PortalAction<TeleportToSer
             return PortalActionResult.SUCCESS;
         }
         vec3 = entity.adjustSpawnLocation(serverLevel, blockPos).getBottomCenter();
-        entity.changeDimension(new DimensionTransition(serverLevel, vec3, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND.then(DimensionTransition.PLACE_PORTAL_TICKET)));*/
-        //? } else {
+        entity.changeDimension(new DimensionTransition(serverLevel, vec3, entity.getDeltaMovement(), f, entity.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND.then(DimensionTransition.PLACE_PORTAL_TICKET)));
+        *///? } else {
         if (entity instanceof ServerPlayer player) {
             player.teleport(player.findRespawnPositionAndUseSpawnBlock(false, TeleportTransition.DO_NOTHING));
             return PortalActionResult.SUCCESS;

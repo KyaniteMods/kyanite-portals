@@ -2,9 +2,10 @@ package dev.kyanitemods.kyaniteportals.util;
 
 //? if <1.21.11 {
 /*import net.minecraft.BlockUtil;
-*///? } else
-import dev.kyanitemods.kyaniteportals.mixin.EntityAccessor;
+*///? } else {
 import net.minecraft.util.BlockUtil;
+//? }
+import dev.kyanitemods.kyaniteportals.mixin.EntityAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
@@ -22,16 +23,15 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 //? if <1.21 {
 /*import net.minecraft.world.level.portal.PortalInfo;
 *///? } else if <1.21.3 {
-//import net.minecraft.world.level.portal.DimensionTransition;
-//? } else
+/*import net.minecraft.world.level.portal.DimensionTransition;
+*///? } else
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.level.portal.PortalShape;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-//? if <1.21
-
+import java.util.Set;
 
 public class KyanitePortalsUtil {
     public static Identifier getIdentifier(ResourceKey<?> resourceKey) {
@@ -82,8 +82,8 @@ public class KyanitePortalsUtil {
         //? if <1.21 {
         /*return new PortalInfo(vec33, axis == axis2 ? entity.getDeltaMovement() : new Vec3(entity.getDeltaMovement().z, entity.getDeltaMovement().y, -entity.getDeltaMovement().x), entity.getYRot() + (float)yaw, entity.getXRot());
         *///? } else if <1.21.3 {
-        //return new DimensionTransition(serverLevel, vec33, Vec3.ZERO, yaw, 0.0f, DimensionTransition.DO_NOTHING);
-        //? } else
+        /*return new DimensionTransition(serverLevel, vec33, Vec3.ZERO, yaw, 0.0f, DimensionTransition.DO_NOTHING);
+        *///? } else
         return new TeleportTransition(serverLevel, vec33, Vec3.ZERO, yaw, 0.0f, Relative.union(Relative.DELTA, Relative.ROTATION), TeleportTransition.DO_NOTHING);
     }
 
@@ -92,8 +92,8 @@ public class KyanitePortalsUtil {
         /*entity.teleportTo(level, info.pos.x(), info.pos.y(), info.pos.z(), Set.of(), info.yRot, info.xRot);
         entity.setDeltaMovement(info.speed);
         *///? } else if <1.21.3 {
-        //entity.changeDimension(info);
-        //? } else
+        /*entity.changeDimension(info);
+        *///? } else
         entity.teleport(info);
     }
 }

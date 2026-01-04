@@ -58,8 +58,8 @@ public record BlockEntityPair(BlockState state, CompoundTag nbt) {
             //? if <1.21 {
             /*blockEntity.load(nbt());
             *///? } else if <1.21.6 {
-            //blockEntity.loadWithComponents(nbt(), level.registryAccess());
-            //? } else {
+            /*blockEntity.loadWithComponents(nbt(), level.registryAccess());
+            *///? } else {
             try (ProblemReporter.ScopedCollector scopedCollector = new ProblemReporter.ScopedCollector(KyanitePortals.LOGGER);){
                 blockEntity.loadWithComponents(TagValueInput.create(scopedCollector, level.registryAccess(), nbt()));
             }

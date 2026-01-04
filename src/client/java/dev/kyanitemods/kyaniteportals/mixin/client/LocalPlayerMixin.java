@@ -84,8 +84,8 @@ public class LocalPlayerMixin implements PortalOverlayPlayer {
     private void kyanitePortals$setDistortionIntensity(CallbackInfo ci) {
     *///? } else if <1.21.5 {
     /*@Inject(method = "handleConfusionTransitionEffect()V", at = @At("HEAD"))
-    private void kyanitePortals$setDistortionIntensity(CallbackInfo ci) {*/
-    //? } else {
+    private void kyanitePortals$setDistortionIntensity(CallbackInfo ci) {
+    *///? } else {
     @Inject(method = "handlePortalTransitionEffect(Z)V", at = @At("HEAD"))
     private void kyanitePortals$setDistortionIntensity(boolean effect, CallbackInfo ci) {
     //? }

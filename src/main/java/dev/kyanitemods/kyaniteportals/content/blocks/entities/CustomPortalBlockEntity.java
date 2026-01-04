@@ -38,8 +38,8 @@ public class CustomPortalBlockEntity extends BlockEntity {
     //? if >=1.21.6 {
     protected void saveAdditional(ValueOutput tag) {
     //? } else if >=1.21 {
-    //protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-    //? } else
+    /*protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+    *///? } else
     //protected void saveAdditional(CompoundTag tag) {
         tag.putString("portal", KyanitePortalsUtil.getIdentifier(portalKey).toString());
     }

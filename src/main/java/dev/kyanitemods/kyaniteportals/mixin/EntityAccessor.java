@@ -1,10 +1,9 @@
 package dev.kyanitemods.kyaniteportals.mixin;
 
 import net.minecraft.core.Direction;
-//? if <1.21
 //? if <1.21.11 {
-//import net.minecraft.BlockUtil;
-//? } else
+/*import net.minecraft.BlockUtil;
+*///? } else
 import net.minecraft.util.BlockUtil;
 import net.minecraft.world.entity.Entity;
 //? if <1.21 {

@@ -70,8 +70,8 @@ public final class SetPositionAction extends PortalAction<SetPositionAction> {
         //? if <1.21 {
         /*entity.teleportTo(serverLevel, location.position().x(), location.position().y(), location.position().z(), Set.of(), yRot, xRot);
         *///? } else if <1.21.3 {
-        //entity.changeDimension(new DimensionTransition(serverLevel, location.position(), entity.getDeltaMovement(), yRot, xRot, DimensionTransition.DO_NOTHING));
-        //? } else
+        /*entity.changeDimension(new DimensionTransition(serverLevel, location.position(), entity.getDeltaMovement(), yRot, xRot, DimensionTransition.DO_NOTHING));
+        *///? } else
         entity.teleport(new TeleportTransition(serverLevel, location.position(), entity.getDeltaMovement(), yRot, xRot, Relative.union(Relative.DELTA, Relative.ROTATION), TeleportTransition.DO_NOTHING));
         return PortalActionResult.SUCCESS;
     }

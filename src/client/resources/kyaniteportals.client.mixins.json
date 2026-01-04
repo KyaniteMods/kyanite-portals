@@ -8,13 +8,15 @@
     "BlockPredictionFixMixin",
     "BlockPredictionFixMixin$ServerVerifiedStateAccessor",
     "ClientPacketListenerMixin",
+    "LevelLoadingScreenMixin",
     "LocalPlayerMixin",
     "LocalPlayerMixin$DistortionIntensityAccessor",
     "LocalPlayerMixin$MinecraftAccessor",
     "NauseaMixin",
     "PortalOverlayMixin",
     "PortalOverlayMixin$EntityAccessor",
-    "PortalOverlayMixin$GuiAccessor"
+    "PortalOverlayMixin$GuiAccessor",
+    "ReceivingLevelScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

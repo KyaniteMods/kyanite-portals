@@ -128,8 +128,8 @@ public class CustomNetherLikePortalBlock extends Block implements EntityBlock {
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier insideBlockEffectApplier, boolean bl) {
         if (!(level.getBlockEntity(pos) instanceof CustomPortalBlockEntity blockEntity)) return;
         //? if <1.21 {
-        //if (!entity.canChangeDimensions()) return;
-        //? } else
+        /*if (!entity.canChangeDimensions()) return;
+        *///? } else
         if (!entity.canUsePortal(false)) return;
 
         Optional<? extends HolderLookup.RegistryLookup<Portal>> lookup = level.registryAccess().lookup(KyanitePortals.RESOURCE_KEY);
