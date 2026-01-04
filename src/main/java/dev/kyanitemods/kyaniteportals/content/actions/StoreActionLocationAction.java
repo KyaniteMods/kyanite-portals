@@ -1,19 +1,14 @@
-package dev.kyanitemods.kyaniteportals.content.portalactions;
+package dev.kyanitemods.kyaniteportals.content.actions;
 
 import com.mojang.serialization.Codec;
 //? if >=1.20.6
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.kyanitemods.kyaniteportals.content.portalactions.location.ActionLocation;
-import dev.kyanitemods.kyaniteportals.content.portalactions.location.ActionLocationOptions;
+import dev.kyanitemods.kyaniteportals.content.actions.location.ActionLocation;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalActions;
-import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 public class StoreActionLocationAction extends PortalAction<StoreActionLocationAction> {
     //$ map_codec_swap StoreActionLocationAction

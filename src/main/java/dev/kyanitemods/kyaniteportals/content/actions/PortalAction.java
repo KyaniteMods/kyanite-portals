@@ -1,9 +1,9 @@
-package dev.kyanitemods.kyaniteportals.content.portalactions;
+package dev.kyanitemods.kyaniteportals.content.actions;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.kyanitemods.kyaniteportals.content.portalactions.location.ActionLocationOptions;
-import dev.kyanitemods.kyaniteportals.content.portalactions.location.FullActionLocationOptions;
+import dev.kyanitemods.kyaniteportals.content.actions.location.ActionLocationOptions;
+import dev.kyanitemods.kyaniteportals.content.actions.location.FullActionLocationOptions;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalActions;
 import dev.kyanitemods.kyaniteportals.util.CodecHelper;
 import net.minecraft.advancements.criterion.EntityPredicate;

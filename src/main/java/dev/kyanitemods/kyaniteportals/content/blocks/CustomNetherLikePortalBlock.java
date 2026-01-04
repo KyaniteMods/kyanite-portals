@@ -6,7 +6,7 @@ import dev.kyanitemods.kyaniteportals.KyanitePortals;
 import dev.kyanitemods.kyaniteportals.content.Portal;
 import dev.kyanitemods.kyaniteportals.content.blocks.entities.CustomPortalBlockEntity;
 import dev.kyanitemods.kyaniteportals.content.interfaces.EntityInPortal;
-import dev.kyanitemods.kyaniteportals.content.portalactions.PortalAction;
+import dev.kyanitemods.kyaniteportals.content.actions.PortalAction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;

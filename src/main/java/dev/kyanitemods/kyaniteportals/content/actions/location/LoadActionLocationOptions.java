@@ -1,8 +1,8 @@
-package dev.kyanitemods.kyaniteportals.content.portalactions.location;
+package dev.kyanitemods.kyaniteportals.content.actions.location;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.kyanitemods.kyaniteportals.content.portalactions.ActionExecutionData;
+import dev.kyanitemods.kyaniteportals.content.actions.ActionExecutionData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;

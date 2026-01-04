@@ -1,9 +1,9 @@
-package dev.kyanitemods.kyaniteportals.content.portalactions.location;
+package dev.kyanitemods.kyaniteportals.content.actions.location;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.kyanitemods.kyaniteportals.content.portalactions.ActionExecutionData;
+import dev.kyanitemods.kyaniteportals.content.actions.ActionExecutionData;
 import dev.kyanitemods.kyaniteportals.util.CodecHelper;
 import dev.kyanitemods.kyaniteportals.util.DimensionList;
 import dev.kyanitemods.kyaniteportals.util.KyanitePortalsUtil;

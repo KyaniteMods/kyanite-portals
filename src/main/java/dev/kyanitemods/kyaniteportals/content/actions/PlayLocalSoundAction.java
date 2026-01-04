@@ -1,20 +1,15 @@
-package dev.kyanitemods.kyaniteportals.content.portalactions;
+package dev.kyanitemods.kyaniteportals.content.actions;
 
 //? if <1.20.6 {
 /*import com.mojang.serialization.Codec;
 *///? } else
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.kyanitemods.kyaniteportals.content.Portal;
-import dev.kyanitemods.kyaniteportals.content.portalactions.location.ActionLocation;
-import dev.kyanitemods.kyaniteportals.content.portalactions.location.ActionLocationOptions;
+import dev.kyanitemods.kyaniteportals.content.actions.location.ActionLocation;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalActions;
-import dev.kyanitemods.kyaniteportals.util.CodecHelper;
 import dev.kyanitemods.kyaniteportals.util.KyanitePortalsUtil;
-import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,7 +20,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Optional;
 
 public final class PlayLocalSoundAction extends PortalAction<PlayLocalSoundAction> {

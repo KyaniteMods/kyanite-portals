@@ -2,12 +2,13 @@ package dev.kyanitemods.kyaniteportals.api;
 
 import dev.kyanitemods.kyaniteportals.KyanitePortals;
 import dev.kyanitemods.kyaniteportals.content.Portal;
+import dev.kyanitemods.kyaniteportals.content.actions.*;
 import dev.kyanitemods.kyaniteportals.content.blocks.entities.CustomPortalBlockEntity;
 import dev.kyanitemods.kyaniteportals.content.generators.NetherLikePortalGenerator;
 import dev.kyanitemods.kyaniteportals.content.particles.CustomPortalParticleOptions;
-import dev.kyanitemods.kyaniteportals.content.portalactions.*;
-import dev.kyanitemods.kyaniteportals.content.portalactions.location.FullActionLocationOptions;
-import dev.kyanitemods.kyaniteportals.content.portalactions.location.LoadActionLocationOptions;
+import dev.kyanitemods.kyaniteportals.content.actions.*;
+import dev.kyanitemods.kyaniteportals.content.actions.location.FullActionLocationOptions;
+import dev.kyanitemods.kyaniteportals.content.actions.location.LoadActionLocationOptions;
 import dev.kyanitemods.kyaniteportals.content.registry.KyanitePortalsBlocks;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalTriggers;
 import dev.kyanitemods.kyaniteportals.content.triggers.PortalTriggerInstance;
@@ -21,7 +22,6 @@ import net.minecraft.core.Holder;
 //? if >=1.21.3 {
 import net.minecraft.core.HolderGetter;
 //? }
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;

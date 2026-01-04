@@ -1,10 +1,10 @@
-package dev.kyanitemods.kyaniteportals.content.portalactions;
+package dev.kyanitemods.kyaniteportals.content.actions;
 
 import com.mojang.serialization.Codec;
 //? if >=1.20.6
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.kyanitemods.kyaniteportals.content.portalactions.location.ActionLocation;
+import dev.kyanitemods.kyaniteportals.content.actions.location.ActionLocation;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalActions;
 import dev.kyanitemods.kyaniteportals.util.BlockPredicate;
 import dev.kyanitemods.kyaniteportals.util.KyanitePortalsUtil;

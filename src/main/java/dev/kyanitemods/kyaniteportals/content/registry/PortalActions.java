@@ -2,7 +2,7 @@ package dev.kyanitemods.kyaniteportals.content.registry;
 
 import com.mojang.serialization.Codec;
 import dev.kyanitemods.kyaniteportals.KyanitePortals;
-import dev.kyanitemods.kyaniteportals.content.portalactions.*;
+import dev.kyanitemods.kyaniteportals.content.actions.*;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;

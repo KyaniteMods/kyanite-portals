@@ -1,4 +1,4 @@
-package dev.kyanitemods.kyaniteportals.content.portalactions;
+package dev.kyanitemods.kyaniteportals.content.actions;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;

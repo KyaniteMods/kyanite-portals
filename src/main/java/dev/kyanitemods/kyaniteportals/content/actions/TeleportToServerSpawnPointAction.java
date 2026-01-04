@@ -1,24 +1,18 @@
-package dev.kyanitemods.kyaniteportals.content.portalactions;
+package dev.kyanitemods.kyaniteportals.content.actions;
 
 //? if <1.20.6 {
 /*import com.mojang.serialization.Codec;
 *///? } else
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.kyanitemods.kyaniteportals.content.portalactions.location.ActionLocation;
+import dev.kyanitemods.kyaniteportals.content.actions.location.ActionLocation;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalActions;
-import dev.kyanitemods.kyaniteportals.mixin.EntityAccessor;
-import dev.kyanitemods.kyaniteportals.mixin.ServerPlayerAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.levelgen.Heightmap;
 //? if <1.21 {
 /*import net.minecraft.world.level.portal.PortalInfo;
 *///? } else if <1.21.3 {
@@ -35,8 +29,6 @@ import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.entity.Relative;
  
 //? }
-import net.minecraft.world.phys.shapes.BooleanOp;
-import net.minecraft.world.phys.shapes.Shapes;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;

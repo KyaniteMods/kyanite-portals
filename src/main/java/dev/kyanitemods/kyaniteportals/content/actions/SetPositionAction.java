@@ -1,11 +1,11 @@
-package dev.kyanitemods.kyaniteportals.content.portalactions;
+package dev.kyanitemods.kyaniteportals.content.actions;
 
 //? if <1.20.6 {
 /*import com.mojang.serialization.Codec;
 *///? } else
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.kyanitemods.kyaniteportals.content.portalactions.location.ActionLocation;
+import dev.kyanitemods.kyaniteportals.content.actions.location.ActionLocation;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalActions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -23,7 +23,6 @@ import net.minecraft.world.level.portal.TeleportTransition;
 //import net.minecraft.world.level.portal.DimensionTransition;
 
 import java.util.Optional;
-import java.util.Set;
 
 public final class SetPositionAction extends PortalAction<SetPositionAction> {
     //$ map_codec_swap SetPositionAction

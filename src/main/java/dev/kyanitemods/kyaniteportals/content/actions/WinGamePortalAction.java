@@ -1,4 +1,4 @@
-package dev.kyanitemods.kyaniteportals.content.portalactions;
+package dev.kyanitemods.kyaniteportals.content.actions;
 
 import com.mojang.serialization.Codec;
 //? if >=1.20.6

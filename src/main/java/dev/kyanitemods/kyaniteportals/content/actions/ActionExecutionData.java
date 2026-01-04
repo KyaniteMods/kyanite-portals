@@ -1,4 +1,4 @@
-package dev.kyanitemods.kyaniteportals.content.portalactions;
+package dev.kyanitemods.kyaniteportals.content.actions;
 
 import java.util.ArrayList;
 import java.util.HashMap;

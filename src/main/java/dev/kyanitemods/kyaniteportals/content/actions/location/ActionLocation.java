@@ -1,6 +1,5 @@
-package dev.kyanitemods.kyaniteportals.content.portalactions.location;
+package dev.kyanitemods.kyaniteportals.content.actions.location;
 
-import dev.kyanitemods.kyaniteportals.content.portalactions.PortalActionResult;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
