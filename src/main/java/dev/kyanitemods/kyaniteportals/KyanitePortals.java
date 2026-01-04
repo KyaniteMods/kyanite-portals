@@ -3,8 +3,11 @@ package dev.kyanitemods.kyaniteportals;
 import dev.kyanitemods.kyaniteportals.api.SimplePortalBuilder;
 import dev.kyanitemods.kyaniteportals.content.ItemPov;
 import dev.kyanitemods.kyaniteportals.content.Portal;
+import dev.kyanitemods.kyaniteportals.content.generators.GeneratorContext;
 import dev.kyanitemods.kyaniteportals.content.registry.*;
 import dev.kyanitemods.kyaniteportals.content.triggers.PortalTrigger;
+import dev.kyanitemods.kyaniteportals.content.triggers.PortalTriggerInstance;
+import dev.kyanitemods.kyaniteportals.content.triggers.TriggerAction;
 import dev.kyanitemods.kyaniteportals.content.triggers.TriggerResult;
 import io.netty.util.internal.UnstableApi;
 import net.fabricmc.api.ModInitializer;
@@ -21,13 +24,16 @@ import net.minecraft.resources.Identifier;
 /*import net.minecraft.world.InteractionResultHolder;
 *///? } else
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,7 +116,12 @@ public class KyanitePortals implements ModInitializer {
         registryAccess.lookup(KyanitePortals.RESOURCE_KEY).ifPresent(portals -> {
             portals.listElements().map(Holder.Reference::value).forEach(portal -> {
                 portal.generator().ifPresent(generator -> {
-                    generator.getTriggers().forEach(trigger -> trigger.addListener(generator));
+                    generator.getTriggers().forEach(trigger -> trigger.addListener(new TriggerAction() {
+                        @Override
+                        public <I extends PortalTriggerInstance<I>> TriggerResult run(I instance, Level level, BlockPos pos, @Nullable Player player) {
+                            return generator.run(new GeneratorContext(instance, portal.tester().orElse(null), level, pos, player));
+                        }
+                    }));
                 });
             });
         });

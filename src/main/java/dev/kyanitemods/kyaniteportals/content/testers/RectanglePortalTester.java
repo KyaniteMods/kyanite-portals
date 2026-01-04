@@ -1,44 +1,66 @@
-package dev.kyanitemods.kyaniteportals.content.generators;
+package dev.kyanitemods.kyaniteportals.content.testers;
 
+import com.mojang.serialization.Codec;
+//? if >=1.20.6
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.kyanitemods.kyaniteportals.content.registry.PortalTesters;
+import dev.kyanitemods.kyaniteportals.util.BlockPredicate;
 import dev.kyanitemods.kyaniteportals.util.Range;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 
+import java.util.List;
+import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 
-public class SquarePortalTester {
+public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
+    //$ map_codec_swap RectanglePortalTester
+    public static final MapCodec<RectanglePortalTester> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Range.Int.CODEC.fieldOf("width").forGetter(tester -> tester.width),
+            Range.Int.CODEC.fieldOf("height").forGetter(tester -> tester.height),
+            Direction.Axis.CODEC.listOf().xmap(Set::copyOf, List::copyOf).optionalFieldOf("axes", Set.of(Direction.Axis.X, Direction.Axis.Z)).forGetter(tester -> tester.axes),
+            BlockPredicate.CODEC.fieldOf("frame").forGetter(tester -> tester.frame),
+            BlockPredicate.CODEC.fieldOf("replaceable").forGetter(tester -> tester.replaceable),
+            BlockPredicate.CODEC.fieldOf("portal").forGetter(tester -> tester.portal),
+            Codec.BOOL.fieldOf("corners_required").forGetter(tester -> tester.cornersRequired)
+    ).apply(instance, RectanglePortalTester::new));
+
     private final Range.Int width;
     private final Range.Int height;
-    private final BiFunction<Level, BlockPos, Boolean> frame;
-    private final BiFunction<Level, BlockPos, Boolean> replaceable;
+    private final BlockPredicate frame;
+    private final BlockPredicate replaceable;
+    private final BlockPredicate portal;
     private final boolean cornersRequired;
+    private final Set<Direction.Axis> axes;
 
-    public SquarePortalTester(Range.Int width, Range.Int height, BiFunction<Level, BlockPos, Boolean> frame, BiFunction<Level, BlockPos, Boolean> replaceable, boolean cornersRequired) {
+    public RectanglePortalTester(Range.Int width, Range.Int height, Set<Direction.Axis> axes, BlockPredicate frame, BlockPredicate replaceable, BlockPredicate portal, boolean cornersRequired) {
         this.width = width;
         this.height = height;
         this.frame = frame;
+        this.portal = portal;
         this.replaceable = replaceable;
         this.cornersRequired = cornersRequired;
+        this.axes = axes;
     }
 
-    public SquarePortalTester(Range.Int width, Range.Int height, BiFunction<Level, BlockPos, Boolean> frame, BiFunction<Level, BlockPos, Boolean> replaceable) {
-        this(width, height, frame, replaceable, false);
+    public RectanglePortalTester(Range.Int width, Range.Int height, BlockPredicate frame, BlockPredicate replaceable, BlockPredicate portal) {
+        this(width, height, Set.of(Direction.Axis.X, Direction.Axis.Z), frame, replaceable, portal, false);
     }
 
-    public Result test(Level level, BlockPos pos, Direction.Axis axis, Direction.Axis... axes) {
-        Result result = test(level, pos, axis);
-        if (result.isSuccess()) return result;
-        for (Direction.Axis axis1 : axes) {
-            result = test(level, pos, axis1);
+    public PortalTestResult test(Level level, BlockPos pos) {
+        for (Direction.Axis axis : axes) {
+            PortalTestResult result = test(level, pos, axis);
             if (result.isSuccess()) return result;
         }
         return FailResult.INSTANCE;
     }
 
-    public Result test(Level level, BlockPos pos, Direction.Axis axis) {
+    public PortalTestResult test(Level level, BlockPos pos, Direction.Axis axis) {
+        int portalBlocks = 0;
+
         Direction right = switch (axis) {
             case X, Y -> Direction.WEST;
             case Z -> Direction.SOUTH;
@@ -52,7 +74,7 @@ public class SquarePortalTester {
 
         int offsetY = 0;
         int minOffsetY = -(height.getMax().orElse(Integer.MAX_VALUE) - 3);
-        while (offsetY > minOffsetY && replaceable.apply(level, bottom.relative(up.getOpposite()))) {
+        while (offsetY > minOffsetY && (portal.matches(level, bottom.relative(up.getOpposite())) || replaceable.matches(level, bottom.relative(up.getOpposite())))) {
             if (!level.isInWorldBounds(bottom)) return FailResult.INSTANCE;
             bottom = bottom.relative(up.getOpposite());
             offsetY--;
@@ -63,7 +85,8 @@ public class SquarePortalTester {
         for (int i = 0; i < width.getMax().orElse(Integer.MAX_VALUE) - 2; i++) {
             BlockPos left = bottom.relative(right.getOpposite(), i);
             BlockPos leftNeighbor = bottom.relative(right.getOpposite(), i + 1);
-            if (replaceable.apply(level, left) && frame.apply(level, leftNeighbor)) {
+            if (!frame.matches(level, leftNeighbor)) continue;
+            if (portal.matches(level, left) || replaceable.matches(level, left)) {
                 bottomLeft = left;
                 break;
             }
@@ -74,8 +97,8 @@ public class SquarePortalTester {
         for (int x = 0; x < width.getMax().orElse(Integer.MAX_VALUE) - 2; x++) {
             BlockPos inner = bottomLeft.relative(right, x);
             BlockPos below = inner.relative(up.getOpposite(), 1);
-            if (replaceable.apply(level, inner)) {
-                if (!frame.apply(level, below)) return FailResult.INSTANCE;
+            if (portal.matches(level, inner) || replaceable.matches(level, inner)) {
+                if (!frame.matches(level, below)) return FailResult.INSTANCE;
                 portalWidth++;
                 continue;
             }
@@ -85,13 +108,13 @@ public class SquarePortalTester {
         int portalHeight = 0;
         for (int y = 0; y < height.getMax().orElse(Integer.MAX_VALUE) - 2; y++) {
             BlockPos leftCorner = bottomLeft.relative(up, y).relative(right.getOpposite(), 1);
-            if (!frame.apply(level, leftCorner)) {
+            if (!frame.matches(level, leftCorner)) {
                 portalHeight = y;
                 break;
             }
 
             BlockPos rightCorner = bottomLeft.relative(up, y).relative(right, portalWidth);
-            if (!frame.apply(level, rightCorner)) {
+            if (!frame.matches(level, rightCorner)) {
                 portalHeight = y;
                 break;
             }
@@ -99,7 +122,13 @@ public class SquarePortalTester {
             boolean obstructed = false;
             for (int x = 0; x < portalWidth; x++) {
                 BlockPos inner = bottomLeft.relative(up, y).relative(right, x);
-                if (!replaceable.apply(level, inner)) {
+
+                if (portal.matches(level, inner)) {
+                    portalBlocks++;
+                    continue;
+                }
+
+                if (!replaceable.matches(level, inner)) {
                     obstructed = true;
                     break;
                 }
@@ -113,7 +142,7 @@ public class SquarePortalTester {
 
         for (int x = 0; x < portalWidth; x++) {
             BlockPos top = bottomLeft.relative(right, x).relative(up, portalHeight);
-            if (!frame.apply(level, top)) {
+            if (!frame.matches(level, top)) {
                 return FailResult.INSTANCE;
             }
         }
@@ -121,25 +150,24 @@ public class SquarePortalTester {
         if (!width.matches(portalWidth + 2) || !height.matches(portalHeight + 2)) return FailResult.INSTANCE;
         if (cornersRequired) {
             BlockPos frameBottomLeft = bottomLeft.relative(right.getOpposite(), 1).relative(up.getOpposite(), 1);
-            if (!frame.apply(level, frameBottomLeft)) return FailResult.INSTANCE;
+            if (!frame.matches(level, frameBottomLeft)) return FailResult.INSTANCE;
             BlockPos frameBottomRight = bottomLeft.relative(right, portalWidth).relative(up.getOpposite(), 1);
-            if (!frame.apply(level, frameBottomRight)) return FailResult.INSTANCE;
+            if (!frame.matches(level, frameBottomRight)) return FailResult.INSTANCE;
             BlockPos frameTopLeft = bottomLeft.relative(right.getOpposite(), 1).relative(up, portalHeight);
-            if (!frame.apply(level, frameTopLeft)) return FailResult.INSTANCE;
+            if (!frame.matches(level, frameTopLeft)) return FailResult.INSTANCE;
             BlockPos frameTopRight = bottomLeft.relative(right, portalWidth).relative(up, portalHeight);
-            if (!frame.apply(level, frameTopRight)) return FailResult.INSTANCE;
+            if (!frame.matches(level, frameTopRight)) return FailResult.INSTANCE;
         }
 
-        return new SuccessResult(level, bottomLeft, portalWidth, portalHeight, up, right, axis);
+        return new SuccessResult(level, bottomLeft, portalWidth, portalHeight, up, right, axis, portalBlocks);
     }
 
-    public interface Result {
-        boolean isSuccess();
-        void placePortalBlocks(BiConsumer<LevelAccessor, BlockPos> placer);
-        Direction.Axis getAxis();
+    @Override
+    public PortalTesterType<RectanglePortalTester> getType() {
+        return PortalTesters.RECTANGLE;
     }
 
-    public static class FailResult implements Result {
+    public static class FailResult implements PortalTestResult {
         public static final FailResult INSTANCE = new FailResult();
 
         private FailResult() {}
@@ -156,9 +184,19 @@ public class SquarePortalTester {
         public Direction.Axis getAxis() {
             return null;
         }
+
+        @Override
+        public int getPortalBlocks() {
+            return 0;
+        }
+
+        @Override
+        public boolean isComplete() {
+            return false;
+        }
     }
 
-    public static class SuccessResult implements Result {
+    public static class SuccessResult implements PortalTestResult {
         private final LevelAccessor level;
         private final BlockPos bottomLeft;
         private final int width;
@@ -166,8 +204,9 @@ public class SquarePortalTester {
         private final Direction up;
         private final Direction right;
         private final Direction.Axis axis;
+        private final int portalBlocks;
 
-        public SuccessResult(LevelAccessor level, BlockPos bottomLeft, int width, int height, Direction up, Direction right, Direction.Axis axis) {
+        public SuccessResult(LevelAccessor level, BlockPos bottomLeft, int width, int height, Direction up, Direction right, Direction.Axis axis, int portalBlocks) {
             this.level = level;
             this.bottomLeft = bottomLeft;
             this.width = width;
@@ -175,6 +214,7 @@ public class SquarePortalTester {
             this.up = up;
             this.right = right;
             this.axis = axis;
+            this.portalBlocks = portalBlocks;
         }
 
         @Override
@@ -191,6 +231,16 @@ public class SquarePortalTester {
         @Override
         public Direction.Axis getAxis() {
             return axis;
+        }
+
+        @Override
+        public int getPortalBlocks() {
+            return portalBlocks;
+        }
+
+        @Override
+        public boolean isComplete() {
+            return getPortalBlocks() == width * height;
         }
     }
 }

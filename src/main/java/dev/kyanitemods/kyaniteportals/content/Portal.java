@@ -11,6 +11,8 @@ import dev.kyanitemods.kyaniteportals.content.actions.PortalAction;
 import dev.kyanitemods.kyaniteportals.content.actions.PortalActionResult;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalActions;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalGenerators;
+import dev.kyanitemods.kyaniteportals.content.registry.PortalTesters;
+import dev.kyanitemods.kyaniteportals.content.testers.PortalTester;
 import dev.kyanitemods.kyaniteportals.util.CodecHelper;
 import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.core.BlockPos;
@@ -23,9 +25,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public record Portal(Optional<PortalGenerator<?>> generator, Optional<EntityPredicate> entityPredicate, TravelTime travelTime, List<PortalAction<?>> enterActions, List<PortalAction<?>> travelActions, List<PortalAction<?>> tickActions, List<PortalAction<?>> randomTickActions, List<PortalAction<?>> animationTickActions, Optional<ParticleOptions> particleOptions) {
+public record Portal(Optional<PortalGenerator<?>> generator, Optional<PortalTester<?>> tester, boolean testValidityAfterGeneration, Optional<EntityPredicate> entityPredicate, TravelTime travelTime, List<PortalAction<?>> enterActions, List<PortalAction<?>> travelActions, List<PortalAction<?>> tickActions, List<PortalAction<?>> randomTickActions, List<PortalAction<?>> animationTickActions, Optional<ParticleOptions> particleOptions) {
     public static final Codec<Portal> CODEC1 = RecordCodecBuilder.create(instance -> instance.group(
             PortalGenerators.CODEC.optionalFieldOf("generator").forGetter(Portal::generator),
+            PortalTesters.CODEC.optionalFieldOf("tester").forGetter(Portal::tester),
+            Codec.BOOL.optionalFieldOf("test_validity_after_generation", true).forGetter(Portal::testValidityAfterGeneration),
             CodecHelper.ENTITY_PREDICATE_CODEC.optionalFieldOf("entity_predicate").forGetter(Portal::entityPredicate),
             TravelTime.CODEC.optionalFieldOf("travel_time", TravelTime.DEFAULT).forGetter(Portal::travelTime),
             PortalActions.CODEC.listOf().optionalFieldOf("enter_actions", List.of()).forGetter(Portal::enterActions),
@@ -68,6 +72,8 @@ public record Portal(Optional<PortalGenerator<?>> generator, Optional<EntityPred
 
     public static class Builder {
         private Optional<PortalGenerator<?>> generator = Optional.empty();
+        private Optional<PortalTester<?>> tester = Optional.empty();
+        private boolean testValidityAfterGeneration = true;
         private Optional<EntityPredicate> entityPredicate = Optional.empty();
         private TravelTime travelTime = TravelTime.DEFAULT;
         private List<PortalAction<?>> enterActions = new ArrayList<>();
@@ -86,6 +92,20 @@ public record Portal(Optional<PortalGenerator<?>> generator, Optional<EntityPred
         public Builder withGenerator(PortalGenerator<?> generator) {
             this.generator = Optional.ofNullable(generator);
             return this;
+        }
+
+        public Builder withTester(PortalTester<?> tester) {
+            this.tester = Optional.ofNullable(tester);
+            return this;
+        }
+
+        public Builder testValidityAfterGeneration(boolean value) {
+            testValidityAfterGeneration = value;
+            return this;
+        }
+
+        public Builder testValidityAfterGeneration() {
+            return testValidityAfterGeneration(true);
         }
 
         public Builder withEntityPredicate(EntityPredicate entityPredicate) {
@@ -129,7 +149,7 @@ public record Portal(Optional<PortalGenerator<?>> generator, Optional<EntityPred
         }
 
         public Portal build() {
-            return new Portal(generator, entityPredicate, travelTime, enterActions, travelActions, tickActions, randomTickActions, animationTickActions, particleOptions);
+            return new Portal(generator, tester, testValidityAfterGeneration, entityPredicate, travelTime, enterActions, travelActions, tickActions, randomTickActions, animationTickActions, particleOptions);
         }
     }
 }

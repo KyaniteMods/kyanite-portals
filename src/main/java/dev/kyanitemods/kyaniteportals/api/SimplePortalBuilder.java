@@ -11,6 +11,7 @@ import dev.kyanitemods.kyaniteportals.content.actions.location.FullActionLocatio
 import dev.kyanitemods.kyaniteportals.content.actions.location.LoadActionLocationOptions;
 import dev.kyanitemods.kyaniteportals.content.registry.KyanitePortalsBlocks;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalTriggers;
+import dev.kyanitemods.kyaniteportals.content.testers.RectanglePortalTester;
 import dev.kyanitemods.kyaniteportals.content.triggers.PortalTriggerInstance;
 import dev.kyanitemods.kyaniteportals.util.BlockEntityPair;
 import dev.kyanitemods.kyaniteportals.util.DimensionList;
@@ -171,16 +172,19 @@ public final class SimplePortalBuilder {
             HolderGetter<EntityType<?>> entityLookup = provider.lookup(Registries.ENTITY_TYPE).orElseThrow().getter();
             CompoundTag tag = new CompoundTag();
             tag.putString("portal", id.toString());
+            BlockPredicate portalPredicate = BlockPredicate.Builder.block().of(KyanitePortalsBlocks.CUSTOM_PORTAL).hasNbt(tag).build();
             Portal.Builder builder = Portal.Builder.create()
                     .withGenerator(new NetherLikePortalGenerator(
                             ignition.stream().map(f -> f.apply(provider)).collect(Collectors.toUnmodifiableList()),
                             new DimensionList(Set.of(fromDimension, toDimension), Optional.empty()),
-                            frame,
-                            replaceable.get(),
-                            new BlockEntityPair(KyanitePortalsBlocks.CUSTOM_PORTAL.defaultBlockState(), tag),
+                            new BlockEntityPair(KyanitePortalsBlocks.CUSTOM_PORTAL.defaultBlockState(), tag)))
+                    .withTester(new RectanglePortalTester(
                             width,
                             height,
-                            false))
+                            frame,
+                            replaceable.get(),
+                            portalPredicate
+                    ))
                     .withEnterActions(new PlayLocalSoundAction(PortalAction.Settings.DEFAULT, Holder.direct(SoundEvents.PORTAL_TRIGGER), ConstantFloat.of(0.25f), UniformFloat.of(0.8f, 1.2f)))
                     .withTravelActions(
                             new StoreActionLocationAction(
@@ -209,7 +213,7 @@ public final class SimplePortalBuilder {
                                             )
                                             .build(),
                                     POI_TAG,
-                                    BlockPredicate.Builder.block().of(KyanitePortalsBlocks.CUSTOM_PORTAL).hasNbt(tag).build(),
+                                    portalPredicate,
                                     128,
                                     true
                             ),
