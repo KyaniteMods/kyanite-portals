@@ -69,7 +69,7 @@ public class NetherLikePortalGenerator extends PortalGenerator<NetherLikePortalG
             }
             final BlockEntityPair finalPair = pair;
 
-            result.placePortalBlocks((level1, pos1) -> finalPair.set(level1, pos1, Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_CLIENTS));
+            result.placePortalBlocks(context.level(), (level, pos) -> finalPair.set(level, pos, Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_CLIENTS));
             return TriggerResult.PASS;
         }
         return TriggerResult.FAIL;

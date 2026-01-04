@@ -10,7 +10,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -34,10 +36,10 @@ public class BlockPredicate {
         this.nbt = nbtPredicate;
     }
 
-    public boolean matches(Level level, BlockPos blockPos) {
+    public boolean matches(LevelReader level, BlockPos blockPos) {
         if (this == ANY) {
             return true;
-        } else if (!level.isLoaded(blockPos)) {
+        } else if (!level.hasChunkAt(blockPos)) {
             return false;
         } else {
             BlockState blockState = level.getBlockState(blockPos);

@@ -9,8 +9,8 @@ import dev.kyanitemods.kyaniteportals.util.BlockPredicate;
 import dev.kyanitemods.kyaniteportals.util.Range;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 
 import java.util.List;
 import java.util.Set;
@@ -50,7 +50,7 @@ public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
         this(width, height, Set.of(Direction.Axis.X, Direction.Axis.Z), frame, replaceable, portal, false);
     }
 
-    public PortalTestResult test(Level level, BlockPos pos) {
+    public PortalTestResult test(LevelReader level, BlockPos pos) {
         for (Direction.Axis axis : axes) {
             PortalTestResult result = test(level, pos, axis);
             if (result.isSuccess()) return result;
@@ -58,7 +58,7 @@ public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
         return FailResult.INSTANCE;
     }
 
-    public PortalTestResult test(Level level, BlockPos pos, Direction.Axis axis) {
+    public PortalTestResult test(LevelReader level, BlockPos pos, Direction.Axis axis) {
         int portalBlocks = 0;
 
         Direction right = switch (axis) {
@@ -75,7 +75,7 @@ public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
         int offsetY = 0;
         int minOffsetY = -(height.getMax().orElse(Integer.MAX_VALUE) - 3);
         while (offsetY > minOffsetY && (portal.matches(level, bottom.relative(up.getOpposite())) || replaceable.matches(level, bottom.relative(up.getOpposite())))) {
-            if (!level.isInWorldBounds(bottom)) return FailResult.INSTANCE;
+            if (level.isOutsideBuildHeight(bottom)) return FailResult.INSTANCE;
             bottom = bottom.relative(up.getOpposite());
             offsetY--;
         }
@@ -159,7 +159,7 @@ public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
             if (!frame.matches(level, frameTopRight)) return FailResult.INSTANCE;
         }
 
-        return new SuccessResult(level, bottomLeft, portalWidth, portalHeight, up, right, axis, portalBlocks);
+        return new SuccessResult(bottomLeft, portalWidth, portalHeight, up, right, axis, portalBlocks);
     }
 
     @Override
@@ -178,7 +178,7 @@ public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
         }
 
         @Override
-        public void placePortalBlocks(BiConsumer<LevelAccessor, BlockPos> placer) {}
+        public void placePortalBlocks(LevelAccessor level, BiConsumer<LevelAccessor, BlockPos> placer) {}
 
         @Override
         public Direction.Axis getAxis() {
@@ -197,7 +197,6 @@ public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
     }
 
     public static class SuccessResult implements PortalTestResult {
-        private final LevelAccessor level;
         private final BlockPos bottomLeft;
         private final int width;
         private final int height;
@@ -206,8 +205,7 @@ public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
         private final Direction.Axis axis;
         private final int portalBlocks;
 
-        public SuccessResult(LevelAccessor level, BlockPos bottomLeft, int width, int height, Direction up, Direction right, Direction.Axis axis, int portalBlocks) {
-            this.level = level;
+        public SuccessResult(BlockPos bottomLeft, int width, int height, Direction up, Direction right, Direction.Axis axis, int portalBlocks) {
             this.bottomLeft = bottomLeft;
             this.width = width;
             this.height = height;
@@ -223,7 +221,7 @@ public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
         }
 
         @Override
-        public void placePortalBlocks(BiConsumer<LevelAccessor, BlockPos> placer) {
+        public void placePortalBlocks(LevelAccessor level, BiConsumer<LevelAccessor, BlockPos> placer) {
             BlockPos.betweenClosed(bottomLeft, bottomLeft.relative(up, height - 1).relative(right, width - 1))
                     .forEach(pos -> placer.accept(level, pos));
         }

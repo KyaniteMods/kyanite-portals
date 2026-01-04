@@ -15,6 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 //? if <1.21 {
 /*import net.minecraft.world.level.portal.PortalInfo;
+import dev.kyanitemods.kyaniteportals.mixin.EntityAccessor;
 *///? } else if <1.21.3 {
 
 /*import net.minecraft.world.level.storage.LevelData;

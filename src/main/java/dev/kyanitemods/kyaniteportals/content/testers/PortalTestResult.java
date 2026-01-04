@@ -8,7 +8,7 @@ import java.util.function.BiConsumer;
 
 public interface PortalTestResult {
     boolean isSuccess();
-    void placePortalBlocks(BiConsumer<LevelAccessor, BlockPos> placer);
+    void placePortalBlocks(LevelAccessor level, BiConsumer<LevelAccessor, BlockPos> placer);
     Direction.Axis getAxis();
     int getPortalBlocks();
     default boolean isEmpty() {

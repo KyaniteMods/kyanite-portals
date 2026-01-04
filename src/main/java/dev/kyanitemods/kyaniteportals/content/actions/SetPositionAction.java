@@ -23,6 +23,7 @@ import net.minecraft.world.level.portal.TeleportTransition;
 //import net.minecraft.world.level.portal.DimensionTransition;
 
 import java.util.Optional;
+import java.util.Set;
 
 public final class SetPositionAction extends PortalAction<SetPositionAction> {
     //$ map_codec_swap SetPositionAction
