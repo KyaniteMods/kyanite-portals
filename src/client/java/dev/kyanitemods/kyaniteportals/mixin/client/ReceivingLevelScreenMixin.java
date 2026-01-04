@@ -29,7 +29,7 @@ public class ReceivingLevelScreenMixin {
     private void kyanitePortals$overrideBackground(ReceivingLevelScreen instance, GuiGraphics guiGraphics, Operation<Void> original, @Local(argsOnly = true, ordinal = 0) int mouseX, @Local(argsOnly = true, ordinal = 1) int mouseY, @Local(argsOnly = true) float tickDelta) {
         Player player = Minecraft.getInstance().player;
         ResourceKey<Portal> portalKey;
-        if (player != null && (portalKey = ((EntityInPortal) player).getPortal()) != null) {
+        if (player != null && ((EntityInPortal) player).isInsidePortal() && (portalKey = ((EntityInPortal) player).getPortal()) != null) {
             Optional<? extends LoadingBackgroundOptions<?>> background = PortalEffects.get(portalKey).stream()
                     .filter(options -> options instanceof LoadingBackgroundOptions<?>)
                     .map(options -> (LoadingBackgroundOptions<?>) options)
@@ -49,7 +49,7 @@ public class ReceivingLevelScreenMixin {
     private void kyanitePortals$overrideBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta, CallbackInfo ci) {
         Player player = Minecraft.getInstance().player;
         ResourceKey<Portal> portalKey;
-        if (player != null && (portalKey = ((EntityInPortal) player).getPortal()) != null) {
+        if (player != null && ((EntityInPortal) player).isInsidePortal() && (portalKey = ((EntityInPortal) player).getPortal()) != null) {
             Optional<? extends LoadingBackgroundOptions<?>> background = PortalEffects.get(portalKey).stream()
                     .filter(options -> options instanceof LoadingBackgroundOptions<?>)
                     .map(options -> (LoadingBackgroundOptions<?>) options)

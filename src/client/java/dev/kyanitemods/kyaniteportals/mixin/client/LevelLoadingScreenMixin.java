@@ -26,7 +26,7 @@ public class LevelLoadingScreenMixin {
     private void kyanitePortals$overrideBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta, CallbackInfo ci) {
         Player player = Minecraft.getInstance().player;
         ResourceKey<Portal> portalKey;
-        if (player != null && (portalKey = ((EntityInPortal) player).getPortal()) != null) {
+        if (player != null && ((EntityInPortal) player).isInsidePortal() && (portalKey = ((EntityInPortal) player).getPortal()) != null) {
             Optional<? extends LoadingBackgroundOptions<?>> background = PortalEffects.get(portalKey).stream()
                     .filter(options -> options instanceof LoadingBackgroundOptions<?>)
                     .map(options -> (LoadingBackgroundOptions<?>) options)
