@@ -79,8 +79,8 @@ public class PortalEffectManager extends /*? if <1.21.3 {*//*SimpleJsonResourceR
             builder.put(KyanitePortalsUtil.getIdentifier(entry.getKey()), Set.of(
                     PortalEffects.NAUSEA,
                     PortalEffects.CLOSE_SCREENS,
-                    new TextureOverlayPortalEffectOptions(/*? if >=1.21.5 {*/AtlasIds.BLOCKS/*? } else {*//*TextureAtlas.LOCATION_BLOCKS*//*? }*/, KyanitePortals.id("block/custom_portal"), entry.getValue()),
-                    new NetherLikeLoadingBackgroundOptions(/*? if >=1.21.5 {*/AtlasIds.BLOCKS/*? } else {*//*TextureAtlas.LOCATION_BLOCKS*//*? }*/, KyanitePortals.id("block/custom_portal"), entry.getValue())
+                    new TextureOverlayPortalEffectOptions(/*? if >=1.21.5 {*/AtlasIds.BLOCKS/*? } else {*//*TextureAtlas.LOCATION_BLOCKS*//*? }*/, KyanitePortals.id("block/custom_portal"), entry.getValue())/*? if >=1.20.5 {*/,
+                    new NetherLikeLoadingBackgroundOptions(/*? if >=1.21.5 {*/AtlasIds.BLOCKS/*? } else {*//*TextureAtlas.LOCATION_BLOCKS*//*? }*/, KyanitePortals.id("block/custom_portal"), entry.getValue())/*? }*/
             ));
         }
         builder.putAll(map);
