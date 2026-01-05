@@ -58,6 +58,7 @@ public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
         return FailResult.INSTANCE;
     }
 
+    // TODO: rotate 90° when axis is Y and test again, width and height are relative in Y axis
     public PortalTestResult test(LevelReader level, BlockPos pos, Direction.Axis axis) {
         int portalBlocks = 0;
 
@@ -82,9 +83,9 @@ public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
 
         BlockPos bottomLeft = null;
 
-        for (int i = 0; i < width.getMax().orElse(Integer.MAX_VALUE) - 2; i++) {
-            BlockPos left = bottom.relative(right.getOpposite(), i);
-            BlockPos leftNeighbor = bottom.relative(right.getOpposite(), i + 1);
+        for (int x = 0; x < width.getMax().orElse(Integer.MAX_VALUE) - 2; x++) {
+            BlockPos left = bottom.relative(right.getOpposite(), x);
+            BlockPos leftNeighbor = bottom.relative(right.getOpposite(), x + 1);
             if (!frame.matches(level, leftNeighbor)) continue;
             if (portal.matches(level, left) || replaceable.matches(level, left)) {
                 bottomLeft = left;

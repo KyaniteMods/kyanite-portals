@@ -16,6 +16,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
 import net.fabricmc.fabric.api.object.builder.v1.world.poi.PointOfInterestHelper;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.*;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
@@ -100,14 +101,17 @@ public class KyanitePortals implements ModInitializer {
         PointOfInterestHelper.register(id("custom_portal"), 0, 1, KyanitePortalsBlocks.CUSTOM_PORTAL);
         DynamicRegistries.registerSynced(RESOURCE_KEY, Portal.CODEC);
 
-//        SimplePortalBuilder.create()
-//                .ignition(Items.EMERALD)
-//                .ignition(Blocks.EMERALD_BLOCK)
-//                .frame(Blocks.OBSIDIAN)
-//                .color(0xFF0000)
-//                .fromDimension(LevelStem.OVERWORLD)
-//                .toDimension(LevelStem.END)
-//                .register(id("cool_end"));
+        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+            SimplePortalBuilder.create()
+                    .ignition(Items.EMERALD)
+                    .ignition(Blocks.EMERALD_BLOCK)
+                    .frame(Blocks.OBSIDIAN)
+                    .color(0xFF0000)
+                    .fromDimension(LevelStem.OVERWORLD)
+                    .toDimension(LevelStem.END)
+                    .allAxes()
+                    .register(id("test_portal"));
+        }
     }
 
     @UnstableApi

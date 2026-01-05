@@ -3,6 +3,9 @@
     "axis=x": {
       "model": "kyanite_portals:block/custom_portal_ns"
     },
+    "axis=y": {
+      "model": "kyanite_portals:block/custom_portal_ud"
+    },
     "axis=z": {
       "model": "kyanite_portals:block/custom_portal_ew"
     }

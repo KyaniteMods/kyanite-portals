@@ -18,6 +18,7 @@ import dev.kyanitemods.kyaniteportals.util.Range;
 import dev.kyanitemods.kyaniteportals.util.BlockPredicate;
 import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.advancements.criterion.ItemPredicate;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 //? if >=1.21.3 {
 import net.minecraft.core.HolderGetter;
@@ -79,6 +80,8 @@ public final class SimplePortalBuilder {
     private Optional<Holder<SoundEvent>> ambientSound = Optional.of(Holder.direct(SoundEvents.PORTAL_AMBIENT));
     private Optional<Holder<SoundEvent>> travelSound = Optional.of(Holder.direct(SoundEvents.PORTAL_TRAVEL));
     private Optional<Holder<SoundEvent>> triggerSound = Optional.of(Holder.direct(SoundEvents.PORTAL_TRIGGER));
+    private Set<Direction.Axis> axes = Set.of(Direction.Axis.X, Direction.Axis.Z);
+    private boolean cornersRequired = false;
 
     public static SimplePortalBuilder create() {
         return new SimplePortalBuilder();
@@ -182,6 +185,30 @@ public final class SimplePortalBuilder {
         return this;
     }
 
+    public SimplePortalBuilder vertical() {
+        axes = Set.of(Direction.Axis.X, Direction.Axis.Z);
+        return this;
+    }
+
+    public SimplePortalBuilder horizontal() {
+        axes = Set.of(Direction.Axis.Y);
+        return this;
+    }
+
+    public SimplePortalBuilder allAxes() {
+        axes = Set.of(Direction.Axis.X, Direction.Axis.Y, Direction.Axis.Z);
+        return this;
+    }
+
+    public SimplePortalBuilder cornersRequired(boolean value) {
+        cornersRequired = value;
+        return this;
+    }
+
+    public SimplePortalBuilder cornersRequired() {
+        return cornersRequired(true);
+    }
+
     public ResourceKey<Portal> register(Identifier id) {
         CompoundTag tag = new CompoundTag();
         tag.putString("portal", id.toString());
@@ -209,9 +236,11 @@ public final class SimplePortalBuilder {
                     .withTester(new RectanglePortalTester(
                             width,
                             height,
+                            axes,
                             frame,
                             replaceable.get(),
-                            portalPredicate
+                            portalPredicate,
+                            cornersRequired
                     ))
                     .withTravelActions(
                             new StoreActionLocationAction(

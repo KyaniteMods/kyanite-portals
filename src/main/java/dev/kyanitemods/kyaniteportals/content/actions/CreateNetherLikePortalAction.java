@@ -15,6 +15,7 @@ import net.minecraft.util.BlockUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -82,108 +83,105 @@ public class CreateNetherLikePortalAction extends PortalAction<CreateNetherLikeP
     }
 
     private Optional<BlockUtil.FoundRectangle> createPortal(ServerLevel serverLevel, BlockPos startPos, Direction.Axis axis) {
-        Direction direction = Direction.get(Direction.AxisDirection.POSITIVE, axis);
-        double distance1 = -1.0;
-        BlockPos blockPos2 = null;
-        double distance2 = -1.0;
-        BlockPos blockPos3 = null;
+        Direction direction = axis == Direction.Axis.Y ? Direction.EAST : Direction.get(Direction.AxisDirection.POSITIVE, axis);
+        Direction directionCW = axis == Direction.Axis.Y ? Direction.UP : direction.getClockWise();
+        double placementDistance = -1.0;
+        BlockPos placementPos = null;
+        double fallbackPlacementDistance = -1.0;
+        BlockPos fallbackPlacementPos = null;
         WorldBorder worldBorder = serverLevel.getWorldBorder();
-        int maxHeight = Math.min(serverLevel.getMaxY(), serverLevel.getMinY() + serverLevel.getLogicalHeight()) - 1;
+        int maxPlacementY = Math.min(serverLevel.getMaxY(), serverLevel.getMinY() + serverLevel.getLogicalHeight()) - 1;
         BlockPos.MutableBlockPos mutablePos = startPos.mutable();
 
-        for (BlockPos.MutableBlockPos currentPos : BlockPos.spiralAround(startPos, 16, Direction.EAST, Direction.SOUTH)) {
-            int placementHeight = Math.min(maxHeight, serverLevel.getHeight(Heightmap.Types.MOTION_BLOCKING, currentPos.getX(), currentPos.getZ()));
-            if (worldBorder.isWithinBounds(currentPos) && worldBorder.isWithinBounds(currentPos.move(direction, 1))) {
-                currentPos.move(direction.getOpposite(), 1);
+        for (BlockPos.MutableBlockPos columnPos : BlockPos.spiralAround(startPos, 16, Direction.EAST, Direction.SOUTH)) {
+            int placementHeight = Math.min(maxPlacementY, serverLevel.getHeight(Heightmap.Types.MOTION_BLOCKING, columnPos.getX(), columnPos.getZ()));
+            if (!worldBorder.isWithinBounds(columnPos) || !worldBorder.isWithinBounds(columnPos.move(direction, 1))) continue;
 
-                for (int currentY = placementHeight; currentY >= serverLevel.getMinY(); currentY--) {
-                    currentPos.setY(currentY);
-                    if (canPortalReplaceBlock(serverLevel, currentPos)) {
-                        int startY = currentY;
+            columnPos.move(direction.getOpposite(), 1);
 
-                        while (currentY > serverLevel.getMinY() && canPortalReplaceBlock(serverLevel, currentPos.move(Direction.DOWN))) {
-                            currentY--;
-                        }
+            for (int lowestReplaceableY = placementHeight; lowestReplaceableY >= serverLevel.getMinY(); lowestReplaceableY--) {
+                columnPos.setY(lowestReplaceableY);
+                if (canPortalReplaceBlock(serverLevel, columnPos)) continue;
+                int startY = lowestReplaceableY;
 
-                        if (currentY + 4 <= maxHeight) {
-                            int height = startY - currentY;
-                            if (height <= 0 || height >= 3) {
-                                currentPos.setY(currentY);
-                                if (canHostFrame(serverLevel, currentPos, mutablePos, direction, 0)) {
-                                    double distance = startPos.distSqr(currentPos);
-                                    if (canHostFrame(serverLevel, currentPos, mutablePos, direction, -1)
-                                            && canHostFrame(serverLevel, currentPos, mutablePos, direction, 1)
-                                            && (distance1 == -1.0 || distance1 > distance)) {
-                                        distance1 = distance;
-                                        blockPos2 = currentPos.immutable();
-                                    }
+                while (lowestReplaceableY > serverLevel.getMinY() && canPortalReplaceBlock(serverLevel, columnPos.move(Direction.DOWN))) {
+                    lowestReplaceableY--;
+                }
+                if (axis != Direction.Axis.Y && lowestReplaceableY + getSize().height() - 1 > maxPlacementY) continue;
 
-                                    if (distance1 == -1.0 && (distance2 == -1.0 || distance2 > distance)) {
-                                        distance2 = distance;
-                                        blockPos3 = currentPos.immutable();
-                                    }
-                                }
-                            }
-                        }
-                    }
+                int emptyY = startY - lowestReplaceableY;
+                if (emptyY > 0 && axis != Direction.Axis.Y && emptyY < getSize().heightWithoutFrame()) continue;
+
+                columnPos.setY(lowestReplaceableY);
+                if (!canHostFrame(serverLevel, columnPos, mutablePos, direction, directionCW, 0)) continue;
+
+                double distance = startPos.distSqr(columnPos);
+                if (canHostFrame(serverLevel, columnPos, mutablePos, direction, directionCW, -1)
+                        && canHostFrame(serverLevel, columnPos, mutablePos, direction, directionCW, 1)
+                        && (placementPos == null || placementDistance > distance)) {
+                    placementDistance = distance;
+                    placementPos = columnPos.immutable();
+                }
+
+                if (placementPos == null && (fallbackPlacementPos == null || fallbackPlacementDistance > distance)) {
+                    fallbackPlacementDistance = distance;
+                    fallbackPlacementPos = columnPos.immutable();
                 }
             }
         }
 
-        if (distance1 == -1.0 && distance2 != -1.0) {
-            blockPos2 = blockPos3;
-            distance1 = distance2;
+        if (placementPos == null && fallbackPlacementPos != null) {
+            placementPos = fallbackPlacementPos;
         }
 
-        if (distance1 == -1.0) {
-            int lowY = Math.max(serverLevel.getMinY() + 1, 70);
-            int highY = maxHeight - 9;
-            if (highY < lowY) {
+        if (placementPos == null) {
+            int minStartY = Math.max(serverLevel.getMinY() + 1, Math.min(serverLevel.getMaxY() - getSize().height(), 70));
+            int maxStartY = maxPlacementY - (getSize().height() + 4);
+            if (maxStartY < minStartY) {
                 return Optional.empty();
             }
 
-            blockPos2 = new BlockPos(startPos.getX(), Mth.clamp(startPos.getY(), lowY, highY), startPos.getZ()).immutable();
-            Direction directionCW = direction.getClockWise();
-            if (!worldBorder.isWithinBounds(blockPos2)) {
+            placementPos = new BlockPos(startPos.getX(), Mth.clamp(startPos.getY(), minStartY, maxStartY), startPos.getZ()).immutable();
+
+            if (!worldBorder.isWithinBounds(placementPos)) {
                 return Optional.empty();
             }
 
-            for (int offsetZ = -1; offsetZ < 2; offsetZ++) {
-                for (int offsetX = 0; offsetX < getSize().widthWithoutFrame(); offsetX++) {
-                    for (int y = -1; y < getSize().heightWithoutFrame(); y++) {
-                        mutablePos.setWithOffset(blockPos2, offsetX * direction.getStepX() + offsetZ * directionCW.getStepX(), y, offsetX * direction.getStepZ() + offsetZ * directionCW.getStepZ());
-                        if (y < 0) {
-                            getFrameBlock().set(serverLevel, mutablePos, Block.UPDATE_ALL);
-                        } else {
-                            serverLevel.setBlockAndUpdate(mutablePos, Blocks.AIR.defaultBlockState());
-                        }
-                    }
-                }
-            }
+            createBasePlate(serverLevel, placementPos, direction, directionCW);
         }
 
         for (int offsetX = -1; offsetX < getSize().width() - 1; offsetX++) {
             for (int offsetY = -1; offsetY < getSize().height() - 1; offsetY++) {
                 if (offsetX == -1 || offsetX == getSize().widthWithoutFrame() || offsetY == -1 || offsetY == getSize().heightWithoutFrame()) {
-                    mutablePos.setWithOffset(blockPos2, offsetX * direction.getStepX(), offsetY, offsetX * direction.getStepZ());
+                    if (directionCW == Direction.UP) {
+                        mutablePos.setWithOffset(placementPos, offsetX, 0, offsetY);
+                    } else {
+                        mutablePos.setWithOffset(placementPos, offsetX * direction.getStepX(), offsetY, offsetX * direction.getStepZ());
+                    }
                     getFrameBlock().set(serverLevel, mutablePos, Block.UPDATE_ALL);
                 }
             }
         }
 
         BlockEntityPair portalBlock = getPortalBlock();
-        if (portalBlock.state().hasProperty(BlockStateProperties.HORIZONTAL_AXIS)) {
+        if (portalBlock.state().hasProperty(BlockStateProperties.AXIS)) {
+            portalBlock = portalBlock.with(portalBlock.state().setValue(BlockStateProperties.AXIS, axis));
+        } else if (portalBlock.state().hasProperty(BlockStateProperties.HORIZONTAL_AXIS)) {
             portalBlock = portalBlock.with(portalBlock.state().setValue(BlockStateProperties.HORIZONTAL_AXIS, axis));
         }
 
         for (int offsetX = 0; offsetX < getSize().widthWithoutFrame(); offsetX++) {
             for (int offsetY = 0; offsetY < getSize().heightWithoutFrame(); offsetY++) {
-                mutablePos.setWithOffset(blockPos2, offsetX * direction.getStepX(), offsetY, offsetX * direction.getStepZ());
+                if (directionCW == Direction.UP) {
+                    mutablePos.setWithOffset(placementPos, offsetX, 0, offsetY);
+                } else {
+                    mutablePos.setWithOffset(placementPos, offsetX * direction.getStepX(), offsetY, offsetX * direction.getStepZ());
+                }
                 portalBlock.set(serverLevel, mutablePos, Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_CLIENTS);
             }
         }
 
-        return Optional.of(new BlockUtil.FoundRectangle(blockPos2.immutable(), 2, 3));
+        return Optional.of(new BlockUtil.FoundRectangle(placementPos.immutable(), 2, 3));
     }
 
     private static boolean canPortalReplaceBlock(ServerLevel serverLevel, BlockPos.MutableBlockPos mutablePos) {
@@ -191,12 +189,46 @@ public class CreateNetherLikePortalAction extends PortalAction<CreateNetherLikeP
         return blockState.canBeReplaced() && blockState.getFluidState().isEmpty();
     }
 
-    private static boolean canHostFrame(ServerLevel serverLevel, BlockPos currentPos, BlockPos.MutableBlockPos mutablePos, Direction direction, int offset) {
-        Direction directionCW = direction.getClockWise();
+    private void createBasePlate(ServerLevel level, BlockPos pos, Direction direction, Direction directionCW) {
+        BlockPos.MutableBlockPos mutablePos = BlockPos.ZERO.mutable();
 
-        for (int offsetX = -1; offsetX < 3; offsetX++) {
-            for (int offsetY = -1; offsetY < 4; offsetY++) {
-                mutablePos.setWithOffset(currentPos, direction.getStepX() * offsetX + directionCW.getStepX() * offset, offsetY, direction.getStepZ() * offsetX + directionCW.getStepZ() * offset);
+        if (directionCW == Direction.UP) {
+            for (int offsetZ = -2; offsetZ < getSize().height(); offsetZ++) {
+                for (int offsetX = -2; offsetX < getSize().width(); offsetX++) {
+                    for (int y = -1; y < 3; y++) {
+                        mutablePos.setWithOffset(pos, offsetX, y, offsetZ);
+                        if (y < 0) {
+                            getFrameBlock().set(level, mutablePos, Block.UPDATE_ALL);
+                        } else {
+                            level.setBlockAndUpdate(mutablePos, Blocks.AIR.defaultBlockState());
+                        }
+                    }
+                }
+            }
+        } else {
+            for (int offsetZ = -1; offsetZ < 2; offsetZ++) {
+                for (int offsetX = 0; offsetX < getSize().widthWithoutFrame(); offsetX++) {
+                    for (int y = -1; y < getSize().heightWithoutFrame(); y++) {
+                        mutablePos.setWithOffset(pos, offsetX * direction.getStepX() + offsetZ * directionCW.getStepX(), y, offsetX * direction.getStepZ() + offsetZ * directionCW.getStepZ());
+                        if (y < 0) {
+                            getFrameBlock().set(level, mutablePos, Block.UPDATE_ALL);
+                        } else {
+                            level.setBlockAndUpdate(mutablePos, Blocks.AIR.defaultBlockState());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean canHostFrame(ServerLevel serverLevel, BlockPos currentPos, BlockPos.MutableBlockPos mutablePos, Direction direction, Direction directionCW, int offset) {
+        for (int offsetX = -1; offsetX < getSize().width() - 1; offsetX++) {
+            for (int offsetY = -1; offsetY < getSize().height() - 1; offsetY++) {
+                if (direction == Direction.UP) {
+                    mutablePos.setWithOffset(currentPos, direction.getStepX() * offsetX + directionCW.getStepX() * offset, offsetY, direction.getStepZ() * offsetX + directionCW.getStepZ() * offset);
+                } else {
+                    mutablePos.setWithOffset(currentPos, direction.getStepX() * offsetX + directionCW.getStepX() * offset, offsetY, direction.getStepZ() * offsetX + directionCW.getStepZ() * offset);
+                }
                 if (offsetY < 0 && !serverLevel.getBlockState(mutablePos).isSolid()) {
                     return false;
                 }
@@ -228,8 +260,8 @@ public class CreateNetherLikePortalAction extends PortalAction<CreateNetherLikeP
 
     public record Size(int width, int height) {
         public static final Codec<Size> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codec.INT.fieldOf("width").forGetter(Size::width),
-                Codec.INT.fieldOf("height").forGetter(Size::height)
+                ExtraCodecs.POSITIVE_INT.fieldOf("width").forGetter(Size::width),
+                ExtraCodecs.POSITIVE_INT.fieldOf("height").forGetter(Size::height)
         ).apply(instance, Size::new));
 
         public int widthWithoutFrame() {

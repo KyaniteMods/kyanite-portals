@@ -32,19 +32,19 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
 public class CustomNetherLikePortalBlock extends Block implements EntityBlock {
-    public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.HORIZONTAL_AXIS;
-    //? if <1.21.5 {
-    /*private static final Map<Direction.Axis, VoxelShape> SHAPES = Map.of(
+    public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.AXIS;
+
+    private static final Map<Direction.Axis, VoxelShape> SHAPES = new EnumMap<>(Map.of(
             Direction.Axis.X, Block.box(0.0, 0.0, 6.0, 16.0, 16.0, 10.0),
-            Direction.Axis.Z, Block.box(6.0, 0.0, 0.0, 10.0, 16.0, 16.0));
-    *///? } else
-    private static final Map<Direction.Axis, VoxelShape> SHAPES = Shapes.rotateHorizontalAxis(Block.column(4.0, 16.0, 0.0, 16.0));
+            Direction.Axis.Y, Block.box(0.0, 6.0, 0.0, 16.0, 10.0, 16.0),
+            Direction.Axis.Z, Block.box(6.0, 0.0, 0.0, 10.0, 16.0, 16.0)));
 
     public CustomNetherLikePortalBlock(Properties properties) {
         super(properties);
@@ -59,7 +59,7 @@ public class CustomNetherLikePortalBlock extends Block implements EntityBlock {
      //? }
         Direction.Axis axis = direction.getAxis();
         Direction.Axis axis2 = blockState.getValue(AXIS);
-        boolean bl = axis2 != axis && axis.isHorizontal();
+        boolean bl = axis2 != axis && ((axis2.isHorizontal() && axis.isHorizontal()) || (axis2.isVertical() && axis.isVertical()));
         Optional<Portal> portal = getPortal(level, pos);
         if (bl || portal.isEmpty() || !portal.get().testValidityAfterGeneration() || portal.get().tester().isEmpty() || portal.get().tester().get().test(level, pos).isComplete()) {
             //? if <1.21.3 {
