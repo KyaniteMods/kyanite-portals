@@ -41,6 +41,7 @@ public class KyanitePortalsUtil {
         return resourceKey.identifier();
     }
 
+    //TODO: make transition better if one portal is horizontal and the other is vertical
     @ApiStatus.Internal
     public static /*? if <1.21 {*//*PortalInfo*//*? } else if <1.21.3 { *//*DimensionTransition*//*? } else {*/TeleportTransition/*? }*/ getDimensionTransitionFromExit(Level portalLevel, BlockPos portalPos, ServerLevel serverLevel, BlockUtil.FoundRectangle foundRectangle, @Nullable Direction.Axis axis, Entity entity) {
         BlockState blockState = portalLevel.getBlockState(portalPos);
