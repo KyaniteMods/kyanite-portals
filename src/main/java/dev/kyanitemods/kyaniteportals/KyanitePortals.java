@@ -100,14 +100,14 @@ public class KyanitePortals implements ModInitializer {
         PointOfInterestHelper.register(id("custom_portal"), 0, 1, KyanitePortalsBlocks.CUSTOM_PORTAL);
         DynamicRegistries.registerSynced(RESOURCE_KEY, Portal.CODEC);
 
-        SimplePortalBuilder.create()
-                .ignition(Items.EMERALD)
-                .ignition(Blocks.EMERALD_BLOCK)
-                .frame(Blocks.OBSIDIAN)
-                .color(0xFF0000)
-                .fromDimension(LevelStem.OVERWORLD)
-                .toDimension(LevelStem.END)
-                .register(id("cool_end"));
+//        SimplePortalBuilder.create()
+//                .ignition(Items.EMERALD)
+//                .ignition(Blocks.EMERALD_BLOCK)
+//                .frame(Blocks.OBSIDIAN)
+//                .color(0xFF0000)
+//                .fromDimension(LevelStem.OVERWORLD)
+//                .toDimension(LevelStem.END)
+//                .register(id("cool_end"));
     }
 
     @UnstableApi

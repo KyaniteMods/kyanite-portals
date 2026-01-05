@@ -11,7 +11,7 @@
     "website": "https://kyanitemods.dev"
   },
   "license": "MIT",
-  "icon": "assets/kyaniteportals/icon.png",
+  "icon": "assets/kyanite_portals/icon.png",
   "environment": "*",
   "entrypoints": {
     "fabric-datagen": [

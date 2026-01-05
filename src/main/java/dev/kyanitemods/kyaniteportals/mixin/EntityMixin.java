@@ -187,39 +187,6 @@ public abstract class EntityMixin implements EntityInPortal {
         if (!((Entity) (Object) this).isOnPortalCooldown()) setHasTraveled(false);
     }
 
-//    @Inject(method = "handlePortal", at = @At("TAIL"))
-//    private void kyanitePortals$tick(CallbackInfo ci) {
-//        if (((Entity) (Object) this).level().isClientSide()) return;
-//        if (isInsidePortal()) {
-//            if (((Object) this) instanceof AbstractMinecart) System.out.println("Ticking inside portal!");
-//            setTimeInPortal(getTimeInPortal() + 1);
-//            setPortalTeleportTime(getPortalTeleportTime() + 1);
-//            Optional<Portal> optional = ((Entity) (Object) this).level().registryAccess().lookupOrThrow(KyanitePortals.RESOURCE_KEY).get(getPortal()).map(Holder.Reference::value);
-//            if (optional.isPresent()) {
-//                Portal portal = optional.get();
-//                int teleportTime = portal.travelTime().get((Entity) (Object) this);
-//                if (getCooldown() == 0 && getPortalTeleportTime() >= teleportTime) {
-//                    setPortalTeleportTime(teleportTime);
-//                    setCooldown(((Entity) (Object) this).getDimensionChangingDelay());
-//                    if (!hasTraveled()) {
-//                        portalTraveled(portalLevel, portalPos);
-//                        if (!((Entity) (Object) this).level().isClientSide()) setHasTraveled(true);
-//                    }
-//                }
-//            }
-//            setInsidePortal(false);
-//            return;
-//        }
-//
-//        if (getPortalTeleportTime() > 0) {
-//            setPortalTeleportTime(Math.max(getPortalTeleportTime() - 4, 0));
-//        }
-//        if (getCooldown() > 0) setCooldown(getCooldown() - 1);
-//        setTimeInPortal(0);
-//
-//        if (getCooldown() == 0 && !((Entity) (Object) this).level().isClientSide()) setHasTraveled(false);
-//    }
-
     @Inject(method = "restoreFrom", at = @At("TAIL"))
     private void kyanitePortals$restoreFrom(Entity entity, CallbackInfo ci) {
         setHasTraveled(((EntityInPortal) entity).hasTraveled());

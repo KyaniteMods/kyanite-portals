@@ -52,7 +52,6 @@ public record Portal(Optional<PortalGenerator<?>> generator, Optional<PortalTest
                 toAdd = action.onFailure(FailureReason.PROBABILITY);
             } else if (action.getSettings().predicate().isPresent() && (level.isClientSide() || !action.getSettings().predicate().get().matches(((ServerLevel) level), pos.getCenter(), entity))) { // NOTE: desync between client and server.
                 toAdd = action.onFailure(FailureReason.PREDICATE);
-                System.out.println("Predicate failed, adding " + toAdd);
             } else if ((level.isClientSide() && action.getSettings().environment().isClient()) || (!level.isClientSide() && action.getSettings().environment().isServer())) {
                 PortalActionResult result = action.execute(level, pos, entity, data);
                 toAdd = result == PortalActionResult.SUCCESS ? action.getSettings().onSuccess() : action.onFailure(FailureReason.ACTION);

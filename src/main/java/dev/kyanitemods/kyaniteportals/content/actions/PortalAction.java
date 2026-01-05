@@ -29,10 +29,7 @@ public abstract class PortalAction<T extends PortalAction<T>> {
     }
 
     public List<PortalAction<?>> onFailure(FailureReason reason) {
-        if (reason == FailureReason.PREDICATE) System.out.println(getSettings().onFailure().size());
-        return getSettings().onFailure().stream().filter(action -> {
-            return action.getSettings().failureReasons().isEmpty() || action.getSettings().failureReasons().get().contains(reason);
-        }).toList();
+        return getSettings().onFailure().stream().filter(action -> action.getSettings().failureReasons().isEmpty() || action.getSettings().failureReasons().get().contains(reason)).toList();
     }
 
     public abstract PortalActionResult execute(Level level, BlockPos pos, @Nullable Entity entity, ActionExecutionData data);
