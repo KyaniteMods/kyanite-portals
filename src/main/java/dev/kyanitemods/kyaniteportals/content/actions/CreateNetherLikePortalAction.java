@@ -90,42 +90,43 @@ public class CreateNetherLikePortalAction extends PortalAction<CreateNetherLikeP
         double fallbackPlacementDistance = -1.0;
         BlockPos fallbackPlacementPos = null;
         WorldBorder worldBorder = serverLevel.getWorldBorder();
-        int maxPlacementY = Math.min(serverLevel.getMaxY(), serverLevel.getMinY() + serverLevel.getLogicalHeight()) - 1;
+        int maxPlaceableY = Math.min(serverLevel.getMaxY(), serverLevel.getMinY() + serverLevel.getLogicalHeight()) - 1;
         BlockPos.MutableBlockPos mutablePos = startPos.mutable();
 
         for (BlockPos.MutableBlockPos columnPos : BlockPos.spiralAround(startPos, 16, Direction.EAST, Direction.SOUTH)) {
-            int placementHeight = Math.min(maxPlacementY, serverLevel.getHeight(Heightmap.Types.MOTION_BLOCKING, columnPos.getX(), columnPos.getZ()));
-            if (!worldBorder.isWithinBounds(columnPos) || !worldBorder.isWithinBounds(columnPos.move(direction, 1))) continue;
+            int height = Math.min(maxPlaceableY, serverLevel.getHeight(Heightmap.Types.MOTION_BLOCKING, columnPos.getX(), columnPos.getZ()));
+            if (worldBorder.isWithinBounds(columnPos) && worldBorder.isWithinBounds(columnPos.move(direction, 1))) {
+                columnPos.move(direction.getOpposite(), 1);
 
-            columnPos.move(direction.getOpposite(), 1);
+                for (int y = height; y >= serverLevel.getMinY(); y--) {
+                    columnPos.setY(y);
+                    if (!canPortalReplaceBlock(serverLevel, columnPos)) continue;
+                    int firstEmptyY = y;
 
-            for (int lowestReplaceableY = placementHeight; lowestReplaceableY >= serverLevel.getMinY(); lowestReplaceableY--) {
-                columnPos.setY(lowestReplaceableY);
-                if (canPortalReplaceBlock(serverLevel, columnPos)) continue;
-                int startY = lowestReplaceableY;
+                    while (y > serverLevel.getMinY() && canPortalReplaceBlock(serverLevel, columnPos.move(Direction.DOWN))) {
+                        y--;
+                    }
 
-                while (lowestReplaceableY > serverLevel.getMinY() && canPortalReplaceBlock(serverLevel, columnPos.move(Direction.DOWN))) {
-                    lowestReplaceableY--;
-                }
-                if (axis != Direction.Axis.Y && lowestReplaceableY + getSize().height() - 1 > maxPlacementY) continue;
+                    if ((axis != Direction.Axis.Y && y + getSize().height() - 1 > maxPlaceableY) || y > maxPlaceableY) continue;
 
-                int emptyY = startY - lowestReplaceableY;
-                if (emptyY > 0 && axis != Direction.Axis.Y && emptyY < getSize().heightWithoutFrame()) continue;
+                    int deltaY = firstEmptyY - y;
+                    if (deltaY > 0 && axis != Direction.Axis.Y && deltaY < getSize().heightWithoutFrame()) continue;
 
-                columnPos.setY(lowestReplaceableY);
-                if (!canHostFrame(serverLevel, columnPos, mutablePos, direction, directionCW, 0)) continue;
+                    columnPos.setY(y);
+                    if (this.canHostFrame(serverLevel, columnPos, mutablePos, direction, directionCW, 0)) {
+                        double distance = startPos.distSqr(columnPos);
+                        if (this.canHostFrame(serverLevel, columnPos, mutablePos, direction, directionCW, -1)
+                                && this.canHostFrame(serverLevel, columnPos, mutablePos, direction, directionCW, 1)
+                                && (placementDistance == -1.0 || placementDistance > distance)) {
+                            placementDistance = distance;
+                            placementPos = columnPos.immutable();
+                        }
 
-                double distance = startPos.distSqr(columnPos);
-                if (canHostFrame(serverLevel, columnPos, mutablePos, direction, directionCW, -1)
-                        && canHostFrame(serverLevel, columnPos, mutablePos, direction, directionCW, 1)
-                        && (placementPos == null || placementDistance > distance)) {
-                    placementDistance = distance;
-                    placementPos = columnPos.immutable();
-                }
-
-                if (placementPos == null && (fallbackPlacementPos == null || fallbackPlacementDistance > distance)) {
-                    fallbackPlacementDistance = distance;
-                    fallbackPlacementPos = columnPos.immutable();
+                        if (placementDistance == -1.0 && (fallbackPlacementDistance == -1.0 || fallbackPlacementDistance > distance)) {
+                            fallbackPlacementDistance = distance;
+                            fallbackPlacementPos = columnPos.immutable();
+                        }
+                    }
                 }
             }
         }
@@ -136,7 +137,7 @@ public class CreateNetherLikePortalAction extends PortalAction<CreateNetherLikeP
 
         if (placementPos == null) {
             int minStartY = Math.max(serverLevel.getMinY() + 1, Math.min(serverLevel.getMaxY() - getSize().height(), 70));
-            int maxStartY = maxPlacementY - (getSize().height() + 4);
+            int maxStartY = maxPlaceableY - (getSize().height() + 4);
             if (maxStartY < minStartY) {
                 return Optional.empty();
             }
