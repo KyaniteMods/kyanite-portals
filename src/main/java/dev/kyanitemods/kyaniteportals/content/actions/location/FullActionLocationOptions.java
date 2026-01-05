@@ -5,7 +5,6 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.actions.ActionExecutionData;
 import dev.kyanitemods.kyaniteportals.util.CodecHelper;
-import dev.kyanitemods.kyaniteportals.util.DimensionList;
 import dev.kyanitemods.kyaniteportals.util.KyanitePortalsUtil;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
@@ -19,7 +18,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
@@ -34,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
 public record FullActionLocationOptions(DimensionContext dimension, PositionContext position) implements ActionLocationOptions {
@@ -74,7 +73,7 @@ public record FullActionLocationOptions(DimensionContext dimension, PositionCont
         ENTRY_POINT("entry_point", InEntryPoint.MAP_CODEC, InEntryPoint.CODEC),
         OPPOSITE_POINT("opposite_point", InOppositePoint.MAP_CODEC, InOppositePoint.CODEC),
         ENTITY_DIMENSION("entity_dimension", InEntityDimension.MAP_CODEC, InEntityDimension.CODEC),
-        TAG("tag", InTag.MAP_CODEC, InTag.CODEC); //TODO: change to DimensionList
+        DIMENSION_IN_SET("dimension_in_set", InDimensionInSet.MAP_CODEC, InDimensionInSet.CODEC);
 
         public static final Codec<DimensionContextType> CODEC = StringRepresentable.fromEnum(DimensionContextType::values);
 
@@ -127,10 +126,10 @@ public record FullActionLocationOptions(DimensionContext dimension, PositionCont
         }
     }
 
-    public record InOppositePoint(Optional<DimensionList> first, DimensionList second) implements DimensionContext {
+    public record InOppositePoint(Optional<Set<ResourceKey<LevelStem>>> first, Set<ResourceKey<LevelStem>> second) implements DimensionContext {
         public static final MapCodec<InOppositePoint> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                DimensionList.CODEC.optionalFieldOf("first").forGetter(InOppositePoint::first),
-                DimensionList.CODEC.fieldOf("second").forGetter(InOppositePoint::second)
+                CodecHelper.DIMENSION_SET_CODEC.optionalFieldOf("first").forGetter(InOppositePoint::first),
+                CodecHelper.DIMENSION_SET_CODEC.fieldOf("second").forGetter(InOppositePoint::second)
         ).apply(instance, InOppositePoint::new));
         public static final Codec<InOppositePoint> CODEC = MAP_CODEC.codec();
 
@@ -140,16 +139,14 @@ public record FullActionLocationOptions(DimensionContext dimension, PositionCont
             HolderLookup.RegistryLookup<LevelStem> registry = level.registryAccess().lookupOrThrow(Registries.LEVEL_STEM);
 
             List<ResourceKey<LevelStem>> list;
-            if (second().matches(level)) {
-                list = first()
-                        .map(dimensionList -> dimensionList.get(registry))
-                        .orElse(registry.listElements()
-                                .map(Holder.Reference::unwrapKey)
-                                .filter(Optional::isPresent)
-                                .map(Optional::get)
-                                .toList());
+            if (second().contains(Registries.levelToLevelStem(level.dimension()))) {
+                list = first().map(List::copyOf).orElse(registry.listElements()
+                        .map(Holder.Reference::unwrapKey)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .toList());
             } else {
-                list = second().get(registry);
+                list = List.copyOf(second());
             }
 
             Optional<ResourceKey<LevelStem>> optional = Util.getRandomSafe(list, random);
@@ -188,34 +185,33 @@ public record FullActionLocationOptions(DimensionContext dimension, PositionCont
         }
     }
 
-    public record InTag(TagKey<LevelStem> tag) implements DimensionContext {
-        public static final MapCodec<InTag> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                TagKey.hashedCodec(Registries.LEVEL_STEM).fieldOf("tag").forGetter(InTag::tag)
-        ).apply(instance, InTag::new));
-        public static final Codec<InTag> CODEC = MAP_CODEC.codec();
+    public record InDimensionInSet(Set<ResourceKey<LevelStem>> set) implements DimensionContext {
+        public static final MapCodec<InDimensionInSet> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                CodecHelper.DIMENSION_SET_CODEC.fieldOf("set").forGetter(InDimensionInSet::set)
+        ).apply(instance, InDimensionInSet::new));
+        public static final Codec<InDimensionInSet> CODEC = MAP_CODEC.codec();
 
         @Override
         public ResourceKey<LevelStem> get(Level level, Entity entity, RandomSource random) {
             if (level.isClientSide()) throw new UnsupportedOperationException("Cannot use tag dimension option on a client");
             HolderLookup.RegistryLookup<LevelStem> registry = level.registryAccess().lookupOrThrow(Registries.LEVEL_STEM);
 
-            TagKey<LevelStem> opposite = tag();
-            Optional<ResourceKey<LevelStem>> optional = registry.get(opposite)
-                    .flatMap(holders -> Util.getRandomSafe(holders.stream().toList(), random))
+            Set<ResourceKey<LevelStem>> opposite = set();
+            Optional<ResourceKey<LevelStem>> optional = registry.get(Util.getRandom(List.copyOf(opposite), random))
                     .flatMap(Holder::unwrapKey);
-            if (optional.isEmpty()) throw new IllegalStateException("Dimension tag " + opposite.location() + " does not exist");
+            if (optional.isEmpty()) throw new IllegalStateException("Empty dimension set in location options");
             return optional.get();
         }
 
         @Override
         public DimensionContextType getType() {
-            return DimensionContextType.TAG;
+            return DimensionContextType.DIMENSION_IN_SET;
         }
 
         @Override
         public String toString() {
-            return "InTag{" +
-                    "tag=" + tag +
+            return "InDimensionInSet{" +
+                    "set=" + set +
                     '}';
         }
     }

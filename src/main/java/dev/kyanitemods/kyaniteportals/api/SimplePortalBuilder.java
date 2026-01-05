@@ -14,10 +14,8 @@ import dev.kyanitemods.kyaniteportals.content.registry.PortalTriggers;
 import dev.kyanitemods.kyaniteportals.content.testers.RectanglePortalTester;
 import dev.kyanitemods.kyaniteportals.content.triggers.PortalTriggerInstance;
 import dev.kyanitemods.kyaniteportals.util.BlockEntityPair;
-import dev.kyanitemods.kyaniteportals.util.DimensionList;
 import dev.kyanitemods.kyaniteportals.util.Range;
 import dev.kyanitemods.kyaniteportals.util.BlockPredicate;
-import io.netty.util.internal.UnstableApi;
 import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.core.Holder;
@@ -206,7 +204,7 @@ public final class SimplePortalBuilder {
             Portal.Builder builder = Portal.Builder.create()
                     .withGenerator(new NetherLikePortalGenerator(
                             ignition.stream().map(f -> f.apply(provider)).collect(Collectors.toUnmodifiableList()),
-                            new DimensionList(Set.of(fromDimension, toDimension), Optional.empty()),
+                            Set.of(fromDimension, toDimension),
                             portal))
                     .withTester(new RectanglePortalTester(
                             width,
@@ -220,8 +218,8 @@ public final class SimplePortalBuilder {
                                     PortalAction.Settings.Builder.create().locationOptions(
                                             new FullActionLocationOptions(
                                                     new FullActionLocationOptions.InOppositePoint(
-                                                            fromDimension == null ? Optional.empty() : Optional.of(new DimensionList(Set.of(fromDimension), Optional.empty())),
-                                                            new DimensionList(Set.of(toDimension), Optional.empty())
+                                                            fromDimension == null ? Optional.empty() : Optional.of(Set.of(fromDimension)),
+                                                            Set.of(toDimension)
                                                     ),
                                                     FullActionLocationOptions.PositionContext.DEFAULT
                                             )).build(), "location"),

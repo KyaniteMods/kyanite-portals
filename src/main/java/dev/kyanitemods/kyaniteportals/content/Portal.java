@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public record Portal(Optional<PortalGenerator<?>> generator, Optional<PortalTester<?>> tester, boolean testValidityAfterGeneration, Optional<EntityPredicate> entityPredicate, TravelTime travelTime, List<PortalAction<?>> enterActions, List<PortalAction<?>> travelActions, List<PortalAction<?>> tickActions, List<PortalAction<?>> randomTickActions, List<PortalAction<?>> animationTickActions, Optional<ParticleOptions> particleOptions) {
-    public static final Codec<Portal> CODEC1 = RecordCodecBuilder.create(instance -> instance.group(
+    public static final Codec<Portal> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             PortalGenerators.CODEC.optionalFieldOf("generator").forGetter(Portal::generator),
             PortalTesters.CODEC.optionalFieldOf("tester").forGetter(Portal::tester),
             Codec.BOOL.optionalFieldOf("test_validity_after_generation", true).forGetter(Portal::testValidityAfterGeneration),
@@ -38,15 +38,9 @@ public record Portal(Optional<PortalGenerator<?>> generator, Optional<PortalTest
             PortalActions.CODEC.listOf().optionalFieldOf("random_tick_actions", List.of()).forGetter(Portal::randomTickActions),
             PortalActions.CODEC.listOf().optionalFieldOf("animation_tick_actions", List.of()).forGetter(Portal::animationTickActions),
             ParticleTypes.CODEC.optionalFieldOf("particle_options").forGetter(Portal::particleOptions)
-    ).apply(instance, Portal::new));
-
-    public static final Codec<Portal> CODEC = CODEC1.flatXmap(
-            portal -> {
-                System.out.println("Decoded Portal: " + CODEC1.encodeStart(JsonOps.INSTANCE, portal).resultOrPartial(System.out::println));
-                return DataResult.success(portal);
-            },
-            DataResult::success
-    );
+    ).apply(instance, ((portalGenerator, portalTester, aBoolean, entityPredicate1, travelTime1, portalActions, portalActions2, portalActions3, portalActions4, portalActions5, particleOptions1) -> {
+        return new Portal(portalGenerator, portalTester, aBoolean, entityPredicate1, travelTime1, portalActions, portalActions2, portalActions3, portalActions4, portalActions5, particleOptions1);
+    })));
 
     public static void executeAll(Level level, BlockPos pos, @Nullable Entity entity, List<PortalAction<?>> actions) {
         Deque<PortalAction<?>> deque = new ArrayDeque<>(actions);

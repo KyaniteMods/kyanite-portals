@@ -16,12 +16,17 @@ import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.advancements.criterion.NbtPredicate;
 import net.minecraft.advancements.criterion.StatePropertiesPredicate;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.level.dimension.LevelStem;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 @ApiStatus.Internal
@@ -50,6 +55,8 @@ public final class CodecHelper {
     }, nbt -> new JsonPrimitive(nbt.toString()));
     *///? } else
     public static final Codec<CompoundTag> FLATTENED_TAG_CODEC = TagParser.FLATTENED_CODEC;
+
+    public static final Codec<Set<ResourceKey<LevelStem>>> DIMENSION_SET_CODEC = ResourceKey.codec(Registries.LEVEL_STEM).listOf().xmap(Set::copyOf, List::copyOf);
 
     public static <F extends K1, T1, T2, T3, T4, T5, T6, T7, T8, T9> Products.P9<F, T1, T2, T3, T4, T5, T6, T7, T8, T9> and(Products.P5<F, T1, T2, T3, T4, T5> p5, App<F, T6> t6, App<F, T7> t7, App<F, T8> t8, App<F, T9> t9) {
         return new Products.P9<>(p5.t1(), p5.t2(), p5.t3(), p5.t4(), p5.t5(), t6, t7, t8, t9);

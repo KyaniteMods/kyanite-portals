@@ -17,8 +17,8 @@
       "settings": {
         "location_options": {
           "dimension": {
-            "in": "tag",
-            "tag": "#kyanite_portals:end_portal_destinations"
+            "in": "dimension_in_set",
+            "set": ["minecraft:the_end"]
           },
           "position": {
             "from": "world_origin",

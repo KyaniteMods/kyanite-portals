@@ -11,24 +11,28 @@ import dev.kyanitemods.kyaniteportals.content.triggers.PortalTriggerInstance;
 import dev.kyanitemods.kyaniteportals.content.triggers.TriggerResult;
 import dev.kyanitemods.kyaniteportals.util.*;
 import dev.kyanitemods.kyaniteportals.util.BlockPredicate;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.dimension.LevelStem;
 
 import java.util.List;
+import java.util.Set;
 
 public class NetherLikePortalGenerator extends PortalGenerator<NetherLikePortalGenerator> {
     //$ map_codec_swap NetherLikePortalGenerator
     public static final MapCodec<NetherLikePortalGenerator> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             PortalTriggers.CODEC.listOf().fieldOf("triggers").forGetter(NetherLikePortalGenerator::getTriggers),
-            DimensionList.CODEC.optionalFieldOf("valid_in", DimensionList.EMPTY).forGetter(NetherLikePortalGenerator::getValidDimensions),
+            CodecHelper.DIMENSION_SET_CODEC.optionalFieldOf("valid_in", Set.of()).forGetter(NetherLikePortalGenerator::getValidDimensions),
             BlockEntityPair.CODEC.fieldOf("portal_block").forGetter(NetherLikePortalGenerator::getPortalBlock)
     ).apply(instance, NetherLikePortalGenerator::new));
 
-    private final DimensionList validDimensions;
+    private final Set<ResourceKey<LevelStem>> validDimensions;
     private final List<PortalTriggerInstance<?>> triggers;
     private final BlockEntityPair portalBlock;
 
-    public NetherLikePortalGenerator(List<PortalTriggerInstance<?>> triggers, DimensionList validDimensions, BlockEntityPair portalBlock) {
+    public NetherLikePortalGenerator(List<PortalTriggerInstance<?>> triggers, Set<ResourceKey<LevelStem>> validDimensions, BlockEntityPair portalBlock) {
         this.triggers = triggers;
         this.validDimensions = validDimensions;
         this.portalBlock = portalBlock;
@@ -44,7 +48,7 @@ public class NetherLikePortalGenerator extends PortalGenerator<NetherLikePortalG
         return triggers;
     }
 
-    public DimensionList getValidDimensions() {
+    public Set<ResourceKey<LevelStem>> getValidDimensions() {
         return validDimensions;
     }
 
@@ -58,7 +62,7 @@ public class NetherLikePortalGenerator extends PortalGenerator<NetherLikePortalG
         PortalTestResult result = context.tester().test(context.level(), context.pos());
         if (result.isSuccess()) {
             if (!result.isEmpty()) return TriggerResult.FAIL;
-            if (!getValidDimensions().matches(context.level())) {
+            if (!getValidDimensions().contains(Registries.levelToLevelStem(context.level().dimension()))) {
                 return TriggerResult.FAIL;
             }
             BlockEntityPair pair = getPortalBlock();
