@@ -9,7 +9,7 @@ import dev.kyanitemods.kyaniteportals.content.Portal;
 import dev.kyanitemods.kyaniteportals.content.interfaces.EntityInPortal;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-//? if <1.20.9
+//? if <1.21.9
 //import net.minecraft.client.gui.screens.ReceivingLevelScreen;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.player.Player;
