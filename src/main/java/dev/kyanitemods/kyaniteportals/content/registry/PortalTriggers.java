@@ -2,10 +2,7 @@ package dev.kyanitemods.kyaniteportals.content.registry;
 
 import com.mojang.serialization.Codec;
 import dev.kyanitemods.kyaniteportals.KyanitePortals;
-import dev.kyanitemods.kyaniteportals.content.triggers.BlockChangeTrigger;
-import dev.kyanitemods.kyaniteportals.content.triggers.PortalTrigger;
-import dev.kyanitemods.kyaniteportals.content.triggers.PortalTriggerInstance;
-import dev.kyanitemods.kyaniteportals.content.triggers.UseItemTrigger;
+import dev.kyanitemods.kyaniteportals.content.triggers.*;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -22,6 +19,7 @@ public final class PortalTriggers {
     public static final UseItemTrigger USE_ITEM = register("use_item", new UseItemTrigger());
     @ApiStatus.Experimental
     public static final BlockChangeTrigger BLOCK_CHANGE = register("block_change", new BlockChangeTrigger());
+    public static final ThrownPotionTrigger THROWN_POTION = register("thrown_potion", new ThrownPotionTrigger());
 
     private static <T extends PortalTriggerInstance<T>, U extends PortalTrigger<T>> U register(String id, U type) {
         return register(KyanitePortals.id(id), type);

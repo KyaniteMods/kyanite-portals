@@ -16,12 +16,16 @@ import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.advancements.criterion.NbtPredicate;
 import net.minecraft.advancements.criterion.StatePropertiesPredicate;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.level.dimension.LevelStem;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -56,6 +60,11 @@ public final class CodecHelper {
     *///? } else
     public static final Codec<CompoundTag> FLATTENED_TAG_CODEC = TagParser.FLATTENED_CODEC;
 
+    //? if <1.21 {
+    /*public static final Codec<Holder<Potion>> POTION_CODEC = codec(ResourceLocation.CODEC, BuiltInRegistries.POTION::get, BuiltInRegistries.POTION::getKey).xmap(Holder::direct, Holder::value);
+    *///? } else
+    public static final Codec<Holder<Potion>> POTION_CODEC = Potion.CODEC;
+
     public static final Codec<Set<ResourceKey<LevelStem>>> DIMENSION_SET_CODEC = ResourceKey.codec(Registries.LEVEL_STEM).listOf().xmap(Set::copyOf, List::copyOf);
 
     public static <F extends K1, T1, T2, T3, T4, T5, T6, T7, T8, T9> Products.P9<F, T1, T2, T3, T4, T5, T6, T7, T8, T9> and(Products.P5<F, T1, T2, T3, T4, T5> p5, App<F, T6> t6, App<F, T7> t7, App<F, T8> t8, App<F, T9> t9) {
@@ -79,9 +88,13 @@ public final class CodecHelper {
     }
 
     public static <T> Codec<T> codec(Function<JsonElement, T> decoder, Function<T, JsonElement> encoder) {
-        return ExtraCodecs.JSON.flatXmap(jsonElement -> {
+        return codec(ExtraCodecs.JSON, decoder, encoder);
+    }
+
+    public static <S, T> Codec<T> codec(Codec<S> codec, Function<S, T> decoder, Function<T, S> encoder) {
+        return codec.flatXmap(string -> {
             try {
-                return DataResult.success(decoder.apply(jsonElement));
+                return DataResult.success(decoder.apply(string));
             } catch (JsonParseException var2) {
                 return DataResult.error(var2::getMessage);
             }

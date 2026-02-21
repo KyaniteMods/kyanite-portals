@@ -10,7 +10,8 @@
     "LevelMixin",
     "PlayerMixin",
     "ServerPlayerAccessor",
-    "ServerPlayerMixin"
+    "ServerPlayerMixin",
+    "ThrownPotionTriggerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

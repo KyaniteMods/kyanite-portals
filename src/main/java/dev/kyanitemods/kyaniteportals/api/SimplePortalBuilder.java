@@ -38,6 +38,7 @@ import net.minecraft.util.valueproviders.UniformFloat;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.dimension.LevelStem;
@@ -45,10 +46,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -140,6 +138,22 @@ public final class SimplePortalBuilder {
         ignition.add(provider -> PortalTriggers.BLOCK_CHANGE.create(block.defaultBlockState()));
         ignitionBlocks.add(block);
         return this;
+    }
+
+    //? if <1.21 {
+    /*public SimplePortalBuilder ignition(Potion... potions) {
+        return ignition(Arrays.stream(potions).map(Holder::direct).toList());
+    }
+    *///? }
+
+    public SimplePortalBuilder ignition(List<Holder<Potion>> potions) {
+        ignition.add(provider -> PortalTriggers.THROWN_POTION.create(potions));
+        return this;
+    }
+
+    @SafeVarargs
+    public final SimplePortalBuilder ignition(Holder<Potion>... potions) {
+        return ignition(Arrays.asList(potions));
     }
 
     public SimplePortalBuilder frame(BlockPredicate predicate) {

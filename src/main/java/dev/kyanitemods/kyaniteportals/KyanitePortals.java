@@ -28,6 +28,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -105,6 +106,8 @@ public class KyanitePortals implements ModInitializer {
             SimplePortalBuilder.create()
                     .ignition(Items.EMERALD)
                     .ignition(Blocks.EMERALD_BLOCK)
+                    .ignition(Potions.FIRE_RESISTANCE)
+                    .ignition(Potions.LONG_FIRE_RESISTANCE)
                     .frame(Blocks.OBSIDIAN)
                     .color(0xFF0000)
                     .fromDimension(LevelStem.OVERWORLD)
