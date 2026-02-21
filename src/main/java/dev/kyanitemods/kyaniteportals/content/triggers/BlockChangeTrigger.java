@@ -4,19 +4,16 @@ import com.mojang.serialization.Codec;
 //? if >=1.20.6
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.kyanitemods.kyaniteportals.content.blocks.entities.CustomPortalBlockEntity;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalTriggers;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.protocol.game.ClientboundBlockChangedAckPacket;
-import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.core.Vec3i;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 @ApiStatus.Experimental
 public class BlockChangeTrigger extends SimplePortalTrigger<BlockChangeTrigger.BlockChangeTriggerInstance> {
@@ -26,7 +23,7 @@ public class BlockChangeTrigger extends SimplePortalTrigger<BlockChangeTrigger.B
     }
 
     public TriggerResult trigger(Level level, BlockPos pos, @Nullable Player player, BlockState state) {
-        return trigger(level, pos, player, instance -> instance.matches(state), (instance) -> instance.beforeTrigger(level, pos, player), (instance, result) -> instance.onTrigger(result, level, pos, player));
+        return trigger(level, pos, player, instance -> BlockChangeTriggerInstance.POSITIONS, (instance, triggerPos) -> instance.matches(state), (instance, triggerPos) -> instance.beforeTrigger(level, triggerPos, player), (instance, triggerPos, result) -> instance.onTrigger(result, level, triggerPos, player));
     }
 
     public BlockChangeTriggerInstance create(BlockState state) {
@@ -34,6 +31,8 @@ public class BlockChangeTrigger extends SimplePortalTrigger<BlockChangeTrigger.B
     }
 
     public static class BlockChangeTriggerInstance extends AbstractPortalTriggerInstance<BlockChangeTriggerInstance> {
+        public static final List<Vec3i> POSITIONS = List.of(Vec3i.ZERO);
+
         //$ map_codec_swap BlockChangeTriggerInstance
         public static final MapCodec<BlockChangeTriggerInstance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 BlockState.CODEC.fieldOf("block").forGetter(i -> i.blockState)

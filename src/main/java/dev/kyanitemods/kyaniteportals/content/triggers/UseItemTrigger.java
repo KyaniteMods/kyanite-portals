@@ -19,6 +19,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
+import net.minecraft.core.Vec3i;
+
+import java.util.List;
 
 public class UseItemTrigger extends SimplePortalTrigger<UseItemTrigger.UseItemTriggerInstance> {
     @Override
@@ -27,7 +30,7 @@ public class UseItemTrigger extends SimplePortalTrigger<UseItemTrigger.UseItemTr
     }
 
     public TriggerResult trigger(Level level, BlockPos pos, @Nullable Player player, ItemStack stack) {
-        return trigger(level, pos, player, instance -> instance.matches(stack), instance -> instance.beforeTrigger(level, player, stack), (instance, result) -> instance.onTrigger(result, level, player, stack));
+        return trigger(level, pos, player, instance -> UseItemTriggerInstance.POSITIONS, (instance, triggerPos) -> instance.matches(stack), (instance, triggerPos) -> instance.beforeTrigger(level, player, stack), (instance, triggerPos, result) -> instance.onTrigger(result, level, player, stack));
     }
 
     public UseItemTriggerInstance create(ItemPredicate predicate, int damage) {
@@ -48,6 +51,8 @@ public class UseItemTrigger extends SimplePortalTrigger<UseItemTrigger.UseItemTr
     }
 
     public static class UseItemTriggerInstance extends AbstractPortalTriggerInstance<UseItemTriggerInstance> {
+        public static final List<Vec3i> POSITIONS = List.of(Vec3i.ZERO);
+
         //$ map_codec_swap UseItemTriggerInstance
         public static final MapCodec<UseItemTriggerInstance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 CodecHelper.ITEM_PREDICATE_CODEC.fieldOf("predicate").forGetter(i -> i.itemPredicate),

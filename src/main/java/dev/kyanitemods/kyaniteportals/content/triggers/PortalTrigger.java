@@ -5,11 +5,12 @@ package dev.kyanitemods.kyaniteportals.content.triggers;
 *///? } else
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.core.Vec3i;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public interface PortalTrigger<I extends PortalTriggerInstance<I>> {
     void addListener(Listener<I> listener);
