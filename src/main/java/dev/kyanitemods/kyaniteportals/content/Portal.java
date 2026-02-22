@@ -38,9 +38,7 @@ public record Portal(Optional<PortalGenerator<?>> generator, Optional<PortalTest
             PortalActions.CODEC.listOf().optionalFieldOf("random_tick_actions", List.of()).forGetter(Portal::randomTickActions),
             PortalActions.CODEC.listOf().optionalFieldOf("animation_tick_actions", List.of()).forGetter(Portal::animationTickActions),
             ParticleTypes.CODEC.optionalFieldOf("particle_options").forGetter(Portal::particleOptions)
-    ).apply(instance, ((portalGenerator, portalTester, aBoolean, entityPredicate1, travelTime1, portalActions, portalActions2, portalActions3, portalActions4, portalActions5, particleOptions1) -> {
-        return new Portal(portalGenerator, portalTester, aBoolean, entityPredicate1, travelTime1, portalActions, portalActions2, portalActions3, portalActions4, portalActions5, particleOptions1);
-    })));
+    ).apply(instance, Portal::new));
 
     public static void executeAll(Level level, BlockPos pos, @Nullable Entity entity, List<PortalAction<?>> actions) {
         Deque<PortalAction<?>> deque = new ArrayDeque<>(actions);
