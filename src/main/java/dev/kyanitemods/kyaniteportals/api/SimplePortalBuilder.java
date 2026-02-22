@@ -110,6 +110,16 @@ public final class SimplePortalBuilder {
         return this;
     }
 
+    public SimplePortalBuilder ignition(Function<RegistryOps.RegistryInfoLookup, PortalTriggerInstance<?>> triggerFunction) {
+        ignition.add(triggerFunction);
+        return this;
+    }
+
+    public SimplePortalBuilder ignition(PortalTriggerInstance<?> triggerInstance) {
+        ignition.add(provider -> triggerInstance);
+        return this;
+    }
+
     public SimplePortalBuilder ignition(Item item, int damage) {
         //? if <1.21.3 {
         /*ignition.add(provider -> PortalTriggers.USE_ITEM.create(ItemPredicate.Builder.item().of(item).build(), damage));

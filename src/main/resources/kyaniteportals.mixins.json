@@ -9,6 +9,7 @@
     "EntityMixin",
     "ItemAccessor",
     "LevelChunkMixin",
+    "ServerLevelMixin",
     "PlayerMixin",
     "ServerPlayerAccessor",
     "ServerPlayerMixin",
