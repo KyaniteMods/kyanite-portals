@@ -1,7 +1,6 @@
 package dev.kyanitemods.kyaniteportals;
 
 import dev.kyanitemods.kyaniteportals.api.SimplePortalBuilder;
-import dev.kyanitemods.kyaniteportals.content.ItemPov;
 import dev.kyanitemods.kyaniteportals.content.Portal;
 import dev.kyanitemods.kyaniteportals.content.generators.GeneratorContext;
 import dev.kyanitemods.kyaniteportals.content.registry.*;
@@ -9,6 +8,7 @@ import dev.kyanitemods.kyaniteportals.content.triggers.PortalTrigger;
 import dev.kyanitemods.kyaniteportals.content.triggers.PortalTriggerInstance;
 import dev.kyanitemods.kyaniteportals.content.triggers.TriggerAction;
 import dev.kyanitemods.kyaniteportals.content.triggers.TriggerResult;
+import dev.kyanitemods.kyaniteportals.mixin.ItemAccessor;
 import io.netty.util.internal.UnstableApi;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -70,7 +70,7 @@ public class KyanitePortals implements ModInitializer {
                 return InteractionResult.PASS;
             }
 
-            BlockHitResult hit = ItemPov.getPlayerHitResult(world, player, ClipContext.Fluid.NONE);
+            BlockHitResult hit = ItemAccessor.callGetPlayerPOVHitResult(world, player, ClipContext.Fluid.NONE);
             if (hit.getType() != HitResult.Type.BLOCK || !world.mayInteract(player, hit.getBlockPos()) || !player.mayUseItemAt(hit.getBlockPos(), hit.getDirection(), stack)) {
                 //? if <1.21.2 {
                 /*return InteractionResultHolder.pass(stack);
