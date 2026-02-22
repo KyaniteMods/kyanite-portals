@@ -6,7 +6,7 @@ import net.minecraft.world.level.GameType;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(ServerPlayer.class)
-public class ServerPlayerMixin implements GameModeEntity {
+public abstract class ServerPlayerMixin implements GameModeEntity {
     @Override
     public GameType kyanitePortals$getGameMode() {
         return ((ServerPlayer) (Object) this).gameMode.getGameModeForPlayer();

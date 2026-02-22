@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Mixin(RegistryDataLoader.class)
-public class AddPortalToRegistryMixin {
+public abstract class AddPortalToRegistryMixin {
     //? if <1.20.6 {
     /*@Inject(method = "loadRegistryContents", at = @At("HEAD"))
     private static void kyanitePortals$addPortalsToRegistry(RegistryOps.RegistryInfoLookup registryInfoLookup, ResourceManager resourceManager, ResourceKey<? extends Registry> resourceKey, WritableRegistry writableRegistry, Decoder decoder, Map<ResourceKey<?>, Exception> map, CallbackInfo ci) {

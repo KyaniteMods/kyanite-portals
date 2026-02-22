@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(/*? if <1.21.5 {*//*ThrownPotion.class*//*? } else { */AbstractThrownPotion.class/*? }*/)
-public class ThrownPotionTriggerMixin {
+public abstract class ThrownPotionTriggerMixin {
     //? if <1.21.5 {
     /*@Inject(method = "onHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/projectile/ThrownPotion;getItem()Lnet/minecraft/world/item/ItemStack;", ordinal = 0))
     *///? } else if <1.21.11 {
