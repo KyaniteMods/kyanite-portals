@@ -37,4 +37,12 @@ public class ActionExecutionData {
         }
         return null;
     }
+
+    public <V> V getSafe(String key, Class<V> type) {
+        if (!map.containsKey(key)) return null;
+        for (Object object : map.get(key)) {
+            if (type.isInstance(object)) return (V) object;
+        }
+        return null;
+    }
 }
