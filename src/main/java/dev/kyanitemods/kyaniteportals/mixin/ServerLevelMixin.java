@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ServerLevelMixin {
     @Inject(method = "levelEvent", at = @At("HEAD"))
     //? if <1.21.5 {
-    //private void kyanitePortals$levelEventTrigger(net.minecraft.world.entity.Entity entity, int type, BlockPos pos, int data, CallbackInfo ci) {
-    //? } else
-    private void kyanitePortals$levelEventTrigger(net.minecraft.world.entity.player.Player entity, int type, BlockPos pos, int data, CallbackInfo ci) {
+    /*private void kyanitePortals$levelEventTrigger(net.minecraft.world.entity.player.Player entity, int type, BlockPos pos, int data, CallbackInfo ci) {
+    *///? } else
+    private void kyanitePortals$levelEventTrigger(net.minecraft.world.entity.Entity entity, int type, BlockPos pos, int data, CallbackInfo ci) {
         PortalTriggers.LEVEL_EVENT.trigger((ServerLevel) (Object) this, type, pos, data);
     }
 }
