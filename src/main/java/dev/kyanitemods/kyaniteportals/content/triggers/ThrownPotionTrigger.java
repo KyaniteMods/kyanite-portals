@@ -80,8 +80,8 @@ public class ThrownPotionTrigger extends SimplePortalTrigger<ThrownPotionTrigger
             //? if >=1.21.3 {
             areaPositions.addAll(Direction.Plane.HORIZONTAL.stream().map(Direction::getUnitVec3i).toList());
             //? } else {
-            //areaPositions.addAll(Direction.Plane.HORIZONTAL.stream().map(Direction::getNormal).toList());
-            //? }
+            /*areaPositions.addAll(Direction.Plane.HORIZONTAL.stream().map(Direction::getNormal).toList());
+            *///? }
             AREA_POSITIONS = areaPositions.build();
         }
 
