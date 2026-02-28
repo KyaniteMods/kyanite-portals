@@ -1,21 +1,10 @@
 package dev.kyanitemods.kyaniteportals.content.blocks;
 
-//? if >=1.20.4
-import com.mojang.serialization.MapCodec;
-import dev.kyanitemods.kyaniteportals.KyanitePortals;
 import dev.kyanitemods.kyaniteportals.content.Portal;
 import dev.kyanitemods.kyaniteportals.content.blocks.entities.CustomPortalBlockEntity;
-import dev.kyanitemods.kyaniteportals.content.interfaces.EntityInPortal;
-import dev.kyanitemods.kyaniteportals.content.actions.PortalAction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.Entity;
-//? if >=1.21.5
-import net.minecraft.world.entity.InsideBlockEffectApplier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -27,18 +16,14 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
-//? if >=1.21.5
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
-public class CustomNetherLikePortalBlock extends Block implements EntityBlock {
+public class CustomNetherLikePortalBlock extends KyanitePortalBlock implements EntityBlock {
     public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.AXIS;
 
     private static final Map<Direction.Axis, VoxelShape> SHAPES = new EnumMap<>(Map.of(
@@ -55,7 +40,7 @@ public class CustomNetherLikePortalBlock extends Block implements EntityBlock {
     //? if <1.21.3 {
     /*public BlockState updateShape(BlockState blockState, Direction direction, BlockState blockState2, LevelAccessor level, BlockPos pos, BlockPos blockPos2) {
     *///? } else {
-    protected BlockState updateShape(BlockState blockState, LevelReader level, ScheduledTickAccess scheduledTickAccess, BlockPos pos, Direction direction, BlockPos blockPos2, BlockState blockState2, RandomSource randomSource) {
+    protected BlockState updateShape(BlockState blockState, LevelReader level, ScheduledTickAccess scheduledTickAccess, BlockPos pos, Direction direction, BlockPos blockPos2, BlockState blockState2, net.minecraft.util.RandomSource randomSource) {
      //? }
         Direction.Axis axis = direction.getAxis();
         Direction.Axis axis2 = blockState.getValue(AXIS);
@@ -99,68 +84,17 @@ public class CustomNetherLikePortalBlock extends Block implements EntityBlock {
     }
 
     //? if >=1.20.4 {
-    public static final MapCodec<CustomNetherLikePortalBlock> CODEC = simpleCodec(CustomNetherLikePortalBlock::new);
+    public static final com.mojang.serialization.MapCodec<CustomNetherLikePortalBlock> CODEC = simpleCodec(CustomNetherLikePortalBlock::new);
 
-    public MapCodec<CustomNetherLikePortalBlock> codec() {
+    public com.mojang.serialization.MapCodec<CustomNetherLikePortalBlock> codec() {
         return CODEC;
     }
     //? }
-    @Override
-    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
-        execute(level, pos, null, Portal::animationTickActions);
-    }
 
     @Override
-    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState newState, boolean bl) {
-        level.scheduleTick(pos, this, 1);
-    }
-
-    @Override
-    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        execute(level, pos, null, Portal::tickActions);
-        level.scheduleTick(pos, this, 1);
-    }
-
-    @Override
-    public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        execute(level, pos, null, Portal::randomTickActions);
-    }
-
-    protected Optional<Portal> getPortal(LevelReader level, BlockPos pos) {
+    public Optional<ResourceKey<Portal>> getPortalKey(LevelReader level, BlockPos pos) {
         if (!(level.getBlockEntity(pos) instanceof CustomPortalBlockEntity blockEntity)) return Optional.empty();
-        Optional<? extends HolderLookup.RegistryLookup<Portal>> lookup = level.registryAccess().lookup(KyanitePortals.RESOURCE_KEY);
-        if (lookup.isEmpty()) return Optional.empty();
-        Optional<Holder.Reference<Portal>> portalReference = lookup.get().get(blockEntity.getPortalKey());
-        return portalReference.map(Holder.Reference::value);
-    }
-
-    protected void execute(Level level, BlockPos pos, @Nullable Entity entity, Function<Portal, List<PortalAction<?>>> actions) {
-        Optional<Portal> portal = getPortal(level, pos);
-        if (portal.isEmpty()) return;
-        Portal.executeAll(level, pos, entity, actions.apply(portal.get()));
-    }
-
-    @Override
-    //? if <1.21.5 {
-    /*public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-    *///? } else if <1.21.10 {
-    //public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier insideBlockEffectApplier) {
-    //? } else
-    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier insideBlockEffectApplier, boolean bl) {
-        if (!(level.getBlockEntity(pos) instanceof CustomPortalBlockEntity blockEntity)) return;
-        //? if <1.21 {
-        /*if (!entity.canChangeDimensions()) return;
-        *///? } else
-        if (!entity.canUsePortal(false)) return;
-
-        Optional<? extends HolderLookup.RegistryLookup<Portal>> lookup = level.registryAccess().lookup(KyanitePortals.RESOURCE_KEY);
-        if (lookup.isEmpty()) return;
-        Optional<Holder.Reference<Portal>> portalReference = lookup.get().get(blockEntity.getPortalKey());
-        if (portalReference.isEmpty()) return;
-        Portal portal = portalReference.get().value();
-        if (portal.entityPredicate().isEmpty() || (!level.isClientSide() && portal.entityPredicate().get().matches((ServerLevel) level, pos.getCenter(), entity))) {
-            ((EntityInPortal) entity).tick(level, pos, blockEntity.getPortalKey());
-        }
+        return Optional.of(blockEntity.getPortalKey());
     }
 
     @Nullable
