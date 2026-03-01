@@ -15,6 +15,7 @@ import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import org.jetbrains.annotations.Nullable;
 
 public class SpawnNetherLikePortalParticlesAction extends PortalAction<SpawnNetherLikePortalParticlesAction> {
@@ -61,11 +62,11 @@ public class SpawnNetherLikePortalParticlesAction extends PortalAction<SpawnNeth
             double yd = (level.getRandom().nextFloat() - 0.5) * 0.5;
             double zd = (level.getRandom().nextFloat() - 0.5) * 0.5;
             int k = level.getRandom().nextInt(2) * 2 - 1;
-            // mad code from Mojang, this doesn't even work properly in the left and right edges of the portal
+            // This does not work properly, but matches vanilla behavior
             if (!level.getBlockState(blockPos.west()).is(state.getBlock()) && !level.getBlockState(blockPos.east()).is(state.getBlock())) {
                 x = location.position().x() + 0.25 * k;
                 xd = level.getRandom().nextFloat() * 2.0F * k;
-            } else {
+            } else if (!state.hasProperty(BlockStateProperties.AXIS) || !state.getValue(BlockStateProperties.AXIS).isVertical()) {
                 z = location.position().z() + 0.25 * k;
                 zd = level.getRandom().nextFloat() * 2.0F * k;
             }
