@@ -322,40 +322,41 @@ public final class SimplePortalBuilder {
                                     true
                             )
                     );
-            if (triggerSound.isPresent()) {
-                builder.withEnterActions(new PlayLocalSoundAction(PortalAction.Settings.DEFAULT, Holder.direct(SoundEvents.PORTAL_TRIGGER), ConstantFloat.of(0.25f), UniformFloat.of(0.8f, 1.2f)));
-            }
-            if (travelSound.isPresent()) {
-                builder.withTravelActions(new PlayLocalSoundAction(
-                        PortalAction.Settings.Builder.create()
-                                .locationOptions(
-                                        new FullActionLocationOptions(
-                                                FullActionLocationOptions.InEntityDimension.INSTANCE,
-                                                new FullActionLocationOptions.PositionContext(
-                                                        FullActionLocationOptions.PositionContext.From.ENTITY,
-                                                        FullActionLocationOptions.PositionContext.RoundingMode.NONE,
-                                                        false,
-                                                        false,
-                                                        Vec3.ZERO)))
-                                .build(),
-                        Holder.direct(SoundEvents.PORTAL_TRAVEL),
-                        ConstantFloat.of(0.25f),
-                        UniformFloat.of(0.8f, 1.2f)
-                ));
-            }
-            if (ambientSound.isPresent()) {
-                builder.withAnimationTickActions(
-                        new PlayLocalSoundAction(
-                                PortalAction.Settings.Builder.create()
-                                        .probability(0.01f)
-                                        .environment(PortalActionEnvironment.CLIENT)
-                                        .build(),
-                                Holder.direct(SoundEvents.PORTAL_AMBIENT),
-                                ConstantFloat.of(0.25f),
-                                UniformFloat.of(0.8f, 1.2f)
-                        )
-                );
-            }
+            triggerSound.ifPresent(soundEventHolder -> builder.withEnterActions(
+                    new PlayLocalSoundAction(
+                            PortalAction.Settings.DEFAULT,
+                            soundEventHolder,
+                            ConstantFloat.of(0.25f),
+                            UniformFloat.of(0.8f, 1.2f)
+                    )
+            ));
+            travelSound.ifPresent(soundEventHolder -> builder.withTravelActions(new PlayLocalSoundAction(
+                    PortalAction.Settings.Builder.create()
+                            .locationOptions(
+                                    new FullActionLocationOptions(
+                                            FullActionLocationOptions.InEntityDimension.INSTANCE,
+                                            new FullActionLocationOptions.PositionContext(
+                                                    FullActionLocationOptions.PositionContext.From.ENTITY,
+                                                    FullActionLocationOptions.PositionContext.RoundingMode.NONE,
+                                                    false,
+                                                    false,
+                                                    Vec3.ZERO)))
+                            .build(),
+                    soundEventHolder,
+                    ConstantFloat.of(0.25f),
+                    UniformFloat.of(0.8f, 1.2f)
+            )));
+            ambientSound.ifPresent(soundEventHolder -> builder.withAnimationTickActions(
+                    new PlayLocalSoundAction(
+                            PortalAction.Settings.Builder.create()
+                                    .probability(0.01f)
+                                    .environment(PortalActionEnvironment.CLIENT)
+                                    .build(),
+                            soundEventHolder,
+                            ConstantFloat.of(0.25f),
+                            UniformFloat.of(0.8f, 1.2f)
+                    )
+            ));
             if (particleOptions.get().isPresent()) {
                 builder.withAnimationTickActions(new SpawnNetherLikePortalParticlesAction(
                         PortalAction.Settings.Builder.create()
