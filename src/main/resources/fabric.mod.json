@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "kyaniteportals",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "name": "Kyanite Portals",
   "description": "An API for creating portals",
   "authors": [
@@ -14,9 +14,6 @@
   "icon": "assets/kyanite_portals/icon.png",
   "environment": "*",
   "entrypoints": {
-    "fabric-datagen": [
-      "dev.kyanitemods.kyaniteportals.client.KyanitePortalsDataGenerator"
-    ],
     "client": [
       "dev.kyanitemods.kyaniteportals.client.KyanitePortalsClient"
     ],
