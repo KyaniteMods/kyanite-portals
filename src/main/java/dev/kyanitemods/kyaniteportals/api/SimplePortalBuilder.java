@@ -6,7 +6,6 @@ import dev.kyanitemods.kyaniteportals.content.actions.*;
 import dev.kyanitemods.kyaniteportals.content.blocks.entities.CustomPortalBlockEntity;
 import dev.kyanitemods.kyaniteportals.content.generators.NetherLikePortalGenerator;
 import dev.kyanitemods.kyaniteportals.content.particles.CustomPortalParticleOptions;
-import dev.kyanitemods.kyaniteportals.content.actions.*;
 import dev.kyanitemods.kyaniteportals.content.actions.location.FullActionLocationOptions;
 import dev.kyanitemods.kyaniteportals.content.actions.location.LoadActionLocationOptions;
 import dev.kyanitemods.kyaniteportals.content.registry.KyanitePortalsBlocks;
@@ -41,6 +40,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
@@ -64,6 +64,7 @@ public final class SimplePortalBuilder {
     private List<Function<RegistryOps.RegistryInfoLookup, PortalTriggerInstance<?>>> ignition = new ArrayList<>();
     private List<Block> ignitionBlocks = new ArrayList<>();
     private BlockPredicate frame = BlockPredicate.Builder.block().build();
+    private BlockEntityPair generatedFrame = null;
     private Supplier<BlockPredicate> replaceable = () -> {
         List<Block> blocks = new ArrayList<>();
         blocks.add(Blocks.AIR);
@@ -75,6 +76,8 @@ public final class SimplePortalBuilder {
     };
     private Range.Int width = Range.Int.create(4, 23);
     private Range.Int height = Range.Int.create(5, 23);
+    private int generatedWidth = 4;
+    private int generatedHeight = 5;
     private Optional<Holder<SoundEvent>> ambientSound = Optional.of(Holder.direct(SoundEvents.PORTAL_AMBIENT));
     private Optional<Holder<SoundEvent>> travelSound = Optional.of(Holder.direct(SoundEvents.PORTAL_TRAVEL));
     private Optional<Holder<SoundEvent>> triggerSound = Optional.of(Holder.direct(SoundEvents.PORTAL_TRIGGER));
@@ -172,7 +175,22 @@ public final class SimplePortalBuilder {
     }
 
     public SimplePortalBuilder frame(Block... blocks) {
-        return frame(BlockPredicate.Builder.block().of(blocks).build());
+        frame(BlockPredicate.Builder.block().of(blocks).build());
+        if (generatedFrame == null) generatedFrame(blocks[0]);
+        return this;
+    }
+
+    public SimplePortalBuilder generatedFrame(Block block) {
+        return generatedFrame(block.defaultBlockState());
+    }
+
+    public SimplePortalBuilder generatedFrame(BlockState state) {
+        return generatedFrame(new BlockEntityPair(state, new CompoundTag()));
+    }
+
+    public SimplePortalBuilder generatedFrame(BlockEntityPair pair) {
+        generatedFrame = pair;
+        return this;
     }
 
     public SimplePortalBuilder replaceable(BlockPredicate predicate) {
@@ -191,6 +209,12 @@ public final class SimplePortalBuilder {
 
     public SimplePortalBuilder height(int min, int max) {
         height = Range.Int.create(min, max);
+        return this;
+    }
+
+    public SimplePortalBuilder generatedSize(int width, int height) {
+        generatedWidth = width;
+        generatedHeight = height;
         return this;
     }
 
@@ -285,9 +309,9 @@ public final class SimplePortalBuilder {
                                                                     .predicate(EntityPredicate.Builder.entity().of(/*? if >=1.21.3 {*/entityLookup, /*? }*/EntityType.PLAYER).build())
                                                                     .locationOptions(new LoadActionLocationOptions("location"))
                                                                     .build(),
-                                                            new BlockEntityPair(Blocks.OBSIDIAN.defaultBlockState(), new CompoundTag()),
+                                                            generatedFrame == null ? new BlockEntityPair(Blocks.OBSIDIAN.defaultBlockState(), new CompoundTag()) : generatedFrame,
                                                             portal,
-                                                            new CreateNetherLikePortalAction.Size(4, 5),
+                                                            new CreateNetherLikePortalAction.Size(generatedWidth, generatedHeight),
                                                             true
                                                     )
                                             )
