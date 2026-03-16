@@ -62,7 +62,7 @@ public class KyanitePortalsUtil {
     public static /*? if <1.21 {*//*PortalInfo*//*? } else if <1.21.3 { *//*DimensionTransition*//*? } else {*/TeleportTransition/*? }*/ createTeleport(ServerLevel serverLevel, BlockUtil.FoundRectangle foundRectangle, Direction.Axis axis, Vec3 vec3, Entity entity) {
         BlockPos blockPos = foundRectangle.minCorner;
         BlockState blockState = serverLevel.getBlockState(blockPos);
-        Direction.Axis axis2 = blockState.getOptionalValue(BlockStateProperties.HORIZONTAL_AXIS).orElse(Direction.Axis.X);
+        Direction.Axis axis2 = blockState.getOptionalValue(BlockStateProperties.AXIS).orElse(blockState.getOptionalValue(BlockStateProperties.HORIZONTAL_AXIS).orElse(Direction.Axis.X));
         double portalWidth = foundRectangle.axis1Size;
         double portalHeight = foundRectangle.axis2Size;
         EntityDimensions entityDimensions = entity.getDimensions(entity.getPose());
@@ -77,8 +77,8 @@ public class KyanitePortalsUtil {
          
         //? }
         double h = 0.5 + vec3.z();
-        boolean bl = axis2 == Direction.Axis.X;
-        Vec3 vec32 = new Vec3((double)blockPos.getX() + (bl ? f : h), (double)blockPos.getY() + g, (double)blockPos.getZ() + (bl ? h : f));
+        boolean xAxis = axis2 == Direction.Axis.X;
+        Vec3 vec32 = new Vec3((double)blockPos.getX() + (xAxis ? f : h), (double)blockPos.getY() + g, (double)blockPos.getZ() + (xAxis ? h : f));
         Vec3 vec33 = PortalShape.findCollisionFreePosition(vec32, serverLevel, entity, entityDimensions);
         //? if <1.21 {
         /*return new PortalInfo(vec33, axis == axis2 ? entity.getDeltaMovement() : new Vec3(entity.getDeltaMovement().z, entity.getDeltaMovement().y, -entity.getDeltaMovement().x), entity.getYRot() + (float)yaw, entity.getXRot());
