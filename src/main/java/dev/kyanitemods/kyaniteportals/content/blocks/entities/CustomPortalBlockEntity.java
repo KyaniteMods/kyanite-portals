@@ -28,7 +28,8 @@ import java.util.Map;
 public class CustomPortalBlockEntity extends BlockEntity {
     public static final Map<ResourceKey<Portal>, Integer> COLORS = new HashMap<>();
 
-    private ResourceKey<Portal> portalKey;
+    public static final Identifier DEFAULT_KEY = KyanitePortals.id("missingno");
+    private ResourceKey<Portal> portalKey = ResourceKey.create(KyanitePortals.RESOURCE_KEY, DEFAULT_KEY);
 
     public CustomPortalBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(KyanitePortalsBlockEntities.CUSTOM_PORTAL, blockPos, blockState);
@@ -48,7 +49,10 @@ public class CustomPortalBlockEntity extends BlockEntity {
     //? if >=1.21.6 {
     public void loadAdditional(ValueInput tag) {
         super.loadAdditional(tag);
-        portalKey = ResourceKey.create(KyanitePortals.RESOURCE_KEY, Identifier.tryParse(tag.getStringOr("portal", KyanitePortals.id("missingno").toString())));
+        Identifier id = Identifier.tryParse(tag.getStringOr("portal", DEFAULT_KEY.toString()));
+        if (id != null) {
+            portalKey = ResourceKey.create(KyanitePortals.RESOURCE_KEY, id == null ? DEFAULT_KEY : id);
+        }
     //? } else {
     /*//? if >=1.21 {
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
@@ -59,7 +63,10 @@ public class CustomPortalBlockEntity extends BlockEntity {
     ^///? }
 
         if (tag.contains("portal", Tag.TAG_STRING)) {
-            portalKey = ResourceKey.create(KyanitePortals.RESOURCE_KEY, ResourceLocation.tryParse(tag.getString("portal")));
+            ResourceLocation id = ResourceLocation.tryParse(tag.getString("portal"));
+            if (id != null) {
+                portalKey = ResourceKey.create(KyanitePortals.RESOURCE_KEY, id);
+            }
         }
     *///? }
 
