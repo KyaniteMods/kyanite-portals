@@ -52,14 +52,17 @@ public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
 
     public PortalTestResult test(LevelReader level, BlockPos pos) {
         for (Direction.Axis axis : axes) {
-            PortalTestResult result = test(level, pos, axis);
+            PortalTestResult result = test(level, pos, axis, width, height);
+            if (!result.isSuccess() && axis == Direction.Axis.Y) {
+                //noinspection SuspiciousNameCombination
+                result = test(level, pos, axis, height, width);
+            }
             if (result.isSuccess()) return result;
         }
         return FailResult.INSTANCE;
     }
 
-    // TODO: rotate 90° when axis is Y and test again, width and height are relative in Y axis
-    public PortalTestResult test(LevelReader level, BlockPos pos, Direction.Axis axis) {
+    public PortalTestResult test(LevelReader level, BlockPos pos, Direction.Axis axis, Range.Int width, Range.Int height) {
         int portalBlocks = 0;
 
         Direction right = switch (axis) {
