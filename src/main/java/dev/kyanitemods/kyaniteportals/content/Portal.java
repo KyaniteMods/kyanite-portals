@@ -1,8 +1,6 @@
 package dev.kyanitemods.kyaniteportals.content;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.generators.PortalGenerator;
 import dev.kyanitemods.kyaniteportals.content.actions.ActionExecutionData;
@@ -16,8 +14,6 @@ import dev.kyanitemods.kyaniteportals.content.testers.PortalTester;
 import dev.kyanitemods.kyaniteportals.util.CodecHelper;
 import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -25,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public record Portal(Optional<PortalGenerator<?>> generator, Optional<PortalTester<?>> tester, boolean testValidityAfterGeneration, Optional<EntityPredicate> entityPredicate, TravelTime travelTime, List<PortalAction<?>> enterActions, List<PortalAction<?>> travelActions, List<PortalAction<?>> tickActions, List<PortalAction<?>> randomTickActions, List<PortalAction<?>> animationTickActions, Optional<ParticleOptions> particleOptions) {
+public record Portal(Optional<PortalGenerator<?>> generator, Optional<PortalTester<?>> tester, boolean testValidityAfterGeneration, Optional<EntityPredicate> entityPredicate, TravelTime travelTime, List<PortalAction<?>> enterActions, List<PortalAction<?>> travelActions, List<PortalAction<?>> tickActions, List<PortalAction<?>> randomTickActions, List<PortalAction<?>> animationTickActions) {
     public static final Codec<Portal> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             PortalGenerators.CODEC.optionalFieldOf("generator").forGetter(Portal::generator),
             PortalTesters.CODEC.optionalFieldOf("tester").forGetter(Portal::tester),
@@ -36,8 +32,7 @@ public record Portal(Optional<PortalGenerator<?>> generator, Optional<PortalTest
             PortalActions.CODEC.listOf().optionalFieldOf("travel_actions", List.of()).forGetter(Portal::travelActions),
             PortalActions.CODEC.listOf().optionalFieldOf("tick_actions", List.of()).forGetter(Portal::tickActions),
             PortalActions.CODEC.listOf().optionalFieldOf("random_tick_actions", List.of()).forGetter(Portal::randomTickActions),
-            PortalActions.CODEC.listOf().optionalFieldOf("animation_tick_actions", List.of()).forGetter(Portal::animationTickActions),
-            ParticleTypes.CODEC.optionalFieldOf("particle_options").forGetter(Portal::particleOptions)
+            PortalActions.CODEC.listOf().optionalFieldOf("animation_tick_actions", List.of()).forGetter(Portal::animationTickActions)
     ).apply(instance, Portal::new));
 
     public static void executeAll(Level level, BlockPos pos, @Nullable Entity entity, List<PortalAction<?>> actions) {
@@ -72,7 +67,6 @@ public record Portal(Optional<PortalGenerator<?>> generator, Optional<PortalTest
         private List<PortalAction<?>> tickActions = new ArrayList<>();
         private List<PortalAction<?>> randomTickActions = new ArrayList<>();
         private List<PortalAction<?>> animationTickActions = new ArrayList<>();
-        private Optional<ParticleOptions> particleOptions = Optional.empty();
 
         protected Builder() {}
 
@@ -134,13 +128,8 @@ public record Portal(Optional<PortalGenerator<?>> generator, Optional<PortalTest
             return this;
         }
 
-        public Builder withParticleOptions(ParticleOptions particleOptions) {
-            this.particleOptions = Optional.ofNullable(particleOptions);
-            return this;
-        }
-
         public Portal build() {
-            return new Portal(generator, tester, testValidityAfterGeneration, entityPredicate, travelTime, enterActions, travelActions, tickActions, randomTickActions, animationTickActions, particleOptions);
+            return new Portal(generator, tester, testValidityAfterGeneration, entityPredicate, travelTime, enterActions, travelActions, tickActions, randomTickActions, animationTickActions);
         }
     }
 }
