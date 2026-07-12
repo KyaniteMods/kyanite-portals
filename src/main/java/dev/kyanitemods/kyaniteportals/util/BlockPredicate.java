@@ -10,8 +10,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -82,6 +80,10 @@ public class BlockPredicate {
         return new BlockPredicate(tag, blocks, state, nbt);
     }));
 
+    public Builder asBuilder() {
+        return Builder.block().of(blocks.orElse(null)).of(tag.orElse(null)).setProperties(properties.orElse(null)).of(nbt.orElse(null));
+    }
+
     public static class Builder {
         private Optional<Set<Block>> blocks = Optional.empty();
         private Optional<TagKey<Block>> tag = Optional.empty();
@@ -105,6 +107,33 @@ public class BlockPredicate {
             return this;
         }
 
+        public Builder add(Block... blocks) {
+            if (this.blocks.isEmpty()) {
+                return of(blocks);
+            } else {
+                ImmutableSet.Builder<Block> builder = ImmutableSet.builder();
+                builder.addAll(this.blocks.get());
+                builder.add(blocks);
+                this.blocks = Optional.of(builder.build());
+            }
+            return this;
+        }
+
+        public Builder add(Iterable<Block> iterable) {
+            if (iterable == null) {
+                return this;
+            }
+            if (this.blocks.isEmpty()) {
+                return of(iterable);
+            } else {
+                ImmutableSet.Builder<Block> builder = ImmutableSet.builder();
+                builder.addAll(this.blocks.get());
+                builder.addAll(iterable);
+                this.blocks = Optional.of(builder.build());
+            }
+            return this;
+        }
+
         public Builder of(TagKey<Block> tagKey) {
             this.tag = Optional.ofNullable(tagKey);
             return this;
@@ -112,6 +141,11 @@ public class BlockPredicate {
 
         public Builder hasNbt(CompoundTag compoundTag) {
             this.nbt = compoundTag == null ? Optional.empty() : Optional.of(new NbtPredicate(compoundTag));
+            return this;
+        }
+
+        public Builder of(NbtPredicate predicate) {
+            this.nbt = predicate == null ? Optional.empty() : Optional.of(predicate);
             return this;
         }
 

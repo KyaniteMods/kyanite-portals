@@ -65,14 +65,14 @@ public final class SimplePortalBuilder {
     private List<Block> ignitionBlocks = new ArrayList<>();
     private BlockPredicate frame = BlockPredicate.Builder.block().build();
     private BlockEntityPair generatedFrame = null;
-    private Supplier<BlockPredicate> replaceable = () -> {
+    private Supplier<BlockPredicate.Builder> replaceable = () -> {
         List<Block> blocks = new ArrayList<>();
         blocks.add(Blocks.AIR);
         blocks.add(Blocks.CAVE_AIR);
         blocks.add(Blocks.VOID_AIR);
         blocks.addAll(ignitionBlocks);
         Block[] arr = blocks.toArray(new Block[0]);
-        return BlockPredicate.Builder.block().of(arr).build();
+        return BlockPredicate.Builder.block().of(arr);
     };
     private Range.Int width = Range.Int.create(4, 23);
     private Range.Int height = Range.Int.create(5, 23);
@@ -194,12 +194,23 @@ public final class SimplePortalBuilder {
     }
 
     public SimplePortalBuilder replaceable(BlockPredicate predicate) {
+        replaceable = predicate::asBuilder;
+        return this;
+    }
+
+    public SimplePortalBuilder replaceable(BlockPredicate.Builder predicate) {
         replaceable = () -> predicate;
         return this;
     }
 
     public SimplePortalBuilder replaceable(Block... blocks) {
-        return replaceable(BlockPredicate.Builder.block().of(blocks).build());
+        return replaceable(BlockPredicate.Builder.block().of(blocks));
+    }
+
+    public SimplePortalBuilder addReplaceable(Block... blocks) {
+        final Supplier<BlockPredicate.Builder> old = replaceable;
+        replaceable = () -> old.get().add(blocks);
+        return this;
     }
 
     public SimplePortalBuilder width(int min, int max) {
@@ -286,7 +297,7 @@ public final class SimplePortalBuilder {
                             height,
                             axes,
                             frame,
-                            replaceable.get(),
+                            replaceable.get().build(),
                             portalPredicate,
                             cornersRequired
                     ))
