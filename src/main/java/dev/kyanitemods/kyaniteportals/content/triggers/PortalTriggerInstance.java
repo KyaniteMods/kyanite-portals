@@ -8,7 +8,4 @@ public interface PortalTriggerInstance<I extends PortalTriggerInstance<I>> {
         PortalTrigger<I> trigger = getTrigger();
         trigger.addListener(new PortalTrigger.Listener<>((I) this, action));
     }
-
-    default void reload() {
-    }
 }

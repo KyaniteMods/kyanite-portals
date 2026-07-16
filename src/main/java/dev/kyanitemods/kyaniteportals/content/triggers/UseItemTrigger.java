@@ -57,6 +57,12 @@ public class UseItemTrigger extends SimplePortalTrigger<UseItemTrigger.UseItemTr
         return PREDICATES.stream().anyMatch(predicate -> predicate.test(stack));
     }
 
+    @Override
+    public void onListenersRemoved() {
+        super.onListenersRemoved();
+        PREDICATES.clear();
+    }
+
     public static class UseItemTriggerInstance extends AbstractPortalTriggerInstance<UseItemTriggerInstance> {
         public static final List<Vec3i> POSITIONS = List.of(Vec3i.ZERO);
 
@@ -94,11 +100,6 @@ public class UseItemTrigger extends SimplePortalTrigger<UseItemTrigger.UseItemTr
                     stack.hurtAndBreak(damageItemBy, ((ServerLevel) level), ((ServerPlayer) player), item -> {});
                 }
             }
-        }
-
-        @Override
-        public void reload() {
-            PREDICATES.clear();
         }
 
         @Override
