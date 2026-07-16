@@ -5,12 +5,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalTriggers;
-import dev.kyanitemods.kyaniteportals.util.blockpredicate.BlockPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +24,7 @@ public class BlockChangeTrigger extends SimplePortalTrigger<BlockChangeTrigger.B
         return BlockChangeTriggerInstance.CODEC;
     }
 
-    public TriggerResult trigger(Level level, BlockPos pos, @Nullable Player player) {
+    public TriggerResult trigger(ServerLevel level, BlockPos pos, @Nullable Player player) {
         return trigger(level, pos, player, instance -> BlockChangeTriggerInstance.POSITIONS, (instance, triggerPos) -> instance.matches(level, triggerPos), (instance, triggerPos) -> instance.beforeTrigger(level, triggerPos, player), (instance, triggerPos, result) -> instance.onTrigger(result, level, triggerPos, player));
     }
 
@@ -46,14 +47,14 @@ public class BlockChangeTrigger extends SimplePortalTrigger<BlockChangeTrigger.B
             this.predicate = predicate;
         }
 
-        public boolean matches(LevelReader level, BlockPos pos) {
+        public boolean matches(WorldGenLevel level, BlockPos pos) {
             return predicate.test(level, pos);
         }
 
-        public void onTrigger(TriggerResult result, Level level, BlockPos pos, @Nullable Player player) {
+        public void onTrigger(TriggerResult result, WorldGenLevel level, BlockPos pos, @Nullable Player player) {
         }
 
-        public void beforeTrigger(Level level, BlockPos pos, @Nullable Player player) {
+        public void beforeTrigger(WorldGenLevel level, BlockPos pos, @Nullable Player player) {
         }
     }
 }

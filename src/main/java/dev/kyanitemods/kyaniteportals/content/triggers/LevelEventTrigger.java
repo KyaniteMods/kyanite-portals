@@ -7,6 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class LevelEventTrigger extends SimplePortalTrigger<LevelEventTrigger.Lev
         return LevelEventTriggerInstance.CODEC;
     }
 
-    public TriggerResult trigger(Level level, int type, BlockPos pos, int data) {
+    public TriggerResult trigger(ServerLevel level, int type, BlockPos pos, int data) {
         return trigger(level, pos, null, instance -> LevelEventTriggerInstance.POSITIONS, (instance, triggerPos) -> instance.matches(type, triggerPos, data), (instance, triggerPos) -> instance.beforeTrigger(level, type, triggerPos, data), (instance, triggerPos, result) -> instance.onTrigger(result, level, type, triggerPos, data));
     }
 

@@ -6,8 +6,10 @@ package dev.kyanitemods.kyaniteportals.content.triggers;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.WorldGenLevel;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -34,7 +36,7 @@ public interface PortalTrigger<I extends PortalTriggerInstance<I>> {
             return instance;
         }
 
-        public TriggerResult run(Level level, BlockPos pos, @Nullable Player player) {
+        public TriggerResult run(ServerLevel level, BlockPos pos, @Nullable Player player) {
             return action.run(instance, level, pos, player);
         }
 

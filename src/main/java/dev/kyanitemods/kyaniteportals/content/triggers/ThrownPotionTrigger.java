@@ -14,6 +14,7 @@ import net.minecraft.core.Direction;
 //? if >=1.21.3
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.Vec3i;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 //? if <1.21.5 {
@@ -42,7 +43,7 @@ public class ThrownPotionTrigger extends SimplePortalTrigger<ThrownPotionTrigger
         return ThrownPotionTriggerInstance.CODEC;
     }
 
-    public TriggerResult trigger(Level level, BlockPos pos, @Nullable Player player, /*? if <1.21.5 {*//*ThrownPotion*//*? } else { */AbstractThrownPotion/*? }*/ potion) {
+    public TriggerResult trigger(ServerLevel level, BlockPos pos, @Nullable Player player, /*? if <1.21.5 {*//*ThrownPotion*//*? } else { */AbstractThrownPotion/*? }*/ potion) {
         return trigger(level, pos, player, instance -> instance.getPositions(potion), (instance, triggerPos) -> instance.matches(potion), (instance, triggerPos) -> instance.beforeTrigger(level, triggerPos, player), (instance, triggerPos, result) -> instance.onTrigger(result, level, triggerPos, player));
     }
 

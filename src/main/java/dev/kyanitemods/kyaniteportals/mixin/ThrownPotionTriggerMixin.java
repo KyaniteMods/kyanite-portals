@@ -1,6 +1,7 @@
 package dev.kyanitemods.kyaniteportals.mixin;
 
 import dev.kyanitemods.kyaniteportals.content.registry.PortalTriggers;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 //? if <1.21.5 {
 /*import net.minecraft.world.entity.projectile.ThrownPotion;
@@ -24,6 +25,6 @@ public abstract class ThrownPotionTriggerMixin {
     @Inject(method = "onHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/projectile/throwableitemprojectile/AbstractThrownPotion;getItem()Lnet/minecraft/world/item/ItemStack;", ordinal = 0))
     private void kyanitePortals$triggerThrownPotion(HitResult hitResult, CallbackInfo ci) {
         /*? if <1.21.5 {*//*ThrownPotion*//*? } else { */AbstractThrownPotion/*? }*/ entity = (/*? if <1.21.5 {*//*ThrownPotion*//*? } else { */AbstractThrownPotion/*? }*/) (Object) this;
-        PortalTriggers.THROWN_POTION.trigger(entity.level(), entity.blockPosition(), entity.getOwner() instanceof Player player ? player : null, entity);
+        if (entity.level() instanceof ServerLevel serverLevel) PortalTriggers.THROWN_POTION.trigger(serverLevel, entity.blockPosition(), entity.getOwner() instanceof Player player ? player : null, entity);
     }
 }

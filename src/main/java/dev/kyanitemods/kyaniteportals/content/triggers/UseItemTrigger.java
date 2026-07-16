@@ -21,15 +21,18 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import net.minecraft.core.Vec3i;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UseItemTrigger extends SimplePortalTrigger<UseItemTrigger.UseItemTriggerInstance> {
+    static final List<ItemPredicate> PREDICATES = new ArrayList<>();
+
     @Override
     public /*? if <1.20.6 {*//*Codec<UseItemTriggerInstance>*//*? } else {*/MapCodec<UseItemTriggerInstance>/*? }*/ codec() {
         return UseItemTriggerInstance.CODEC;
     }
 
-    public TriggerResult trigger(Level level, BlockPos pos, @Nullable Player player, ItemStack stack) {
+    public TriggerResult trigger(ServerLevel level, BlockPos pos, @Nullable Player player, ItemStack stack) {
         return trigger(level, pos, player, instance -> UseItemTriggerInstance.POSITIONS, (instance, triggerPos) -> instance.matches(stack), (instance, triggerPos) -> instance.beforeTrigger(level, player, stack), (instance, triggerPos, result) -> instance.onTrigger(result, level, player, stack));
     }
 
@@ -48,6 +51,10 @@ public class UseItemTrigger extends SimplePortalTrigger<UseItemTrigger.UseItemTr
 
     public UseItemTriggerInstance create(/*? if >=1.21.3 {*/HolderGetter<Item> itemLookup, /*? }*/Item item, int damage) {
         return create(ItemPredicate.Builder.item().of(/*? if >=1.21.3 {*/itemLookup, /*? }*/item).build(), damage);
+    }
+
+    public static boolean shouldSwing(ItemStack stack) {
+        return PREDICATES.stream().anyMatch(predicate -> predicate.test(stack));
     }
 
     public static class UseItemTriggerInstance extends AbstractPortalTriggerInstance<UseItemTriggerInstance> {
@@ -87,6 +94,17 @@ public class UseItemTrigger extends SimplePortalTrigger<UseItemTrigger.UseItemTr
                     stack.hurtAndBreak(damageItemBy, ((ServerLevel) level), ((ServerPlayer) player), item -> {});
                 }
             }
+        }
+
+        @Override
+        public void reload() {
+            PREDICATES.clear();
+        }
+
+        @Override
+        public void addListener(TriggerAction action) {
+            super.addListener(action);
+            PREDICATES.add(itemPredicate);
         }
 
         public void beforeTrigger(Level level, @Nullable Player player, ItemStack stack) {

@@ -13,10 +13,8 @@ import dev.kyanitemods.kyaniteportals.content.registry.PortalTriggers;
 import dev.kyanitemods.kyaniteportals.content.testers.RectanglePortalTester;
 import dev.kyanitemods.kyaniteportals.content.triggers.PortalTriggerInstance;
 import dev.kyanitemods.kyaniteportals.util.BlockEntityPair;
+import dev.kyanitemods.kyaniteportals.util.MatchingNbtPredicate;
 import dev.kyanitemods.kyaniteportals.util.Range;
-import dev.kyanitemods.kyaniteportals.util.blockpredicate.AnyOfBlockPredicate;
-import dev.kyanitemods.kyaniteportals.util.blockpredicate.BlockPredicate;
-import dev.kyanitemods.kyaniteportals.util.blockpredicate.SimpleBlockPredicate;
 import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.core.Direction;
@@ -44,6 +42,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.dimension.LevelStem;
+import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector3f;
@@ -64,9 +63,9 @@ public final class SimplePortalBuilder {
     private ResourceKey<LevelStem> toDimension = LevelStem.NETHER;
     private ResourceKey<LevelStem> fromDimension;
     private List<Function<RegistryOps.RegistryInfoLookup, PortalTriggerInstance<?>>> ignition = new ArrayList<>();
-    private BlockPredicate frame = SimpleBlockPredicate.Builder.block().build();
+    private BlockPredicate frame = BlockPredicate.not(BlockPredicate.alwaysTrue());
     private BlockEntityPair generatedFrame = null;
-    private BlockPredicate replaceable = SimpleBlockPredicate.Builder.block().of(Blocks.AIR, Blocks.CAVE_AIR, Blocks.VOID_AIR).build();
+    private BlockPredicate replaceable = BlockPredicate.matchesBlocks(Blocks.AIR, Blocks.CAVE_AIR, Blocks.VOID_AIR);
     private Range.Int width = Range.Int.create(4, 23);
     private Range.Int height = Range.Int.create(5, 23);
     private int generatedWidth = 4;
@@ -142,14 +141,14 @@ public final class SimplePortalBuilder {
 
     public SimplePortalBuilder ignition(BlockPredicate predicate) {
         ignition.add(provider -> PortalTriggers.BLOCK_CHANGE.create(predicate));
-        replaceable = new AnyOfBlockPredicate(List.of(replaceable, predicate));
+        replaceable = BlockPredicate.anyOf(List.of(replaceable, predicate));
         return this;
     }
 
     public SimplePortalBuilder ignition(Block... blocks) {
-        SimpleBlockPredicate predicate = SimpleBlockPredicate.Builder.block().of(blocks).build();
+        BlockPredicate predicate = BlockPredicate.matchesBlocks(blocks);
         ignition.add(provider -> PortalTriggers.BLOCK_CHANGE.create(predicate));
-        replaceable = new AnyOfBlockPredicate(List.of(replaceable, predicate));
+        replaceable = BlockPredicate.anyOf(List.of(replaceable, predicate));
         return this;
     }
 
@@ -175,7 +174,7 @@ public final class SimplePortalBuilder {
     }
 
     public SimplePortalBuilder frame(Block... blocks) {
-        frame(SimpleBlockPredicate.Builder.block().of(blocks).build());
+        frame(BlockPredicate.matchesBlocks(blocks));
         if (generatedFrame == null) generatedFrame(blocks[0]);
         return this;
     }
@@ -204,11 +203,11 @@ public final class SimplePortalBuilder {
     }
 
     public SimplePortalBuilder replaceable(Block... blocks) {
-        return replaceable(SimpleBlockPredicate.Builder.block().of(blocks).build());
+        return replaceable(BlockPredicate.matchesBlocks(blocks));
     }
 
     public SimplePortalBuilder addReplaceable(Block... blocks) {
-        return replaceable(predicate -> new AnyOfBlockPredicate(List.of(predicate, SimpleBlockPredicate.Builder.block().of(blocks).build())));
+        return replaceable(predicate -> BlockPredicate.anyOf(List.of(predicate, BlockPredicate.matchesBlocks(blocks))));
     }
 
     public SimplePortalBuilder width(int min, int max) {
@@ -270,17 +269,17 @@ public final class SimplePortalBuilder {
         CompoundTag tag = new CompoundTag();
         tag.putString("portal", id.toString());
         BlockEntityPair pair = new BlockEntityPair(KyanitePortalsBlocks.CUSTOM_PORTAL.defaultBlockState(), tag);
-        SimpleBlockPredicate portalPredicate = SimpleBlockPredicate.Builder.block().of(KyanitePortalsBlocks.CUSTOM_PORTAL).hasNbt(tag).build();
+        BlockPredicate portalPredicate = BlockPredicate.allOf(BlockPredicate.matchesBlocks(KyanitePortalsBlocks.CUSTOM_PORTAL), MatchingNbtPredicate.of(tag));
         ResourceKey<Portal> key = register(pair, portalPredicate, id);
         CustomPortalBlockEntity.COLORS.put(key, color);
         return key;
     }
 
     public ResourceKey<Portal> register(Block block, Identifier id) {
-        return register(new BlockEntityPair(block.defaultBlockState(), new CompoundTag()), SimpleBlockPredicate.Builder.block().of(block).build(), id);
+        return register(new BlockEntityPair(block.defaultBlockState(), new CompoundTag()), BlockPredicate.matchesBlocks(block), id);
     }
 
-    public ResourceKey<Portal> register(BlockEntityPair portal, SimpleBlockPredicate portalPredicate, Identifier id) {
+    public ResourceKey<Portal> register(BlockEntityPair portal, BlockPredicate portalPredicate, Identifier id) {
         ResourceKey<Portal> key = ResourceKey.create(KyanitePortals.RESOURCE_KEY, id);
         KyanitePortals.PORTAL_REGISTRY_OVERRIDES.put(key, provider -> {
             //? if >=1.21.3

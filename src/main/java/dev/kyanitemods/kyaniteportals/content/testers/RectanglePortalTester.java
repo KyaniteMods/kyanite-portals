@@ -5,12 +5,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalTesters;
-import dev.kyanitemods.kyaniteportals.util.blockpredicate.BlockPredicate;
 import dev.kyanitemods.kyaniteportals.util.Range;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 
 import java.util.List;
 import java.util.Set;
@@ -50,7 +50,7 @@ public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
         this(width, height, Set.of(Direction.Axis.X, Direction.Axis.Z), frame, replaceable, portal, false);
     }
 
-    public PortalTestResult test(LevelReader level, BlockPos pos) {
+    public PortalTestResult test(WorldGenLevel level, BlockPos pos) {
         for (Direction.Axis axis : axes) {
             PortalTestResult result = test(level, pos, axis, width, height);
             if (!result.isSuccess() && axis == Direction.Axis.Y) {
@@ -62,7 +62,7 @@ public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
         return FailResult.INSTANCE;
     }
 
-    public PortalTestResult test(LevelReader level, BlockPos pos, Direction.Axis axis, Range.Int width, Range.Int height) {
+    public PortalTestResult test(WorldGenLevel level, BlockPos pos, Direction.Axis axis, Range.Int width, Range.Int height) {
         int portalBlocks = 0;
 
         Direction right = switch (axis) {

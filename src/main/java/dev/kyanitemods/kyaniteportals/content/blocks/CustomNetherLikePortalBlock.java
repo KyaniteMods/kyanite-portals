@@ -46,7 +46,7 @@ public class CustomNetherLikePortalBlock extends KyanitePortalBlock implements E
         Direction.Axis axis2 = blockState.getValue(AXIS);
         boolean bl = axis2 != axis && ((axis2.isHorizontal() && axis.isHorizontal()) || (axis2.isVertical() && axis.isVertical()));
         Optional<Portal> portal = getPortal(level, pos);
-        if (bl || portal.isEmpty() || !portal.get().testValidityAfterGeneration() || portal.get().tester().isEmpty() || portal.get().tester().get().test(level, pos).isComplete()) {
+        if (!(level instanceof WorldGenLevel worldGenLevel) || bl || portal.isEmpty() || !portal.get().testValidityAfterGeneration() || portal.get().tester().isEmpty() || portal.get().tester().get().test(worldGenLevel, pos).isComplete()) {
             //? if <1.21.3 {
             /*return super.updateShape(blockState, direction, blockState2, level, pos, blockPos2);
             *///? } else

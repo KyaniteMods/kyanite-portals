@@ -2,8 +2,10 @@ package dev.kyanitemods.kyaniteportals.content.triggers;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.phys.Vec3;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +33,7 @@ public abstract class SimplePortalTrigger<I extends PortalTriggerInstance<I>> im
         listeners.clear();
     }
 
-    protected TriggerResult trigger(Level level, BlockPos pos, @Nullable Player player, Function<I, List<Vec3i>> positions, BiPredicate<I, BlockPos> predicate, BiConsumer<I, BlockPos> beforeAction, TriConsumer<I, BlockPos, TriggerResult> onAction) {
+    protected TriggerResult trigger(ServerLevel level, BlockPos pos, @Nullable Player player, Function<I, List<Vec3i>> positions, BiPredicate<I, BlockPos> predicate, BiConsumer<I, BlockPos> beforeAction, TriConsumer<I, BlockPos, TriggerResult> onAction) {
         TriggerResult result = TriggerResult.FAIL;
         if (!listeners.isEmpty()) {
             BlockPos.MutableBlockPos mutableBlockPos = pos.mutable();

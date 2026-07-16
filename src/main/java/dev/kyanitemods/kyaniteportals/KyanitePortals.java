@@ -4,13 +4,9 @@ import dev.kyanitemods.kyaniteportals.api.SimplePortalBuilder;
 import dev.kyanitemods.kyaniteportals.content.Portal;
 import dev.kyanitemods.kyaniteportals.content.generators.GeneratorContext;
 import dev.kyanitemods.kyaniteportals.content.registry.*;
-import dev.kyanitemods.kyaniteportals.content.triggers.PortalTrigger;
-import dev.kyanitemods.kyaniteportals.content.triggers.PortalTriggerInstance;
-import dev.kyanitemods.kyaniteportals.content.triggers.TriggerAction;
-import dev.kyanitemods.kyaniteportals.content.triggers.TriggerResult;
+import dev.kyanitemods.kyaniteportals.content.triggers.*;
 import dev.kyanitemods.kyaniteportals.mixin.ItemAccessor;
-import dev.kyanitemods.kyaniteportals.util.blockpredicate.BlockPredicateType;
-import dev.kyanitemods.kyaniteportals.util.blockpredicate.SimpleBlockPredicate;
+import dev.kyanitemods.kyaniteportals.util.MatchingNbtPredicate;
 import io.netty.util.internal.UnstableApi;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -24,19 +20,20 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 //? if <1.21.2 {
-
 /*import net.minecraft.world.InteractionResultHolder;
-*///? } else
+*///? } else {
 import net.minecraft.world.InteractionResult;
+//? }
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.dimension.LevelStem;
+import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.Nullable;
@@ -59,7 +56,7 @@ public class KyanitePortals implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        BlockPredicateType.load();
+        MatchingNbtPredicate.load();
         PortalActions.load();
         KyanitePortalsParticleTypes.load();
         PortalTriggers.load();
@@ -84,7 +81,7 @@ public class KyanitePortals implements ModInitializer {
             }
 
             BlockPos pos = hit.getBlockPos().relative(hit.getDirection());
-            if (PortalTriggers.USE_ITEM.trigger(world, pos, player, stack) == TriggerResult.FAIL) {
+            if (world instanceof ServerLevel serverLevel ? PortalTriggers.USE_ITEM.trigger(serverLevel, pos, player, stack) == TriggerResult.FAIL : !UseItemTrigger.shouldSwing(stack)) {
                 //? if <1.21.2 {
                 /*return InteractionResultHolder.pass(stack);
                 *///? } else
@@ -110,7 +107,7 @@ public class KyanitePortals implements ModInitializer {
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
             SimplePortalBuilder.create()
                     .ignition(Items.EMERALD)
-                    .ignition(SimpleBlockPredicate.Builder.block().of(BlockTags.BEACON_BASE_BLOCKS).build())
+                    .ignition(BlockPredicate.matchesTag(BlockTags.BEACON_BASE_BLOCKS))
                     .ignition(Potions.FIRE_RESISTANCE)
                     .ignition(Potions.LONG_FIRE_RESISTANCE)
                     .frame(Blocks.OBSIDIAN)
@@ -130,7 +127,7 @@ public class KyanitePortals implements ModInitializer {
                 portal.generator().ifPresent(generator -> {
                     generator.getTriggers().forEach(trigger -> trigger.addListener(new TriggerAction() {
                         @Override
-                        public <I extends PortalTriggerInstance<I>> TriggerResult run(I instance, Level level, BlockPos pos, @Nullable Player player) {
+                        public <I extends PortalTriggerInstance<I>> TriggerResult run(I instance, ServerLevel level, BlockPos pos, @Nullable Player player) {
                             return generator.run(new GeneratorContext(instance, portal.tester().orElse(null), level, pos, player));
                         }
                     }));

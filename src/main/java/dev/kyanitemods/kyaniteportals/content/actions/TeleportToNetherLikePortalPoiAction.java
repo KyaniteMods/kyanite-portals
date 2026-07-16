@@ -6,8 +6,6 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.actions.location.ActionLocation;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalActions;
-import dev.kyanitemods.kyaniteportals.util.blockpredicate.BlockPredicate;
-import dev.kyanitemods.kyaniteportals.util.blockpredicate.TrueBlockPredicate;
 import dev.kyanitemods.kyaniteportals.util.KyanitePortalsUtil;
 //? if <1.21.11 {
 /*import net.minecraft.BlockUtil;
@@ -30,6 +28,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.border.WorldBorder;
+import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -39,7 +38,7 @@ public class TeleportToNetherLikePortalPoiAction extends PortalAction<TeleportTo
     public static final MapCodec<TeleportToNetherLikePortalPoiAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Settings.optionalLocation(),
             TagKey.hashedCodec(Registries.POINT_OF_INTEREST_TYPE).fieldOf("point_of_interest_types").forGetter(TeleportToNetherLikePortalPoiAction::getPoiTypes),
-            BlockPredicate.CODEC.optionalFieldOf("portal_predicate").xmap(optional -> optional.orElse(TrueBlockPredicate.INSTANCE), predicate -> predicate == TrueBlockPredicate.INSTANCE ? Optional.empty() : Optional.of(predicate)).forGetter(TeleportToNetherLikePortalPoiAction::getPortalPredicate),
+            BlockPredicate.CODEC.optionalFieldOf("portal_predicate").xmap(optional -> optional.orElse(BlockPredicate.alwaysTrue()), predicate -> predicate == BlockPredicate.alwaysTrue() ? Optional.empty() : Optional.of(predicate)).forGetter(TeleportToNetherLikePortalPoiAction::getPortalPredicate),
             Codec.INT.fieldOf("search_range").forGetter(TeleportToNetherLikePortalPoiAction::getSearchRange),
             Codec.BOOL.optionalFieldOf("adapt_coordinate_space", true).forGetter(TeleportToNetherLikePortalPoiAction::shouldAdaptCoordinateSpace)
     ).apply(instance, TeleportToNetherLikePortalPoiAction::new));
