@@ -17,7 +17,6 @@ public final class PortalTriggers {
     public static final Codec<PortalTriggerInstance<?>> CODEC = REGISTRY.byNameCodec().dispatch("type", PortalTriggerInstance::getTrigger, PortalTrigger::codec);
 
     public static final UseItemTrigger USE_ITEM = register("use_item", new UseItemTrigger());
-    @ApiStatus.Experimental
     public static final BlockChangeTrigger BLOCK_CHANGE = register("block_change", new BlockChangeTrigger());
     public static final ThrownPotionTrigger THROWN_POTION = register("thrown_potion", new ThrownPotionTrigger());
     public static final LevelEventTrigger LEVEL_EVENT = register("level_event", new LevelEventTrigger());

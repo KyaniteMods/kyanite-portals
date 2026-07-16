@@ -51,9 +51,6 @@ public class KyanitePortals implements ModInitializer {
     public static final ResourceKey<Registry<Portal>> RESOURCE_KEY = ResourceKey.createRegistryKey(id("portal"));
     public static final Map<ResourceKey<Portal>, Function<RegistryOps.RegistryInfoLookup, Portal>> PORTAL_REGISTRY_OVERRIDES = new HashMap<>();
 
-//    public static final Block NETHER_PORTAL = PortalHelper.registerNetherLike(rl("nether_portal"), ResourceKey.create(RESOURCE_KEY, rl("nether_portal")));
-//    public static final Block END_PORTAL = PortalHelper.registerEndLike(rl("end_portal"), ResourceKey.create(RESOURCE_KEY, rl("end_portal")));
-
     @Override
     public void onInitialize() {
         MatchingNbtPredicate.load();
