@@ -34,6 +34,7 @@ SimplePortalBuilder.create()
       {
         "type": "kyanite_portals:block_change",
         "predicate": {
+          "type": "minecraft:matching_blocks",
           "blocks": ["minecraft:emerald_block"]
         }
       }
@@ -46,14 +47,25 @@ SimplePortalBuilder.create()
   "tester": {
     "type": "kyanite_portals:rectangle",
     "frame": {
+      "type": "minecraft:matching_blocks",
       "blocks": ["minecraft:obsidian"]
     },
     "replaceable": {
+      "type": "minecraft:matching_blocks",
       "blocks": ["minecraft:air", "minecraft:cave_air", "minecraft:void_air", "minecraft:emerald_block"]
     },
     "portal": {
-      "blocks": ["kyanite_portals:custom_portal"],
-      "nbt": "{portal:\"kyanite_portals:nether_portal\"}"
+      "type": "minecraft:all_of",
+      "predicates": [
+        {
+          "type": "minecraft:matching_blocks",
+          "blocks": "kyanite_portals:custom_portal"
+        },
+        {
+          "type": "kyanite_portals:matching_nbt",
+          "nbt": "{portal:\"kyanite_portals:nether_portal\"}"
+        }
+      ]
     },
     "width": { "min": 4, "max": 23 },
     "height": { "min": 5, "max": 23 },
@@ -105,8 +117,17 @@ SimplePortalBuilder.create()
       "action": "kyanite_portals:teleport_to_nether_like_portal_poi",
       "point_of_interest_types": "#kyanite_portals:custom_portals",
       "portal_predicate": {
-        "blocks": ["kyanite_portals:custom_portal"],
-        "nbt": "{portal:\"example:end_portal\"}"
+        "type": "minecraft:all_of",
+        "predicates": [
+          {
+            "type": "minecraft:matching_blocks",
+            "blocks": "kyanite_portals:custom_portal"
+          },
+          {
+            "type": "kyanite_portals:matching_nbt",
+            "nbt": "{portal:\"example:end_portal\"}"
+          }
+        ]
       },
       "settings": {
         "location_options": {
