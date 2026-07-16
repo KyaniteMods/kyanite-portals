@@ -5,7 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalTesters;
-import dev.kyanitemods.kyaniteportals.util.BlockPredicate;
+import dev.kyanitemods.kyaniteportals.util.blockpredicate.BlockPredicate;
 import dev.kyanitemods.kyaniteportals.util.Range;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -78,7 +78,7 @@ public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
 
         int offsetY = 0;
         int minOffsetY = -(height.getMax().orElse(Integer.MAX_VALUE) - 3);
-        while (offsetY > minOffsetY && (portal.matches(level, bottom.relative(up.getOpposite())) || replaceable.matches(level, bottom.relative(up.getOpposite())))) {
+        while (offsetY > minOffsetY && (portal.test(level, bottom.relative(up.getOpposite())) || replaceable.test(level, bottom.relative(up.getOpposite())))) {
             if (level.isOutsideBuildHeight(bottom)) return FailResult.INSTANCE;
             bottom = bottom.relative(up.getOpposite());
             offsetY--;
@@ -89,8 +89,8 @@ public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
         for (int x = 0; x < width.getMax().orElse(Integer.MAX_VALUE) - 2; x++) {
             BlockPos left = bottom.relative(right.getOpposite(), x);
             BlockPos leftNeighbor = bottom.relative(right.getOpposite(), x + 1);
-            if (!frame.matches(level, leftNeighbor)) continue;
-            if (portal.matches(level, left) || replaceable.matches(level, left)) {
+            if (!frame.test(level, leftNeighbor)) continue;
+            if (portal.test(level, left) || replaceable.test(level, left)) {
                 bottomLeft = left;
                 break;
             }
@@ -101,8 +101,8 @@ public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
         for (int x = 0; x < width.getMax().orElse(Integer.MAX_VALUE) - 2; x++) {
             BlockPos inner = bottomLeft.relative(right, x);
             BlockPos below = inner.relative(up.getOpposite(), 1);
-            if (portal.matches(level, inner) || replaceable.matches(level, inner)) {
-                if (!frame.matches(level, below)) return FailResult.INSTANCE;
+            if (portal.test(level, inner) || replaceable.test(level, inner)) {
+                if (!frame.test(level, below)) return FailResult.INSTANCE;
                 portalWidth++;
                 continue;
             }
@@ -112,13 +112,13 @@ public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
         int portalHeight = 0;
         for (int y = 0; y < height.getMax().orElse(Integer.MAX_VALUE) - 2; y++) {
             BlockPos leftCorner = bottomLeft.relative(up, y).relative(right.getOpposite(), 1);
-            if (!frame.matches(level, leftCorner)) {
+            if (!frame.test(level, leftCorner)) {
                 portalHeight = y;
                 break;
             }
 
             BlockPos rightCorner = bottomLeft.relative(up, y).relative(right, portalWidth);
-            if (!frame.matches(level, rightCorner)) {
+            if (!frame.test(level, rightCorner)) {
                 portalHeight = y;
                 break;
             }
@@ -127,12 +127,12 @@ public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
             for (int x = 0; x < portalWidth; x++) {
                 BlockPos inner = bottomLeft.relative(up, y).relative(right, x);
 
-                if (portal.matches(level, inner)) {
+                if (portal.test(level, inner)) {
                     portalBlocks++;
                     continue;
                 }
 
-                if (!replaceable.matches(level, inner)) {
+                if (!replaceable.test(level, inner)) {
                     obstructed = true;
                     break;
                 }
@@ -146,7 +146,7 @@ public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
 
         for (int x = 0; x < portalWidth; x++) {
             BlockPos top = bottomLeft.relative(right, x).relative(up, portalHeight);
-            if (!frame.matches(level, top)) {
+            if (!frame.test(level, top)) {
                 return FailResult.INSTANCE;
             }
         }
@@ -154,13 +154,13 @@ public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
         if (!width.matches(portalWidth + 2) || !height.matches(portalHeight + 2)) return FailResult.INSTANCE;
         if (cornersRequired) {
             BlockPos frameBottomLeft = bottomLeft.relative(right.getOpposite(), 1).relative(up.getOpposite(), 1);
-            if (!frame.matches(level, frameBottomLeft)) return FailResult.INSTANCE;
+            if (!frame.test(level, frameBottomLeft)) return FailResult.INSTANCE;
             BlockPos frameBottomRight = bottomLeft.relative(right, portalWidth).relative(up.getOpposite(), 1);
-            if (!frame.matches(level, frameBottomRight)) return FailResult.INSTANCE;
+            if (!frame.test(level, frameBottomRight)) return FailResult.INSTANCE;
             BlockPos frameTopLeft = bottomLeft.relative(right.getOpposite(), 1).relative(up, portalHeight);
-            if (!frame.matches(level, frameTopLeft)) return FailResult.INSTANCE;
+            if (!frame.test(level, frameTopLeft)) return FailResult.INSTANCE;
             BlockPos frameTopRight = bottomLeft.relative(right, portalWidth).relative(up, portalHeight);
-            if (!frame.matches(level, frameTopRight)) return FailResult.INSTANCE;
+            if (!frame.test(level, frameTopRight)) return FailResult.INSTANCE;
         }
 
         return new SuccessResult(bottomLeft, portalWidth, portalHeight, up, right, axis, portalBlocks);

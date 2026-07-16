@@ -10,7 +10,6 @@ import dev.kyanitemods.kyaniteportals.content.testers.PortalTestResult;
 import dev.kyanitemods.kyaniteportals.content.triggers.PortalTriggerInstance;
 import dev.kyanitemods.kyaniteportals.content.triggers.TriggerResult;
 import dev.kyanitemods.kyaniteportals.util.*;
-import dev.kyanitemods.kyaniteportals.util.BlockPredicate;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;

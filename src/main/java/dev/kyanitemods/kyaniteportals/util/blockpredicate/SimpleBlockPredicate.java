@@ -1,8 +1,10 @@
-package dev.kyanitemods.kyaniteportals.util;
+package dev.kyanitemods.kyaniteportals.util.blockpredicate;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.kyanitemods.kyaniteportals.util.CodecHelper;
 import net.minecraft.advancements.criterion.NbtPredicate;
 import net.minecraft.advancements.criterion.StatePropertiesPredicate;
 import net.minecraft.core.BlockPos;
@@ -14,53 +16,17 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public class BlockPredicate {
-    public static final BlockPredicate ANY = new BlockPredicate(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+public class SimpleBlockPredicate implements BlockPredicate {
+    public static final SimpleBlockPredicate ANY = new SimpleBlockPredicate(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
 
-    private final Optional<TagKey<Block>> tag;
-    private final Optional<Set<Block>> blocks;
-    private final Optional<StatePropertiesPredicate> properties;
-    private final Optional<NbtPredicate> nbt;
-
-    public BlockPredicate(Optional<TagKey<Block>> tagKey, Optional<Set<Block>> set, Optional<StatePropertiesPredicate> statePropertiesPredicate, Optional<NbtPredicate> nbtPredicate) {
-        this.tag = tagKey;
-        this.blocks = set;
-        this.properties = statePropertiesPredicate;
-        this.nbt = nbtPredicate;
-    }
-
-    public boolean matches(LevelReader level, BlockPos blockPos) {
-        if (this == ANY) {
-            return true;
-        } else if (!level.hasChunkAt(blockPos)) {
-            return false;
-        } else {
-            BlockState blockState = level.getBlockState(blockPos);
-            if (tag.isPresent() && !blockState.is(tag.get())) {
-                return false;
-            } else if (blocks.isPresent() && !blocks.get().contains(blockState.getBlock())) {
-                return false;
-            } else if (properties.isPresent() && !properties.get().matches(blockState)) {
-                return false;
-            } else {
-                if (nbt.isPresent()) {
-                    BlockEntity blockEntity = level.getBlockEntity(blockPos);
-                    if (blockEntity == null || !nbt.get().matches(blockEntity.saveWithFullMetadata(/*? if >=1.21 {*/level.registryAccess()/*? }*/))) {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
-        }
-    }
-
-    public static final Codec<BlockPredicate> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    //$ map_codec_swap SimpleBlockPredicate
+    public static final MapCodec<SimpleBlockPredicate> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             TagKey.codec(Registries.BLOCK)
                     .optionalFieldOf("tag")
                     .forGetter(predicate -> predicate.tag),
@@ -77,8 +43,44 @@ public class BlockPredicate {
                     .forGetter(predicate -> predicate.nbt)
     ).apply(instance, (tag, blocks, state, nbt) -> {
         if (tag.isEmpty() && blocks.isEmpty() && state.isEmpty() && nbt.isEmpty()) return ANY;
-        return new BlockPredicate(tag, blocks, state, nbt);
+        return new SimpleBlockPredicate(tag, blocks, state, nbt);
     }));
+
+    private final Optional<TagKey<Block>> tag;
+    private final Optional<Set<Block>> blocks;
+    private final Optional<StatePropertiesPredicate> properties;
+    private final Optional<NbtPredicate> nbt;
+
+    public SimpleBlockPredicate(Optional<TagKey<Block>> tagKey, Optional<Set<Block>> set, Optional<StatePropertiesPredicate> statePropertiesPredicate, Optional<NbtPredicate> nbtPredicate) {
+        this.tag = tagKey;
+        this.blocks = set;
+        this.properties = statePropertiesPredicate;
+        this.nbt = nbtPredicate;
+    }
+
+    public boolean matches(BlockState state, @Nullable CompoundTag compoundTag) {
+        if (tag.isPresent() && !state.is(tag.get())) {
+            return false;
+        } else if (blocks.isPresent() && !blocks.get().contains(state.getBlock())) {
+            return false;
+        } else if (properties.isPresent() && !properties.get().matches(state)) {
+            return false;
+        } else {
+            return nbt.map(predicate -> predicate.matches(compoundTag)).orElse(true);
+        }
+    }
+
+    @Override
+    public boolean test(LevelReader level, BlockPos blockPos) {
+        if (this == ANY) {
+            return true;
+        } else if (!level.hasChunkAt(blockPos)) {
+            return false;
+        } else {
+            BlockEntity blockEntity = level.getBlockEntity(blockPos);
+            return matches(level.getBlockState(blockPos), blockEntity == null ? null : blockEntity.saveWithFullMetadata(/*? if >=1.21 {*/level.registryAccess()/*? }*/));
+        }
+    }
 
     public Builder asBuilder() {
         return Builder.block().of(blocks.orElse(null)).of(tag.orElse(null)).setProperties(properties.orElse(null)).of(nbt.orElse(null));
@@ -154,8 +156,13 @@ public class BlockPredicate {
             return this;
         }
 
-        public BlockPredicate build() {
-            return new BlockPredicate(tag, blocks, properties, nbt);
+        public SimpleBlockPredicate build() {
+            return new SimpleBlockPredicate(tag, blocks, properties, nbt);
         }
+    }
+
+    @Override
+    public BlockPredicateType getType() {
+        return BlockPredicateType.SIMPLE;
     }
 }

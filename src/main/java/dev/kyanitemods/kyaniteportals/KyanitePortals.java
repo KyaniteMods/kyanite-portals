@@ -9,6 +9,8 @@ import dev.kyanitemods.kyaniteportals.content.triggers.PortalTriggerInstance;
 import dev.kyanitemods.kyaniteportals.content.triggers.TriggerAction;
 import dev.kyanitemods.kyaniteportals.content.triggers.TriggerResult;
 import dev.kyanitemods.kyaniteportals.mixin.ItemAccessor;
+import dev.kyanitemods.kyaniteportals.util.blockpredicate.BlockPredicateType;
+import dev.kyanitemods.kyaniteportals.util.blockpredicate.SimpleBlockPredicate;
 import io.netty.util.internal.UnstableApi;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -22,9 +24,11 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 //? if <1.21.2 {
+
 /*import net.minecraft.world.InteractionResultHolder;
 *///? } else
 import net.minecraft.world.InteractionResult;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -55,6 +59,7 @@ public class KyanitePortals implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        BlockPredicateType.load();
         PortalActions.load();
         KyanitePortalsParticleTypes.load();
         PortalTriggers.load();
@@ -105,7 +110,7 @@ public class KyanitePortals implements ModInitializer {
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
             SimplePortalBuilder.create()
                     .ignition(Items.EMERALD)
-                    .ignition(Blocks.EMERALD_BLOCK)
+                    .ignition(SimpleBlockPredicate.Builder.block().of(BlockTags.BEACON_BASE_BLOCKS).build())
                     .ignition(Potions.FIRE_RESISTANCE)
                     .ignition(Potions.LONG_FIRE_RESISTANCE)
                     .frame(Blocks.OBSIDIAN)
@@ -135,9 +140,13 @@ public class KyanitePortals implements ModInitializer {
     }
 
     public static Identifier id(String path) {
+        return id(MOD_ID, path);
+    }
+
+    public static Identifier id(String namespace, String path) {
         //? if <1.21 {
-        /*return new ResourceLocation(MOD_ID, path);
-        *///? } else
-        return Identifier.fromNamespaceAndPath(MOD_ID, path);
+        /*return new ResourceLocation(namespace, path);
+         *///? } else
+        return Identifier.fromNamespaceAndPath(namespace, path);
     }
 }

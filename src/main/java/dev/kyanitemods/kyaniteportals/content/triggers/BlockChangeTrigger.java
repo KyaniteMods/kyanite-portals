@@ -5,11 +5,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalTriggers;
+import dev.kyanitemods.kyaniteportals.util.blockpredicate.BlockPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.LevelReader;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,12 +23,12 @@ public class BlockChangeTrigger extends SimplePortalTrigger<BlockChangeTrigger.B
         return BlockChangeTriggerInstance.CODEC;
     }
 
-    public TriggerResult trigger(Level level, BlockPos pos, @Nullable Player player, BlockState state) {
-        return trigger(level, pos, player, instance -> BlockChangeTriggerInstance.POSITIONS, (instance, triggerPos) -> instance.matches(state), (instance, triggerPos) -> instance.beforeTrigger(level, triggerPos, player), (instance, triggerPos, result) -> instance.onTrigger(result, level, triggerPos, player));
+    public TriggerResult trigger(Level level, BlockPos pos, @Nullable Player player) {
+        return trigger(level, pos, player, instance -> BlockChangeTriggerInstance.POSITIONS, (instance, triggerPos) -> instance.matches(level, triggerPos), (instance, triggerPos) -> instance.beforeTrigger(level, triggerPos, player), (instance, triggerPos, result) -> instance.onTrigger(result, level, triggerPos, player));
     }
 
-    public BlockChangeTriggerInstance create(BlockState state) {
-        return new BlockChangeTriggerInstance(state);
+    public BlockChangeTriggerInstance create(BlockPredicate predicate) {
+        return new BlockChangeTriggerInstance(predicate);
     }
 
     public static class BlockChangeTriggerInstance extends AbstractPortalTriggerInstance<BlockChangeTriggerInstance> {
@@ -35,18 +36,18 @@ public class BlockChangeTrigger extends SimplePortalTrigger<BlockChangeTrigger.B
 
         //$ map_codec_swap BlockChangeTriggerInstance
         public static final MapCodec<BlockChangeTriggerInstance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                BlockState.CODEC.fieldOf("block").forGetter(i -> i.blockState)
+                BlockPredicate.CODEC.fieldOf("predicate").forGetter(i -> i.predicate)
         ).apply(instance, BlockChangeTriggerInstance::new));
 
-        private final BlockState blockState;
+        private final BlockPredicate predicate;
 
-        public BlockChangeTriggerInstance(BlockState blockState) {
+        public BlockChangeTriggerInstance(BlockPredicate predicate) {
             super(PortalTriggers.BLOCK_CHANGE);
-            this.blockState = blockState;
+            this.predicate = predicate;
         }
 
-        public boolean matches(BlockState state) {
-            return blockState.getBlock().equals(state.getBlock());
+        public boolean matches(LevelReader level, BlockPos pos) {
+            return predicate.test(level, pos);
         }
 
         public void onTrigger(TriggerResult result, Level level, BlockPos pos, @Nullable Player player) {
