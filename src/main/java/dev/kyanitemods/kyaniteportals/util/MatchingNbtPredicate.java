@@ -35,7 +35,7 @@ public class MatchingNbtPredicate implements BlockPredicate {
     @Override
     public boolean test(WorldGenLevel level, BlockPos pos) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
-        return blockEntity != null && NbtUtils.compareNbt(blockEntity.saveWithFullMetadata(/*? if >=1.21 {*/level.registryAccess()/*? }*/), nbt, true);
+        return blockEntity != null && NbtUtils.compareNbt(nbt, blockEntity.saveWithFullMetadata(/*? if >=1.21 {*/level.registryAccess()/*? }*/), true);
     }
 
     public static MatchingNbtPredicate of(CompoundTag nbt) {
