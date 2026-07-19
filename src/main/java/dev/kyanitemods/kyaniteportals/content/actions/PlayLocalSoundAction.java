@@ -7,7 +7,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.actions.location.ActionLocation;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalActions;
-import dev.kyanitemods.kyaniteportals.util.KyanitePortalsUtil;
+import dev.kyanitemods.kyaniteportals.util.StonecutterUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
@@ -57,7 +57,7 @@ public final class PlayLocalSoundAction extends PortalAction<PlayLocalSoundActio
         if (!(entity instanceof ServerPlayer player)) return PortalActionResult.FAILURE;
 
         Optional<ServerLevel> optional = location.getWorld(level);
-        if (optional.isEmpty() || !KyanitePortalsUtil.getIdentifier(entity.level().dimension()).equals(KyanitePortalsUtil.getIdentifier(optional.get().dimension()))) return PortalActionResult.FAILURE;
+        if (optional.isEmpty() || !StonecutterUtil.getIdentifier(entity.level().dimension()).equals(StonecutterUtil.getIdentifier(optional.get().dimension()))) return PortalActionResult.FAILURE;
 
         player.connection.send(new ClientboundSoundPacket(soundEvent(), SoundSource.AMBIENT, location.position().x(), location.position().y(), location.position().z(), volume().sample(level.getRandom()), pitch().sample(level.getRandom()), level.getRandom().nextLong()));
         return PortalActionResult.SUCCESS;

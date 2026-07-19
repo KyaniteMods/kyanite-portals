@@ -7,7 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.actions.location.ActionLocation;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalActions;
 import dev.kyanitemods.kyaniteportals.util.BlockEntityPair;
-import dev.kyanitemods.kyaniteportals.util.KyanitePortalsUtil;
+import dev.kyanitemods.kyaniteportals.util.TeleportHelper;
 //? if <1.21.11 {
 /*import net.minecraft.BlockUtil;
 *///? } else
@@ -75,8 +75,8 @@ public class CreateNetherLikePortalAction extends PortalAction<CreateNetherLikeP
 
         if (shouldTeleportPlayerToPortal() && entity != null) {
             optionalPortal.map(foundRectangle ->
-                    KyanitePortalsUtil.getDimensionTransitionFromExit(level, pos, serverLevel, foundRectangle, axis, entity)
-            ).ifPresent(info -> KyanitePortalsUtil.teleport(entity, serverLevel, info));
+                    TeleportHelper.getDimensionTransitionFromExit(level, pos, serverLevel, foundRectangle, axis, entity)
+            ).ifPresent(info -> TeleportHelper.teleport(entity, serverLevel, info));
         }
 
         return PortalActionResult.SUCCESS;
@@ -182,7 +182,7 @@ public class CreateNetherLikePortalAction extends PortalAction<CreateNetherLikeP
             }
         }
 
-        return Optional.of(new BlockUtil.FoundRectangle(placementPos.immutable(), 2, 3));
+        return Optional.of(new BlockUtil.FoundRectangle(placementPos.immutable(), getSize().widthWithoutFrame(), getSize().heightWithoutFrame()));
     }
 
     private static boolean canPortalReplaceBlock(ServerLevel serverLevel, BlockPos.MutableBlockPos mutablePos) {

@@ -5,7 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.actions.ActionExecutionData;
 import dev.kyanitemods.kyaniteportals.util.CodecHelper;
-import dev.kyanitemods.kyaniteportals.util.KyanitePortalsUtil;
+import dev.kyanitemods.kyaniteportals.util.StonecutterUtil;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
@@ -59,9 +59,9 @@ public record FullActionLocationOptions(DimensionContext dimension, PositionCont
         } catch (Throwable var9) {
             CrashReport crashReport = CrashReport.forThrowable(var9, "Calculating portal action location");
             CrashReportCategory crashReportCategory = crashReport.addCategory("Location options details");
-            crashReportCategory.setDetail("Entry dimension", KyanitePortalsUtil.getIdentifier(level.dimension()));
+            crashReportCategory.setDetail("Entry dimension", StonecutterUtil.getIdentifier(level.dimension()));
             if (entity != null) {
-                crashReportCategory.setDetail("Entity dimension", KyanitePortalsUtil.getIdentifier(entity.level().dimension()));
+                crashReportCategory.setDetail("Entity dimension", StonecutterUtil.getIdentifier(entity.level().dimension()));
             }
             crashReportCategory.setDetail("Dimension", dimension());
             crashReportCategory.setDetail("Position", position());
@@ -233,12 +233,12 @@ public record FullActionLocationOptions(DimensionContext dimension, PositionCont
             if ((adaptCoordinateSpace() || inBounds()) && level.isClientSide()) {
                 throw new UnsupportedOperationException("Cannot use adapt_coordinate_space or in_bounds on a client");
             } else {
-                if (KyanitePortalsUtil.getIdentifier(toKey).equals(KyanitePortalsUtil.getIdentifier(Registries.levelToLevelStem(level.dimension())))) { // probably unnecessary to call Registries.levelToLevelStem()?
+                if (StonecutterUtil.getIdentifier(toKey).equals(StonecutterUtil.getIdentifier(Registries.levelToLevelStem(level.dimension())))) { // probably unnecessary to call Registries.levelToLevelStem()?
                     to = level;
                 } else if (level.isClientSide()) {
                     throw new IllegalArgumentException("Cannot execute action in different dimension on a client (position options)");
                 } else {
-                    to = Objects.requireNonNull(level.getServer().getLevel(Registries.levelStemToLevel(toKey)), "Dimension " + KyanitePortalsUtil.getIdentifier(toKey) + " does not exist");
+                    to = Objects.requireNonNull(level.getServer().getLevel(Registries.levelStemToLevel(toKey)), "Dimension " + StonecutterUtil.getIdentifier(toKey) + " does not exist");
                 }
             }
 

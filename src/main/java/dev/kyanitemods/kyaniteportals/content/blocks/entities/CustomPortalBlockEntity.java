@@ -3,12 +3,9 @@ package dev.kyanitemods.kyaniteportals.content.blocks.entities;
 import dev.kyanitemods.kyaniteportals.KyanitePortals;
 import dev.kyanitemods.kyaniteportals.content.Portal;
 import dev.kyanitemods.kyaniteportals.content.registry.KyanitePortalsBlockEntities;
-import dev.kyanitemods.kyaniteportals.util.KyanitePortalsUtil;
+import dev.kyanitemods.kyaniteportals.util.StonecutterUtil;
 import net.minecraft.core.BlockPos;
-//? if >=1.21
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -16,10 +13,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-//? if >=1.21.6 {
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
-//? }
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -37,17 +30,17 @@ public class CustomPortalBlockEntity extends BlockEntity {
 
     @Override
     //? if >=1.21.6 {
-    protected void saveAdditional(ValueOutput tag) {
+    protected void saveAdditional(net.minecraft.world.level.storage.ValueOutput tag) {
     //? } else if >=1.21 {
-    /*protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+    /*protected void saveAdditional(CompoundTag tag, net.minecraft.core.HolderLookup.Provider provider) {
     *///? } else
     //protected void saveAdditional(CompoundTag tag) {
-        tag.putString("portal", KyanitePortalsUtil.getIdentifier(portalKey).toString());
+        tag.putString("portal", StonecutterUtil.getIdentifier(portalKey).toString());
     }
 
     @Override
     //? if >=1.21.6 {
-    public void loadAdditional(ValueInput tag) {
+    public void loadAdditional(net.minecraft.world.level.storage.ValueInput tag) {
         super.loadAdditional(tag);
         Identifier id = Identifier.tryParse(tag.getStringOr("portal", DEFAULT_KEY.toString()));
         if (id != null) {
@@ -55,14 +48,14 @@ public class CustomPortalBlockEntity extends BlockEntity {
         }
     //? } else {
     /*//? if >=1.21 {
-    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+    public void loadAdditional(CompoundTag tag, net.minecraft.core.HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
     //? } else {
     /^public void load(CompoundTag tag) {
         super.load(tag);
     ^///? }
 
-        if (tag.contains("portal", Tag.TAG_STRING)) {
+        if (tag.contains("portal", net.minecraft.nbt.Tag.TAG_STRING)) {
             ResourceLocation id = ResourceLocation.tryParse(tag.getString("portal"));
             if (id != null) {
                 portalKey = ResourceKey.create(KyanitePortals.RESOURCE_KEY, id);
@@ -95,7 +88,7 @@ public class CustomPortalBlockEntity extends BlockEntity {
 
     @Override
     //? if >=1.21 {
-    public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
+    public CompoundTag getUpdateTag(net.minecraft.core.HolderLookup.Provider provider) {
         return this.saveWithoutMetadata(provider);
     }
     //? } else {

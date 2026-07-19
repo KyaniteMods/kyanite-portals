@@ -5,7 +5,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import dev.kyanitemods.kyaniteportals.KyanitePortals;
 import dev.kyanitemods.kyaniteportals.content.interfaces.EntityInPortal;
 import dev.kyanitemods.kyaniteportals.content.Portal;
-import dev.kyanitemods.kyaniteportals.util.KyanitePortalsUtil;
+import dev.kyanitemods.kyaniteportals.util.StonecutterUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 //? if <1.21.6 {
@@ -74,7 +74,7 @@ public abstract class EntityMixin implements EntityInPortal {
     public void tick(Level level, BlockPos pos, ResourceKey<Portal> portal) {
         portalLevel = level;
         portalPos = pos.immutable();
-        if (getPortal() == null || !KyanitePortalsUtil.getIdentifier(portal).equals(KyanitePortalsUtil.getIdentifier(getPortal()))) {
+        if (getPortal() == null || !StonecutterUtil.getIdentifier(portal).equals(StonecutterUtil.getIdentifier(getPortal()))) {
             setPortal(portal);
             setTimeInPortal(0);
             setPortalTeleportTime(0);
@@ -226,7 +226,7 @@ public abstract class EntityMixin implements EntityInPortal {
         tag.putInt("kyanite_portals:portal_teleport_time", getPortalTeleportTime());
         tag.putInt("kyanite_portals:time_in_portal", getTimeInPortal());
         if (getPortal() != null) {
-            tag.putString("kyanite_portals:portal", KyanitePortalsUtil.getIdentifier(getPortal()).toString());
+            tag.putString("kyanite_portals:portal", StonecutterUtil.getIdentifier(getPortal()).toString());
         }
     }
 }

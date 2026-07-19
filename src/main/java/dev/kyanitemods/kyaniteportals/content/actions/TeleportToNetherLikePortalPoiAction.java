@@ -6,7 +6,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.actions.location.ActionLocation;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalActions;
-import dev.kyanitemods.kyaniteportals.util.KyanitePortalsUtil;
+import dev.kyanitemods.kyaniteportals.util.TeleportHelper;
 //? if <1.21.11 {
 /*import net.minecraft.BlockUtil;
 *///? } else
@@ -69,27 +69,27 @@ public class TeleportToNetherLikePortalPoiAction extends PortalAction<TeleportTo
 
         Optional<ServerLevel> optional = location.getWorld(level);
         if (optional.isEmpty()) return PortalActionResult.FAILURE;
-        final ServerLevel serverLevel = optional.get();
+        final ServerLevel exitLevel = optional.get();
 
         BlockPos searchPos = BlockPos.containing(location.position().x(), location.position().y(), location.position().z());
         int searchRange;
         if (shouldAdaptCoordinateSpace()) {
-            searchRange = Mth.ceil(getSearchRange() / serverLevel.dimensionType().coordinateScale());
+            searchRange = Mth.ceil(getSearchRange() / exitLevel.dimensionType().coordinateScale());
         } else {
             searchRange = getSearchRange();
         }
 
-        PoiManager poiManager = serverLevel.getPoiManager();
-        poiManager.ensureLoadedAndValid(serverLevel, searchPos, searchRange);
-        Optional<BlockUtil.FoundRectangle> optionalPortal = findPortalAround(serverLevel, getPoiTypes(), searchRange, searchPos, serverLevel.getWorldBorder(), getPortalPredicate());
+        PoiManager poiManager = exitLevel.getPoiManager();
+        poiManager.ensureLoadedAndValid(exitLevel, searchPos, searchRange);
+        Optional<BlockUtil.FoundRectangle> optionalPortal = findPortalAround(exitLevel, getPoiTypes(), searchRange, searchPos, exitLevel.getWorldBorder(), getPortalPredicate());
         if (optionalPortal.isEmpty()) return PortalActionResult.FAILURE;
 
         EnumProperty<Direction.Axis> axisProperty = level.getBlockState(pos).hasProperty(BlockStateProperties.AXIS) ? BlockStateProperties.AXIS : BlockStateProperties.HORIZONTAL_AXIS;
-        Direction.Axis axis = level.getBlockState(pos).getOptionalValue(axisProperty).orElse(Direction.Axis.X);
+        Direction.Axis entryAxis = level.getBlockState(pos).getOptionalValue(axisProperty).orElse(Direction.Axis.X);
 
-        optionalPortal.map(foundRectangle ->
-                KyanitePortalsUtil.getDimensionTransitionFromExit(level, pos, serverLevel, foundRectangle, axis, entity)
-        ).ifPresent(info -> KyanitePortalsUtil.teleport(entity, serverLevel, info));
+        optionalPortal.map(exitFoundRectangle ->
+                TeleportHelper.getDimensionTransitionFromExit(level, pos, exitLevel, exitFoundRectangle, entryAxis, entity)
+        ).ifPresent(info -> TeleportHelper.teleport(entity, exitLevel, info));
         return PortalActionResult.SUCCESS;
     }
 
@@ -116,7 +116,7 @@ public class TeleportToNetherLikePortalPoiAction extends PortalAction<TeleportTo
                     Direction.Axis axis = blockState.getOptionalValue(BlockStateProperties.AXIS).orElse(blockState.getOptionalValue(BlockStateProperties.HORIZONTAL_AXIS).orElse(Direction.Axis.X));
                     return BlockUtil.getLargestRectangleAround(
                             poiPos,
-                            axis,
+                            axis == Direction.Axis.Y ? Direction.Axis.X : axis,
                             21,
                             axis == Direction.Axis.Y ? Direction.Axis.Z : Direction.Axis.Y,
                             21,

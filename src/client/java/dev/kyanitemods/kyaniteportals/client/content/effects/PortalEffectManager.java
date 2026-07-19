@@ -7,7 +7,7 @@ import com.mojang.serialization.Codec;
 import dev.kyanitemods.kyaniteportals.KyanitePortals;
 import dev.kyanitemods.kyaniteportals.content.Portal;
 import dev.kyanitemods.kyaniteportals.content.blocks.entities.CustomPortalBlockEntity;
-import dev.kyanitemods.kyaniteportals.util.KyanitePortalsUtil;
+import dev.kyanitemods.kyaniteportals.util.StonecutterUtil;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 //? if <1.21.5
 //import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -75,8 +75,8 @@ public class PortalEffectManager extends /*? if <1.21.3 {*//*SimpleJsonResourceR
     protected void apply(Map<Identifier, Set<PortalEffectOptions<?>>> map, ResourceManager resourceManager, ProfilerFiller profilerFiller) {
         ImmutableMap.Builder<Identifier, Set<PortalEffectOptions<?>>> builder = ImmutableMap.builder();
         for (Map.Entry<ResourceKey<Portal>, Integer> entry : CustomPortalBlockEntity.COLORS.entrySet()) {
-            if (map.containsKey(KyanitePortalsUtil.getIdentifier(entry.getKey()))) continue;
-            builder.put(KyanitePortalsUtil.getIdentifier(entry.getKey()), Set.of(
+            if (map.containsKey(StonecutterUtil.getIdentifier(entry.getKey()))) continue;
+            builder.put(StonecutterUtil.getIdentifier(entry.getKey()), Set.of(
                     PortalEffects.NAUSEA,
                     PortalEffects.CLOSE_SCREENS,
                     new TextureOverlayPortalEffectOptions(/*? if >=1.21.5 {*/AtlasIds.BLOCKS/*? } else {*//*TextureAtlas.LOCATION_BLOCKS*//*? }*/, KyanitePortals.id("block/custom_portal"), entry.getValue())/*? if >=1.20.5 {*/,

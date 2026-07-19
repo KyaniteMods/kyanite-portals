@@ -7,7 +7,7 @@ import com.mojang.serialization.DataResult;
 import dev.kyanitemods.kyaniteportals.KyanitePortals;
 import dev.kyanitemods.kyaniteportals.client.KyanitePortalsClient;
 import dev.kyanitemods.kyaniteportals.content.Portal;
-import dev.kyanitemods.kyaniteportals.util.KyanitePortalsUtil;
+import dev.kyanitemods.kyaniteportals.util.StonecutterUtil;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 
@@ -44,7 +44,7 @@ public final class PortalEffects {
     }
 
     public static Set<PortalEffectOptions<?>> get(ResourceKey<Portal> portal) {
-        return KyanitePortalsClient.PORTAL_EFFECT_MANAGER.get(KyanitePortalsUtil.getIdentifier(portal));
+        return KyanitePortalsClient.PORTAL_EFFECT_MANAGER.get(StonecutterUtil.getIdentifier(portal));
     }
 
     @SuppressWarnings("unchecked")
