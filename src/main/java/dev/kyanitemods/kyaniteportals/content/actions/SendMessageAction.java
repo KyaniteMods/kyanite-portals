@@ -7,19 +7,19 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.registry.PortalActions;
+import dev.kyanitemods.kyaniteportals.util.CodecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 public class SendMessageAction extends PortalAction<SendMessageAction> {
-    //$ map_codec_swap SendActionBarMessageAction
+    //$ map_codec_swap SendMessageAction
     public static final MapCodec<SendMessageAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Settings.optionalLocation(),
-            ComponentSerialization.CODEC.fieldOf("text").forGetter(SendMessageAction::getText),
+            CodecHelper.COMPONENT_CODEC.fieldOf("text").forGetter(SendMessageAction::getText),
             Codec.BOOL.fieldOf("overlay").forGetter(SendMessageAction::isOverlay)
     ).apply(instance, SendMessageAction::new));
 

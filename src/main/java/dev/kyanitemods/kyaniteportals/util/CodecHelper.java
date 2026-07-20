@@ -11,13 +11,13 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.KyanitePortals;
-import dev.kyanitemods.kyaniteportals.mixin.ContextAwarePredicateAccessor;
 import net.minecraft.advancements.criterion.*;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ExtraCodecs;
@@ -47,7 +47,7 @@ public final class CodecHelper {
 
     //? if <1.20.4 {
     /*private static final Gson CONDITION_GSON = net.minecraft.world.level.storage.loot.Deserializers.createConditionSerializer().create();
-    private static final Codec<ContextAwarePredicate> CONTEXT_AWARE_PREDICATE_CODEC = codec(element -> CONDITION_GSON.fromJson(element, net.minecraft.world.level.storage.loot.predicates.LootItemCondition[].class), CONDITION_GSON::toJsonTree).xmap(ContextAwarePredicate::create, contextAwarePredicate -> ((ContextAwarePredicateAccessor) contextAwarePredicate).kyanitePortals$getConditions());
+    private static final Codec<ContextAwarePredicate> CONTEXT_AWARE_PREDICATE_CODEC = codec(element -> CONDITION_GSON.fromJson(element, net.minecraft.world.level.storage.loot.predicates.LootItemCondition[].class), CONDITION_GSON::toJsonTree).xmap(ContextAwarePredicate::create, contextAwarePredicate -> ((dev.kyanitemods.kyaniteportals.mixin.ContextAwarePredicateAccessor) contextAwarePredicate).kyanitePortals$getConditions());
     public static final Codec<ContextAwarePredicate> ENTITY_PREDICATE_ADVANCEMENT_CODEC = Codec.either(
             CONTEXT_AWARE_PREDICATE_CODEC,
             ENTITY_PREDICATE_CODEC
@@ -55,14 +55,16 @@ public final class CodecHelper {
             either -> either.map(predicate -> predicate, EntityPredicate::wrap),
             Either::left
     );
+    public static final Codec<Component> COMPONENT_CODEC = net.minecraft.util.ExtraCodecs.COMPONENT;
     *///? } else {
     public static final Codec<ContextAwarePredicate> ENTITY_PREDICATE_ADVANCEMENT_CODEC = EntityPredicate.ADVANCEMENT_CODEC;
+    public static final Codec<Component> COMPONENT_CODEC = net.minecraft.network.chat.ComponentSerialization.CODEC;
     //? }
 
     //? if <1.21.5 {
     /*public static final Codec<CompoundTag> FLATTENED_TAG_CODEC = CodecHelper.codec(json -> {
         try {
-            return TagParser.parseTag(GsonHelper.convertToString(json, "nbt"));
+            return TagParser.parseTag(net.minecraft.util.GsonHelper.convertToString(json, "nbt"));
         } catch (CommandSyntaxException var3) {
             throw new JsonSyntaxException("Invalid NBT tag: " + var3.getMessage());
         }
