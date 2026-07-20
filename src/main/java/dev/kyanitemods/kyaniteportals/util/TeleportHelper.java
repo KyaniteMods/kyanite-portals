@@ -64,7 +64,7 @@ public class TeleportHelper {
         //? }
         double posX = entityWidth / 2.0 + (exitPortalWidth - entityWidth) * entryRelativePortalPos.x();
         double posY = (exitAxis == Direction.Axis.Y ? entityWidth / 2.0 : 0.0) + (exitPortalHeight - (exitAxis == Direction.Axis.Y ? entityWidth : entityHeight)) * entryRelativePortalPos.y();
-        double posZ = exitAxis == Direction.Axis.Y ? 0.0 : 0.5 + entryRelativePortalPos.z();
+        double posZ = exitAxis == Direction.Axis.Y ? 0.0 : 0.5 + Mth.clamp(entryRelativePortalPos.z(), -0.5, 0.5);
 
         Vec3 exitPortalPos = switch (exitAxis) {
             case X -> new Vec3((double)blockPos.getX() + posX, (double)blockPos.getY() + posY, (double)blockPos.getZ() + posZ);
