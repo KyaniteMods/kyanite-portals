@@ -82,7 +82,7 @@ public class TeleportHelper {
 
     public static void teleport(Entity entity, ServerLevel level, /*? if <1.21 {*//*PortalInfo*//*? } else if <1.21.3 { *//*DimensionTransition*//*? } else {*/TeleportTransition/*? }*/ info) {
         //? if <1.21 {
-        /*entity.teleportTo(level, info.pos.x(), info.pos.y(), info.pos.z(), Set.of(), info.yRot, info.xRot);
+        /*entity.teleportTo(level, info.pos.x(), info.pos.y(), info.pos.z(), java.util.Set.of(), info.yRot, info.xRot);
         entity.setDeltaMovement(info.speed);
         *///? } else if <1.21.3 {
         /*entity.changeDimension(info);

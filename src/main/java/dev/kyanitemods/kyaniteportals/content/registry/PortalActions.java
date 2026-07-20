@@ -24,6 +24,7 @@ public final class PortalActions {
     public static final CodecPortalActionType<SpawnNetherLikePortalParticlesAction> SPAWN_NETHER_LIKE_PORTAL_PARTICLES = register("spawn_nether_like_portal_particles", new CodecPortalActionType<>(SpawnNetherLikePortalParticlesAction.CODEC));
     public static final CodecPortalActionType<TeleportToServerSpawnPointAction> TELEPORT_TO_SERVER_SPAWN_POINT = register("teleport_to_server_spawn_point", new CodecPortalActionType<>(TeleportToServerSpawnPointAction.CODEC));
     public static final CodecPortalActionType<WinGamePortalAction> WIN_GAME = register("win_game", new CodecPortalActionType<>(WinGamePortalAction.CODEC));
+    public static final CodecPortalActionType<SendMessageAction> SEND_MESSAGE = register("send_message", new CodecPortalActionType<>(SendMessageAction.CODEC));
 
     private static <T extends PortalAction<T>, U extends PortalActionType<T>> U register(String id, U type) {
         return register(KyanitePortals.id(id), type);

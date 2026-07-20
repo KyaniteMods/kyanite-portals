@@ -15,8 +15,8 @@ import dev.kyanitemods.kyaniteportals.content.triggers.PortalTriggerInstance;
 import dev.kyanitemods.kyaniteportals.util.BlockEntityPair;
 import dev.kyanitemods.kyaniteportals.util.MatchingNbtPredicate;
 import dev.kyanitemods.kyaniteportals.util.Range;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.advancements.criterion.ItemPredicate;
+import net.minecraft.ChatFormatting;
+import net.minecraft.advancements.criterion.*;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 //? if >=1.21.3 {
@@ -25,6 +25,7 @@ import net.minecraft.core.HolderGetter;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
@@ -38,11 +39,16 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.predicates.AllOfCondition;
+import net.minecraft.world.level.storage.loot.predicates.InvertedLootItemCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemEntityPropertyCondition;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector3f;
@@ -75,6 +81,7 @@ public final class SimplePortalBuilder {
     private Optional<Holder<SoundEvent>> triggerSound = Optional.of(Holder.direct(SoundEvents.PORTAL_TRIGGER));
     private Set<Direction.Axis> axes = Set.of(Direction.Axis.X, Direction.Axis.Z);
     private boolean cornersRequired = false;
+    private Optional<Boolean> spectatorsCanUse = Optional.empty();
 
     public static SimplePortalBuilder create() {
         return new SimplePortalBuilder();
@@ -265,6 +272,11 @@ public final class SimplePortalBuilder {
         return cornersRequired(true);
     }
 
+    public SimplePortalBuilder spectatorsCanUse(boolean value) {
+        spectatorsCanUse = Optional.of(value);
+        return this;
+    }
+
     public ResourceKey<Portal> register(Identifier id) {
         CompoundTag tag = new CompoundTag();
         tag.putString("portal", id.toString());
@@ -284,6 +296,55 @@ public final class SimplePortalBuilder {
         KyanitePortals.PORTAL_REGISTRY_OVERRIDES.put(key, provider -> {
             //? if >=1.21.3
             HolderGetter<EntityType<?>> entityLookup = provider.lookup(Registries.ENTITY_TYPE).orElseThrow().getter();
+
+            PortalAction.Settings.Builder createPortalSettings = PortalAction.Settings.Builder.create()
+                    .predicate(ContextAwarePredicate.create(AllOfCondition.allOf(
+                            LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, EntityPredicate.Builder.entity().of(/*? if >=1.21.3 {*/entityLookup, /*? }*/EntityType.PLAYER)),
+                            InvertedLootItemCondition.invert(LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, EntityPredicate.Builder.entity().subPredicate(PlayerPredicate.Builder.player().setGameType(/*? if <1.21 {*//*GameType.SPECTATOR*//*? } else {*/GameTypePredicate.of(GameType.SPECTATOR)/*? }*/).build()).build()))
+                    ).build()))
+                    .locationOptions(new LoadActionLocationOptions("location"));
+
+            PortalAction.Settings.Builder teleportToPortalSettings = PortalAction.Settings.Builder.create()
+                    .locationOptions(new LoadActionLocationOptions("location"))
+                    .onFailure(
+                            new CreateNetherLikePortalAction(
+                                    createPortalSettings.build(),
+                                    generatedFrame == null ? new BlockEntityPair(Blocks.OBSIDIAN.defaultBlockState(), new CompoundTag()) : generatedFrame,
+                                    portal,
+                                    new CreateNetherLikePortalAction.Size(generatedWidth, generatedHeight),
+                                    true
+                            ),
+                            new SendMessageAction(
+                                    PortalAction.Settings.Builder.create()
+                                            .predicate(ContextAwarePredicate.create(LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, EntityPredicate.Builder.entity().subPredicate(PlayerPredicate.Builder.player().setGameType(/*? if <1.21 {*//*GameType.SPECTATOR*//*? } else {*/GameTypePredicate.of(GameType.SPECTATOR)/*? }*/).build()).build()).build()))
+                                            .build(),
+                                    Component.translatable(/*? if <26.3 {*/"kyanite_portals.spectator.cannot_teleport"/*? } else {*//*"spectator.cannot_teleport"*//*? }*/).withStyle(ChatFormatting.RED),
+                                    true
+                            )
+                    );
+
+            travelSound.ifPresent(soundEventHolder -> {
+                PlayLocalSoundAction action = new PlayLocalSoundAction(
+                        PortalAction.Settings.Builder.create()
+                                .locationOptions(
+                                        new FullActionLocationOptions(
+                                                FullActionLocationOptions.InEntityDimension.INSTANCE,
+                                                new FullActionLocationOptions.PositionContext(
+                                                        FullActionLocationOptions.PositionContext.From.ENTITY,
+                                                        FullActionLocationOptions.PositionContext.RoundingMode.NONE,
+                                                        false,
+                                                        false,
+                                                        Vec3.ZERO)))
+                                .build(),
+                        soundEventHolder,
+                        ConstantFloat.of(0.25f),
+                        UniformFloat.of(0.8f, 1.2f)
+                );
+
+                createPortalSettings.onSuccess(action);
+                teleportToPortalSettings.onSuccess(action);
+            });
+
             Portal.Builder builder = Portal.Builder.create()
                     .withGenerator(new NetherLikePortalGenerator(
                             ignition.stream().map(f -> f.apply(provider)).collect(Collectors.toUnmodifiableList()),
@@ -309,21 +370,7 @@ public final class SimplePortalBuilder {
                                                     FullActionLocationOptions.PositionContext.DEFAULT
                                             )).build(), "location"),
                             new TeleportToNetherLikePortalPoiAction(
-                                    PortalAction.Settings.Builder.create()
-                                            .locationOptions(new LoadActionLocationOptions("location"))
-                                            .onFailure(
-                                                    new CreateNetherLikePortalAction(
-                                                            PortalAction.Settings.Builder.create()
-                                                                    .predicate(EntityPredicate.Builder.entity().of(/*? if >=1.21.3 {*/entityLookup, /*? }*/EntityType.PLAYER).build())
-                                                                    .locationOptions(new LoadActionLocationOptions("location"))
-                                                                    .build(),
-                                                            generatedFrame == null ? new BlockEntityPair(Blocks.OBSIDIAN.defaultBlockState(), new CompoundTag()) : generatedFrame,
-                                                            portal,
-                                                            new CreateNetherLikePortalAction.Size(generatedWidth, generatedHeight),
-                                                            true
-                                                    )
-                                            )
-                                            .build(),
+                                    teleportToPortalSettings.build(),
                                     POI_TAG,
                                     portalPredicate,
                                     128,
@@ -338,22 +385,6 @@ public final class SimplePortalBuilder {
                             UniformFloat.of(0.8f, 1.2f)
                     )
             ));
-            travelSound.ifPresent(soundEventHolder -> builder.withTravelActions(new PlayLocalSoundAction(
-                    PortalAction.Settings.Builder.create()
-                            .locationOptions(
-                                    new FullActionLocationOptions(
-                                            FullActionLocationOptions.InEntityDimension.INSTANCE,
-                                            new FullActionLocationOptions.PositionContext(
-                                                    FullActionLocationOptions.PositionContext.From.ENTITY,
-                                                    FullActionLocationOptions.PositionContext.RoundingMode.NONE,
-                                                    false,
-                                                    false,
-                                                    Vec3.ZERO)))
-                            .build(),
-                    soundEventHolder,
-                    ConstantFloat.of(0.25f),
-                    UniformFloat.of(0.8f, 1.2f)
-            )));
             ambientSound.ifPresent(soundEventHolder -> builder.withAnimationTickActions(
                     new PlayLocalSoundAction(
                             PortalAction.Settings.Builder.create()
@@ -383,6 +414,7 @@ public final class SimplePortalBuilder {
                         particleOptions.get().get()
                 ));
             }
+            spectatorsCanUse.ifPresent(builder::spectatorsCanUse);
             return builder.build();
         });
 

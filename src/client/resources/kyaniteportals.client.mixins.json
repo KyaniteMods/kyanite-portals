@@ -15,7 +15,9 @@
     "PortalOverlayMixin",
     "PortalOverlayMixin$EntityAccessor",
     "PortalOverlayMixin$GuiAccessor",
-    "ReceivingLevelScreenMixin"
+    "ReceivingLevelScreenMixin",
+    "SpectatorGameRendererMixin",
+    "SpectatorGuiMixin"
   ],
   "injectors": {
     "defaultRequire": 1

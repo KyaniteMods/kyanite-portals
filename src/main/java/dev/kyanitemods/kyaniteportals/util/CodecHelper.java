@@ -1,9 +1,6 @@
 package dev.kyanitemods.kyaniteportals.util;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.*;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.Products;
 import com.mojang.datafixers.kinds.App;
@@ -12,10 +9,10 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.advancements.criterion.ItemPredicate;
-import net.minecraft.advancements.criterion.NbtPredicate;
-import net.minecraft.advancements.criterion.StatePropertiesPredicate;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.kyanitemods.kyaniteportals.KyanitePortals;
+import dev.kyanitemods.kyaniteportals.mixin.ContextAwarePredicateAccessor;
+import net.minecraft.advancements.criterion.*;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -24,7 +21,6 @@ import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.level.dimension.LevelStem;
 import org.jetbrains.annotations.ApiStatus;
@@ -47,6 +43,20 @@ public final class CodecHelper {
     public static final Codec<StatePropertiesPredicate> STATE_PROPERTIES_PREDICATE_CODEC = StatePropertiesPredicate.CODEC;
     public static final Codec<NbtPredicate> NBT_PREDICATE_CODEC = NbtPredicate.CODEC;
     public static final Codec<ItemPredicate> ITEM_PREDICATE_CODEC = ItemPredicate.CODEC;
+    //? }
+
+    //? if <1.20.4 {
+    /*private static final Gson CONDITION_GSON = net.minecraft.world.level.storage.loot.Deserializers.createConditionSerializer().create();
+    private static final Codec<ContextAwarePredicate> CONTEXT_AWARE_PREDICATE_CODEC = codec(element -> CONDITION_GSON.fromJson(element, net.minecraft.world.level.storage.loot.predicates.LootItemCondition[].class), CONDITION_GSON::toJsonTree).xmap(ContextAwarePredicate::create, contextAwarePredicate -> ((ContextAwarePredicateAccessor) contextAwarePredicate).kyanitePortals$getConditions());
+    public static final Codec<ContextAwarePredicate> ENTITY_PREDICATE_ADVANCEMENT_CODEC = Codec.either(
+            CONTEXT_AWARE_PREDICATE_CODEC,
+            ENTITY_PREDICATE_CODEC
+    ).xmap(
+            either -> either.map(predicate -> predicate, EntityPredicate::wrap),
+            Either::left
+    );
+    *///? } else {
+    public static final Codec<ContextAwarePredicate> ENTITY_PREDICATE_ADVANCEMENT_CODEC = EntityPredicate.ADVANCEMENT_CODEC;
     //? }
 
     //? if <1.21.5 {

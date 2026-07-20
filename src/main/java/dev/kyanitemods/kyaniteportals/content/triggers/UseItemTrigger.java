@@ -10,8 +10,6 @@ import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.core.BlockPos;
 //? if >=1.21.3
 import net.minecraft.core.HolderGetter;
-//? if >=1.21
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.player.Player;
@@ -32,7 +30,7 @@ public class UseItemTrigger extends SimplePortalTrigger<UseItemTrigger.UseItemTr
         return UseItemTriggerInstance.CODEC;
     }
 
-    public TriggerResult trigger(ServerLevel level, BlockPos pos, @Nullable Player player, ItemStack stack) {
+    public TriggerResult trigger(net.minecraft.server.level.ServerLevel level, BlockPos pos, @Nullable Player player, ItemStack stack) {
         return trigger(level, pos, player, instance -> UseItemTriggerInstance.POSITIONS, (instance, triggerPos) -> instance.matches(stack), (instance, triggerPos) -> instance.beforeTrigger(level, player, stack), (instance, triggerPos, result) -> instance.onTrigger(result, level, player, stack));
     }
 
@@ -54,7 +52,7 @@ public class UseItemTrigger extends SimplePortalTrigger<UseItemTrigger.UseItemTr
     }
 
     public static boolean shouldSwing(ItemStack stack) {
-        return PREDICATES.stream().anyMatch(predicate -> predicate.test(stack));
+        return PREDICATES.stream().anyMatch(predicate -> /*? if <1.20.6 {*//*predicate.matches(stack)*//*? } else {*/predicate.test(stack)/*? }*/);
     }
 
     @Override
@@ -97,7 +95,7 @@ public class UseItemTrigger extends SimplePortalTrigger<UseItemTrigger.UseItemTr
                     *///? } else if <1.21 {
                     //stack.hurtAndBreak(damageItemBy, level.getRandom(), ((ServerPlayer) player), () -> {});
                     //? } else
-                    stack.hurtAndBreak(damageItemBy, ((ServerLevel) level), ((ServerPlayer) player), item -> {});
+                    stack.hurtAndBreak(damageItemBy, ((net.minecraft.server.level.ServerLevel) level), ((ServerPlayer) player), item -> {});
                 }
             }
         }

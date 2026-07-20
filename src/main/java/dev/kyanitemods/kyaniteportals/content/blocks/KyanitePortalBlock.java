@@ -49,7 +49,7 @@ public abstract class KyanitePortalBlock extends Block {
 
     public abstract Optional<ResourceKey<Portal>> getPortalKey(LevelReader level, BlockPos pos);
 
-    protected Optional<Portal> getPortal(LevelReader level, BlockPos pos) {
+    public Optional<Portal> getPortal(LevelReader level, BlockPos pos) {
         Optional<ResourceKey<Portal>> key = getPortalKey(level, pos);
         if (key.isEmpty()) return Optional.empty();
         Optional<? extends HolderLookup.RegistryLookup<Portal>> lookup = level.registryAccess().lookup(KyanitePortals.RESOURCE_KEY);
@@ -58,7 +58,7 @@ public abstract class KyanitePortalBlock extends Block {
         return portalReference.map(Holder.Reference::value);
     }
 
-    protected void execute(Level level, BlockPos pos, @Nullable Entity entity, Function<Portal, List<PortalAction<?>>> actions) {
+    public void execute(Level level, BlockPos pos, @Nullable Entity entity, Function<Portal, List<PortalAction<?>>> actions) {
         Optional<Portal> portal = getPortal(level, pos);
         if (portal.isEmpty()) return;
         Portal.executeAll(level, pos, entity, actions.apply(portal.get()));

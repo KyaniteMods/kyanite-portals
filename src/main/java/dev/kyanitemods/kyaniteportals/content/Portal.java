@@ -17,11 +17,17 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public record Portal(Optional<PortalGenerator<?>> generator, Optional<PortalTester<?>> tester, boolean testValidityAfterGeneration, Optional<EntityPredicate> entityPredicate, TravelTime travelTime, List<PortalAction<?>> enterActions, List<PortalAction<?>> travelActions, List<PortalAction<?>> tickActions, List<PortalAction<?>> randomTickActions, List<PortalAction<?>> animationTickActions) {
+public record Portal(Optional<PortalGenerator<?>> generator, Optional<PortalTester<?>> tester, boolean testValidityAfterGeneration, Optional<EntityPredicate> entityPredicate, TravelTime travelTime, List<PortalAction<?>> enterActions, List<PortalAction<?>> travelActions, List<PortalAction<?>> tickActions, List<PortalAction<?>> randomTickActions, List<PortalAction<?>> animationTickActions, boolean spectatorsCanUse) {
+    public static final boolean SPECTATORS_CAN_USE_DEFAULT = /*? if <26.3 {*/false/*? } else {*//*true*//*? }*/;
+
     public static final Codec<Portal> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             PortalGenerators.CODEC.optionalFieldOf("generator").forGetter(Portal::generator),
             PortalTesters.CODEC.optionalFieldOf("tester").forGetter(Portal::tester),
@@ -32,7 +38,8 @@ public record Portal(Optional<PortalGenerator<?>> generator, Optional<PortalTest
             PortalActions.CODEC.listOf().optionalFieldOf("travel_actions", List.of()).forGetter(Portal::travelActions),
             PortalActions.CODEC.listOf().optionalFieldOf("tick_actions", List.of()).forGetter(Portal::tickActions),
             PortalActions.CODEC.listOf().optionalFieldOf("random_tick_actions", List.of()).forGetter(Portal::randomTickActions),
-            PortalActions.CODEC.listOf().optionalFieldOf("animation_tick_actions", List.of()).forGetter(Portal::animationTickActions)
+            PortalActions.CODEC.listOf().optionalFieldOf("animation_tick_actions", List.of()).forGetter(Portal::animationTickActions),
+            Codec.BOOL.optionalFieldOf("spectators_can_use", SPECTATORS_CAN_USE_DEFAULT).forGetter(Portal::spectatorsCanUse)
     ).apply(instance, Portal::new));
 
     public static void executeAll(Level level, BlockPos pos, @Nullable Entity entity, List<PortalAction<?>> actions) {
@@ -43,7 +50,7 @@ public record Portal(Optional<PortalGenerator<?>> generator, Optional<PortalTest
             List<PortalAction<?>> toAdd;
             if (!(level.getRandom().nextFloat() < action.getSettings().probability())) {
                 toAdd = action.onFailure(FailureReason.PROBABILITY);
-            } else if (action.getSettings().predicate().isPresent() && (level.isClientSide() || !action.getSettings().predicate().get().matches(((ServerLevel) level), pos.getCenter(), entity))) { // NOTE: desync between client and server.
+            } else if (action.getSettings().predicate().isPresent() && (level.isClientSide() || entity == null || !action.getSettings().predicate().get().matches(new LootContext.Builder(new LootParams.Builder((ServerLevel) level).withParameter(LootContextParams.THIS_ENTITY, entity).withParameter(LootContextParams.ORIGIN, entity.position()).create(LootContextParamSets.ADVANCEMENT_REWARD)).create(/*? if <1.20.2 { *//*null*//*? } else { */Optional.empty()/*? } */)))) { // NOTE: desync between client and server.
                 toAdd = action.onFailure(FailureReason.PREDICATE);
             } else if ((level.isClientSide() && action.getSettings().environment().isClient()) || (!level.isClientSide() && action.getSettings().environment().isServer())) {
                 PortalActionResult result = action.execute(level, pos, entity, data);
@@ -67,6 +74,7 @@ public record Portal(Optional<PortalGenerator<?>> generator, Optional<PortalTest
         private List<PortalAction<?>> tickActions = new ArrayList<>();
         private List<PortalAction<?>> randomTickActions = new ArrayList<>();
         private List<PortalAction<?>> animationTickActions = new ArrayList<>();
+        private boolean spectatorsCanUse = SPECTATORS_CAN_USE_DEFAULT;
 
         protected Builder() {}
 
@@ -128,8 +136,13 @@ public record Portal(Optional<PortalGenerator<?>> generator, Optional<PortalTest
             return this;
         }
 
+        public Builder spectatorsCanUse(boolean value) {
+            spectatorsCanUse = value;
+            return this;
+        }
+
         public Portal build() {
-            return new Portal(generator, tester, testValidityAfterGeneration, entityPredicate, travelTime, enterActions, travelActions, tickActions, randomTickActions, animationTickActions);
+            return new Portal(generator, tester, testValidityAfterGeneration, entityPredicate, travelTime, enterActions, travelActions, tickActions, randomTickActions, animationTickActions, spectatorsCanUse);
         }
     }
 }

@@ -4,18 +4,21 @@
   "package": "dev.kyanitemods.kyaniteportals.mixin",
   "mixins": [
     "AddPortalToRegistryMixin",
+    "ContextAwarePredicateAccessor",
     "EntityAccessor",
     "EntityMixin",
     "ItemAccessor",
     "LevelChunkMixin",
-    "ServerLevelMixin",
     "PlayerMixin",
+    "ServerLevelMixin",
     "ServerPlayerAccessor",
+    "ServerPlayerGameModeMixin",
     "ServerPlayerMixin",
     "ThrownPotionTriggerMixin"
   ],
   "injectors": {
-    "defaultRequire": 1
+    "defaultRequire": 1,
+    "maxShiftBy": 2
   },
   "overwrites": {
     "requireAnnotations": true

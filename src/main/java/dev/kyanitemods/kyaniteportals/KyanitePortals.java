@@ -112,6 +112,7 @@ public class KyanitePortals implements ModInitializer {
                     .fromDimension(LevelStem.OVERWORLD)
                     .toDimension(LevelStem.END)
                     .allAxes()
+                    .spectatorsCanUse(true)
                     .register(id("test_portal"));
         }
     }
