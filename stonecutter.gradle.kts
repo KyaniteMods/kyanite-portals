@@ -22,8 +22,8 @@ stonecutter parameters {
     dependencies["fapi"] = node.project.property("deps.fabric_api") as String
 
     swaps["map_codec_swap"] = when {
-        eval(current.version, "<1.20.5") -> "public static final Codec<$1> CODEC = RecordCodecBuilder.create(instance -> instance.group("
-        else -> "public static final MapCodec<$1> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group("
+        eval(current.version, "<1.20.5") -> "public static final com.mojang.serialization.Codec<$1> CODEC = RecordCodecBuilder.create(instance -> instance.group("
+        else -> "public static final com.mojang.serialization.MapCodec<$1> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group("
     }
 
     replacements {
