@@ -37,7 +37,7 @@ import java.util.Set;
 
 public class TeleportToServerSpawnPointAction extends PortalAction<TeleportToServerSpawnPointAction> {
     //$ map_codec_swap TeleportToServerSpawnPointAction
-    public static final MapCodec<TeleportToServerSpawnPointAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+    public static final com.mojang.serialization.MapCodec<TeleportToServerSpawnPointAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Settings.optionalLocation()
     ).apply(instance, TeleportToServerSpawnPointAction::new));
 

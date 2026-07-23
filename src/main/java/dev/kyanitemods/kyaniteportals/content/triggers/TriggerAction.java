@@ -8,5 +8,5 @@ import net.minecraft.world.level.WorldGenLevel;
 import org.jetbrains.annotations.Nullable;
 
 public interface TriggerAction {
-    <I extends PortalTriggerInstance<I>> TriggerResult run(I instance, ServerLevel level, BlockPos pos, @Nullable Player player);
+    <I extends PortalTriggerInstance<I>> TriggerResult run(I instance, Level level, BlockPos pos, @Nullable Player player);
 }

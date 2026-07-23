@@ -24,7 +24,6 @@ import net.minecraft.resources.Identifier;
 *///? } else {
 import net.minecraft.world.InteractionResult;
 //? }
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -78,7 +77,7 @@ public class KyanitePortals implements ModInitializer {
             }
 
             BlockPos pos = hit.getBlockPos().relative(hit.getDirection());
-            if (world instanceof ServerLevel serverLevel ? PortalTriggers.USE_ITEM.trigger(serverLevel, pos, player, stack) == TriggerResult.FAIL : !UseItemTrigger.shouldSwing(stack)) {
+            if (PortalTriggers.USE_ITEM.trigger(world, pos, player, stack) == TriggerResult.FAIL) {
                 //? if <1.21.2 {
                 /*return InteractionResultHolder.pass(stack);
                 *///? } else
@@ -125,7 +124,7 @@ public class KyanitePortals implements ModInitializer {
                 portal.generator().ifPresent(generator -> {
                     generator.getTriggers().forEach(trigger -> trigger.addListener(new TriggerAction() {
                         @Override
-                        public <I extends PortalTriggerInstance<I>> TriggerResult run(I instance, ServerLevel level, BlockPos pos, @Nullable Player player) {
+                        public <I extends PortalTriggerInstance<I>> TriggerResult run(I instance, net.minecraft.world.level.Level level, BlockPos pos, @Nullable Player player) {
                             return generator.run(new GeneratorContext(instance, portal.tester().orElse(null), level, pos, player));
                         }
                     }));
@@ -140,7 +139,7 @@ public class KyanitePortals implements ModInitializer {
 
     public static Identifier id(String namespace, String path) {
         //? if <1.21 {
-        /*return new ResourceLocation(namespace, path);
+        /*return new Identifier(namespace, path);
          *///? } else
         return Identifier.fromNamespaceAndPath(namespace, path);
     }

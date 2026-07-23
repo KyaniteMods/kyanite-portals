@@ -8,9 +8,10 @@ import dev.kyanitemods.kyaniteportals.content.registry.PortalTesters;
 import dev.kyanitemods.kyaniteportals.util.Range;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
+import dev.kyanitemods.kyaniteportals.util.AgnosticPredicate;
 
 import java.util.List;
 import java.util.Set;
@@ -18,25 +19,25 @@ import java.util.function.BiConsumer;
 
 public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
     //$ map_codec_swap RectanglePortalTester
-    public static final MapCodec<RectanglePortalTester> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+    public static final com.mojang.serialization.MapCodec<RectanglePortalTester> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Range.Int.CODEC.fieldOf("width").forGetter(tester -> tester.width),
             Range.Int.CODEC.fieldOf("height").forGetter(tester -> tester.height),
             Direction.Axis.CODEC.listOf().xmap(Set::copyOf, List::copyOf).optionalFieldOf("axes", Set.of(Direction.Axis.X, Direction.Axis.Z)).forGetter(tester -> tester.axes),
-            BlockPredicate.CODEC.fieldOf("frame").forGetter(tester -> tester.frame),
-            BlockPredicate.CODEC.fieldOf("replaceable").forGetter(tester -> tester.replaceable),
-            BlockPredicate.CODEC.fieldOf("portal").forGetter(tester -> tester.portal),
+            AgnosticPredicate.CODEC.fieldOf("frame").forGetter(tester -> tester.frame),
+            AgnosticPredicate.CODEC.fieldOf("replaceable").forGetter(tester -> tester.replaceable),
+            AgnosticPredicate.CODEC.fieldOf("portal").forGetter(tester -> tester.portal),
             Codec.BOOL.fieldOf("corners_required").forGetter(tester -> tester.cornersRequired)
     ).apply(instance, RectanglePortalTester::new));
 
     private final Range.Int width;
     private final Range.Int height;
-    private final BlockPredicate frame;
-    private final BlockPredicate replaceable;
-    private final BlockPredicate portal;
+    private final AgnosticPredicate frame;
+    private final AgnosticPredicate replaceable;
+    private final AgnosticPredicate portal;
     private final boolean cornersRequired;
     private final Set<Direction.Axis> axes;
 
-    public RectanglePortalTester(Range.Int width, Range.Int height, Set<Direction.Axis> axes, BlockPredicate frame, BlockPredicate replaceable, BlockPredicate portal, boolean cornersRequired) {
+    public RectanglePortalTester(Range.Int width, Range.Int height, Set<Direction.Axis> axes, AgnosticPredicate frame, AgnosticPredicate replaceable, AgnosticPredicate portal, boolean cornersRequired) {
         this.width = width;
         this.height = height;
         this.frame = frame;
@@ -46,11 +47,11 @@ public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
         this.axes = axes;
     }
 
-    public RectanglePortalTester(Range.Int width, Range.Int height, BlockPredicate frame, BlockPredicate replaceable, BlockPredicate portal) {
+    public RectanglePortalTester(Range.Int width, Range.Int height, AgnosticPredicate frame, AgnosticPredicate replaceable, AgnosticPredicate portal) {
         this(width, height, Set.of(Direction.Axis.X, Direction.Axis.Z), frame, replaceable, portal, false);
     }
 
-    public PortalTestResult test(WorldGenLevel level, BlockPos pos) {
+    public PortalTestResult test(Level level, BlockPos pos) {
         for (Direction.Axis axis : axes) {
             PortalTestResult result = test(level, pos, axis, width, height);
             if (!result.isSuccess() && axis == Direction.Axis.Y) {
@@ -62,7 +63,7 @@ public class RectanglePortalTester extends PortalTester<RectanglePortalTester> {
         return FailResult.INSTANCE;
     }
 
-    public PortalTestResult test(WorldGenLevel level, BlockPos pos, Direction.Axis axis, Range.Int width, Range.Int height) {
+    public PortalTestResult test(Level level, BlockPos pos, Direction.Axis axis, Range.Int width, Range.Int height) {
         int portalBlocks = 0;
 
         Direction right = switch (axis) {

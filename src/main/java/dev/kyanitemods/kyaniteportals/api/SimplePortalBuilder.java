@@ -44,6 +44,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.dimension.LevelStem;
+import dev.kyanitemods.kyaniteportals.util.AgnosticPredicate;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.AllOfCondition;
@@ -147,14 +148,14 @@ public final class SimplePortalBuilder {
     }
 
     public SimplePortalBuilder ignition(BlockPredicate predicate) {
-        ignition.add(provider -> PortalTriggers.BLOCK_CHANGE.create(predicate));
+        ignition.add(provider -> PortalTriggers.BLOCK_CHANGE.create(AgnosticPredicate.of(predicate)));
         replaceable = BlockPredicate.anyOf(List.of(replaceable, predicate));
         return this;
     }
 
     public SimplePortalBuilder ignition(Block... blocks) {
         BlockPredicate predicate = BlockPredicate.matchesBlocks(blocks);
-        ignition.add(provider -> PortalTriggers.BLOCK_CHANGE.create(predicate));
+        ignition.add(provider -> PortalTriggers.BLOCK_CHANGE.create(AgnosticPredicate.of(predicate)));
         replaceable = BlockPredicate.anyOf(List.of(replaceable, predicate));
         return this;
     }
@@ -354,9 +355,9 @@ public final class SimplePortalBuilder {
                             width,
                             height,
                             axes,
-                            frame,
-                            replaceable,
-                            portalPredicate,
+                            AgnosticPredicate.of(frame),
+                            AgnosticPredicate.of(replaceable),
+                            AgnosticPredicate.of(portalPredicate),
                             cornersRequired
                     ))
                     .withTravelActions(
@@ -372,7 +373,7 @@ public final class SimplePortalBuilder {
                             new TeleportToNetherLikePortalPoiAction(
                                     teleportToPortalSettings.build(),
                                     POI_TAG,
-                                    portalPredicate,
+                                    AgnosticPredicate.of(portalPredicate),
                                     128,
                                     true
                             )

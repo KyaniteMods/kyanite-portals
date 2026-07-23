@@ -36,7 +36,7 @@ public interface PortalTrigger<I extends PortalTriggerInstance<I>> {
             return instance;
         }
 
-        public TriggerResult run(ServerLevel level, BlockPos pos, @Nullable Player player) {
+        public TriggerResult run(Level level, BlockPos pos, @Nullable Player player) {
             return action.run(instance, level, pos, player);
         }
 

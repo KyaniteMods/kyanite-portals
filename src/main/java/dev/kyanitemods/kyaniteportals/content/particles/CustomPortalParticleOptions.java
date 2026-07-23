@@ -26,7 +26,7 @@ import java.util.Locale;
 
 public class CustomPortalParticleOptions implements ParticleOptions {
     //$ map_codec_swap CustomPortalParticleOptions
-    public static final MapCodec<CustomPortalParticleOptions> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+    public static final com.mojang.serialization.MapCodec<CustomPortalParticleOptions> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             ExtraCodecs.VECTOR3F.fieldOf("color").forGetter(CustomPortalParticleOptions::getColor)
     ).apply(instance, CustomPortalParticleOptions::new));
 
@@ -36,7 +36,7 @@ public class CustomPortalParticleOptions implements ParticleOptions {
     //? if <1.20.5 {
     /*public static final ParticleOptions.Deserializer<CustomPortalParticleOptions> DESERIALIZER = new ParticleOptions.Deserializer<>() {
         public CustomPortalParticleOptions fromCommand(ParticleType<CustomPortalParticleOptions> particleType, StringReader stringReader) throws CommandSyntaxException {
-            Vector3f vector3f = readVector3f(stringReader);
+            Vector3fc vector3f = readVector3f(stringReader);
             return new CustomPortalParticleOptions(vector3f);
         }
 

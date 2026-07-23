@@ -30,7 +30,7 @@ public class UseItemTrigger extends SimplePortalTrigger<UseItemTrigger.UseItemTr
         return UseItemTriggerInstance.CODEC;
     }
 
-    public TriggerResult trigger(net.minecraft.server.level.ServerLevel level, BlockPos pos, @Nullable Player player, ItemStack stack) {
+    public TriggerResult trigger(Level level, BlockPos pos, @Nullable Player player, ItemStack stack) {
         return trigger(level, pos, player, instance -> UseItemTriggerInstance.POSITIONS, (instance, triggerPos) -> instance.matches(stack), (instance, triggerPos) -> instance.beforeTrigger(level, player, stack), (instance, triggerPos, result) -> instance.onTrigger(result, level, player, stack));
     }
 
@@ -65,7 +65,7 @@ public class UseItemTrigger extends SimplePortalTrigger<UseItemTrigger.UseItemTr
         public static final List<Vec3i> POSITIONS = List.of(Vec3i.ZERO);
 
         //$ map_codec_swap UseItemTriggerInstance
-        public static final MapCodec<UseItemTriggerInstance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+        public static final com.mojang.serialization.MapCodec<UseItemTriggerInstance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 CodecHelper.ITEM_PREDICATE_CODEC.fieldOf("predicate").forGetter(i -> i.itemPredicate),
                 ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("damage_item_by", 0).forGetter(i -> i.damageItemBy)
         ).apply(instance, UseItemTriggerInstance::new));

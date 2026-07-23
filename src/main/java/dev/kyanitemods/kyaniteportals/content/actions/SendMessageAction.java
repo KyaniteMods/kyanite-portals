@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SendMessageAction extends PortalAction<SendMessageAction> {
     //$ map_codec_swap SendMessageAction
-    public static final MapCodec<SendMessageAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+    public static final com.mojang.serialization.MapCodec<SendMessageAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Settings.optionalLocation(),
             CodecHelper.COMPONENT_CODEC.fieldOf("text").forGetter(SendMessageAction::getText),
             Codec.BOOL.fieldOf("overlay").forGetter(SendMessageAction::isOverlay)

@@ -51,4 +51,10 @@ stonecutter parameters {
             replace("BlockBehaviour.Properties.copy", "BlockBehaviour.Properties.ofFullCopy")
         }
     }
+
+    replacements {
+        string (current.parsed >= "1.20.6") {
+            replace("net.minecraft.world.level.chunk.ChunkStatus", "net.minecraft.world.level.chunk.status.ChunkStatus")
+        }
+    }
 }

@@ -8,7 +8,7 @@ import net.minecraft.resources.Identifier;
 
 public class TextureOverlayPortalEffectOptions extends PortalEffectOptions<TextureOverlayPortalEffectOptions> {
     //$ map_codec_swap TextureOverlayPortalEffectOptions
-    public static final MapCodec<TextureOverlayPortalEffectOptions> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+    public static final com.mojang.serialization.MapCodec<TextureOverlayPortalEffectOptions> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Identifier.CODEC.fieldOf("atlas").forGetter(TextureOverlayPortalEffectOptions::getAtlas),
             Identifier.CODEC.fieldOf("texture").forGetter(TextureOverlayPortalEffectOptions::getTexture),
             Codec.intRange(0, 16777215).optionalFieldOf("tint", 0xFFFFFF).forGetter(TextureOverlayPortalEffectOptions::getTint)

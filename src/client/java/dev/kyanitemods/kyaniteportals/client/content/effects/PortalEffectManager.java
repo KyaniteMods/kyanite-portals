@@ -42,10 +42,10 @@ public class PortalEffectManager extends /*? if <1.21.3 {*//*SimpleJsonResourceR
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, JsonElement> object, ResourceManager resourceManager, ProfilerFiller profilerFiller) {
-        ImmutableMap.Builder<ResourceLocation, Set<PortalEffectOptions<?>>> builder = ImmutableMap.builder();
-        for (Map.Entry<ResourceLocation, JsonElement> entry : object.entrySet()) {
-            ResourceLocation identifier = entry.getKey();
+    protected void apply(Map<Identifier, JsonElement> object, ResourceManager resourceManager, ProfilerFiller profilerFiller) {
+        ImmutableMap.Builder<Identifier, Set<PortalEffectOptions<?>>> builder = ImmutableMap.builder();
+        for (Map.Entry<Identifier, JsonElement> entry : object.entrySet()) {
+            Identifier identifier = entry.getKey();
             try {
                 Set<PortalEffectOptions<?>> list = CODEC.parse(JsonOps.INSTANCE, entry.getValue()).result().orElseThrow(() -> new JsonParseException("Parsing error loading portal effects for portal " + identifier));
                 KyanitePortals.LOGGER.info("Loaded portal effects for portal " + identifier);

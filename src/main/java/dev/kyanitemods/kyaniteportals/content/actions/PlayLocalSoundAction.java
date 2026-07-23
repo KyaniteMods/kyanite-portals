@@ -24,7 +24,7 @@ import java.util.Optional;
 
 public final class PlayLocalSoundAction extends PortalAction<PlayLocalSoundAction> {
     //$ map_codec_swap PlayLocalSoundAction
-    public static final MapCodec<PlayLocalSoundAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+    public static final com.mojang.serialization.MapCodec<PlayLocalSoundAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Settings.optionalLocation(),
             SoundEvent.CODEC.fieldOf("sound_event").forGetter(PlayLocalSoundAction::soundEvent),
             FloatProvider.CODEC.fieldOf("volume").forGetter(PlayLocalSoundAction::volume),

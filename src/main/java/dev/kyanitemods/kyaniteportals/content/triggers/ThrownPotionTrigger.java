@@ -43,7 +43,7 @@ public class ThrownPotionTrigger extends SimplePortalTrigger<ThrownPotionTrigger
         return ThrownPotionTriggerInstance.CODEC;
     }
 
-    public TriggerResult trigger(ServerLevel level, BlockPos pos, @Nullable Player player, /*? if <1.21.5 {*//*ThrownPotion*//*? } else { */AbstractThrownPotion/*? }*/ potion) {
+    public TriggerResult trigger(Level level, BlockPos pos, @Nullable Player player, /*? if <1.21.5 {*//*ThrownPotion*//*? } else { */AbstractThrownPotion/*? }*/ potion) {
         return trigger(level, pos, player, instance -> instance.getPositions(potion), (instance, triggerPos) -> instance.matches(potion), (instance, triggerPos) -> instance.beforeTrigger(level, triggerPos, player), (instance, triggerPos, result) -> instance.onTrigger(result, level, triggerPos, player));
     }
 
@@ -87,7 +87,7 @@ public class ThrownPotionTrigger extends SimplePortalTrigger<ThrownPotionTrigger
         }
 
         //$ map_codec_swap ThrownPotionTriggerInstance
-        public static final MapCodec<ThrownPotionTriggerInstance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+        public static final com.mojang.serialization.MapCodec<ThrownPotionTriggerInstance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Codec.BOOL.optionalFieldOf("trigger_in_area", true).forGetter(i -> i.triggerInArea),
                 CodecHelper.POTION_CODEC.listOf().fieldOf("potions").forGetter(i -> i.potions),
                 CodecHelper.ITEM_PREDICATE_CODEC.optionalFieldOf("predicate").forGetter(i -> i.itemPredicate)

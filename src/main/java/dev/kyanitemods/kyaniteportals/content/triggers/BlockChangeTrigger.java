@@ -10,7 +10,7 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
+import dev.kyanitemods.kyaniteportals.util.AgnosticPredicate;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public class BlockChangeTrigger extends SimplePortalTrigger<BlockChangeTrigger.B
         return trigger(level, pos, player, instance -> BlockChangeTriggerInstance.POSITIONS, (instance, triggerPos) -> instance.matches(level, triggerPos), (instance, triggerPos) -> instance.beforeTrigger(level, triggerPos, player), (instance, triggerPos, result) -> instance.onTrigger(result, level, triggerPos, player));
     }
 
-    public BlockChangeTriggerInstance create(BlockPredicate predicate) {
+    public BlockChangeTriggerInstance create(AgnosticPredicate predicate) {
         return new BlockChangeTriggerInstance(predicate);
     }
 
@@ -33,13 +33,13 @@ public class BlockChangeTrigger extends SimplePortalTrigger<BlockChangeTrigger.B
         public static final List<Vec3i> POSITIONS = List.of(Vec3i.ZERO);
 
         //$ map_codec_swap BlockChangeTriggerInstance
-        public static final MapCodec<BlockChangeTriggerInstance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                BlockPredicate.CODEC.fieldOf("predicate").forGetter(i -> i.predicate)
+        public static final com.mojang.serialization.MapCodec<BlockChangeTriggerInstance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                AgnosticPredicate.CODEC.fieldOf("predicate").forGetter(i -> i.predicate)
         ).apply(instance, BlockChangeTriggerInstance::new));
 
-        private final BlockPredicate predicate;
+        private final AgnosticPredicate predicate;
 
-        public BlockChangeTriggerInstance(BlockPredicate predicate) {
+        public BlockChangeTriggerInstance(AgnosticPredicate predicate) {
             super(PortalTriggers.BLOCK_CHANGE);
             this.predicate = predicate;
         }

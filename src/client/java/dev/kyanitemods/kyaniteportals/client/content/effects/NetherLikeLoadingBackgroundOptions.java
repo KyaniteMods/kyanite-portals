@@ -14,7 +14,7 @@ import net.minecraft.resources.Identifier;
 
 public class NetherLikeLoadingBackgroundOptions extends LoadingBackgroundOptions<NetherLikeLoadingBackgroundOptions> {
     //$ map_codec_swap NetherLikeLoadingBackgroundOptions
-    public static final MapCodec<NetherLikeLoadingBackgroundOptions> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+    public static final com.mojang.serialization.MapCodec<NetherLikeLoadingBackgroundOptions> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Identifier.CODEC.fieldOf("atlas").forGetter(NetherLikeLoadingBackgroundOptions::getAtlas),
             Identifier.CODEC.fieldOf("texture").forGetter(NetherLikeLoadingBackgroundOptions::getTexture),
             Codec.intRange(0, 16777215).optionalFieldOf("tint", 0xFFFFFF).forGetter(NetherLikeLoadingBackgroundOptions::getTint)

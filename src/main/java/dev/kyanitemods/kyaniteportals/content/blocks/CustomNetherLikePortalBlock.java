@@ -38,19 +38,19 @@ public class CustomNetherLikePortalBlock extends KyanitePortalBlock implements E
 
     @Override
     //? if <1.21.3 {
-    /*public BlockState updateShape(BlockState blockState, Direction direction, BlockState blockState2, LevelAccessor level, BlockPos pos, BlockPos blockPos2) {
+    /*public BlockState updateShape(BlockState blockState, Direction direction, BlockState blockState2, LevelAccessor levelReader, BlockPos pos, BlockPos blockPos2) {
     *///? } else {
-    protected BlockState updateShape(BlockState blockState, LevelReader level, ScheduledTickAccess scheduledTickAccess, BlockPos pos, Direction direction, BlockPos blockPos2, BlockState blockState2, net.minecraft.util.RandomSource randomSource) {
+    protected BlockState updateShape(BlockState blockState, LevelReader levelReader, ScheduledTickAccess scheduledTickAccess, BlockPos pos, Direction direction, BlockPos blockPos2, BlockState blockState2, net.minecraft.util.RandomSource randomSource) {
      //? }
         Direction.Axis axis = direction.getAxis();
         Direction.Axis axis2 = blockState.getValue(AXIS);
         boolean bl = axis2 != axis && ((axis2.isHorizontal() && axis.isHorizontal()) || (axis2.isVertical() && axis.isVertical()));
-        Optional<Portal> portal = getPortal(level, pos);
-        if (!(level instanceof WorldGenLevel worldGenLevel) || bl || portal.isEmpty() || !portal.get().testValidityAfterGeneration() || portal.get().tester().isEmpty() || portal.get().tester().get().test(worldGenLevel, pos).isComplete()) {
+        Optional<Portal> portal = getPortal(levelReader, pos);
+        if (!(levelReader instanceof Level level) || bl || portal.isEmpty() || !portal.get().testValidityAfterGeneration() || portal.get().tester().isEmpty() || portal.get().tester().get().test(level, pos).isComplete()) {
             //? if <1.21.3 {
-            /*return super.updateShape(blockState, direction, blockState2, level, pos, blockPos2);
+            /*return super.updateShape(blockState, direction, blockState2, levelReader, pos, blockPos2);
             *///? } else
-            return super.updateShape(blockState, level, scheduledTickAccess, pos, direction, blockPos2, blockState2, randomSource);
+            return super.updateShape(blockState, levelReader, scheduledTickAccess, pos, direction, blockPos2, blockState2, randomSource);
         }
         return Blocks.AIR.defaultBlockState();
     }

@@ -27,7 +27,7 @@ import java.util.Set;
 
 public final class SetPositionAction extends PortalAction<SetPositionAction> {
     //$ map_codec_swap SetPositionAction
-    public static final MapCodec<SetPositionAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+    public static final com.mojang.serialization.MapCodec<SetPositionAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Settings.REQUIRED_LOCATION_CODEC.fieldOf("settings").forGetter(SetPositionAction::getSettings),
             FloatProvider.CODEC.optionalFieldOf("yaw").forGetter(SetPositionAction::getYRot),
             FloatProvider.CODEC.optionalFieldOf("pitch").forGetter(SetPositionAction::getXRot)

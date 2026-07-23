@@ -28,6 +28,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.border.WorldBorder;
+import dev.kyanitemods.kyaniteportals.util.AgnosticPredicate;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,20 +36,20 @@ import java.util.*;
 
 public class TeleportToNetherLikePortalPoiAction extends PortalAction<TeleportToNetherLikePortalPoiAction> {
     //$ map_codec_swap TeleportToNetherLikePortalPoiAction
-    public static final MapCodec<TeleportToNetherLikePortalPoiAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+    public static final com.mojang.serialization.MapCodec<TeleportToNetherLikePortalPoiAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Settings.optionalLocation(),
             TagKey.hashedCodec(Registries.POINT_OF_INTEREST_TYPE).fieldOf("point_of_interest_types").forGetter(TeleportToNetherLikePortalPoiAction::getPoiTypes),
-            BlockPredicate.CODEC.optionalFieldOf("portal_predicate").xmap(optional -> optional.orElse(BlockPredicate.alwaysTrue()), predicate -> predicate == BlockPredicate.alwaysTrue() ? Optional.empty() : Optional.of(predicate)).forGetter(TeleportToNetherLikePortalPoiAction::getPortalPredicate),
+            AgnosticPredicate.CODEC.optionalFieldOf("portal_predicate").xmap(optional -> optional.orElse(AgnosticPredicate.ALWAYS_TRUE), predicate -> predicate == AgnosticPredicate.ALWAYS_TRUE ? Optional.empty() : Optional.of(predicate)).forGetter(TeleportToNetherLikePortalPoiAction::getPortalPredicate),
             Codec.INT.fieldOf("search_range").forGetter(TeleportToNetherLikePortalPoiAction::getSearchRange),
             Codec.BOOL.optionalFieldOf("adapt_coordinate_space", true).forGetter(TeleportToNetherLikePortalPoiAction::shouldAdaptCoordinateSpace)
     ).apply(instance, TeleportToNetherLikePortalPoiAction::new));
 
     private final TagKey<PoiType> poiTypes;
-    private final BlockPredicate portalPredicate;
+    private final AgnosticPredicate portalPredicate;
     private final int searchRange;
     private final boolean adaptSearchToDimensionScale;
 
-    public TeleportToNetherLikePortalPoiAction(Settings settings, TagKey<PoiType> poiTypes, BlockPredicate portalPredicate, int searchRange, boolean adaptSearchToDimensionScale) {
+    public TeleportToNetherLikePortalPoiAction(Settings settings, TagKey<PoiType> poiTypes, AgnosticPredicate portalPredicate, int searchRange, boolean adaptSearchToDimensionScale) {
         super(settings);
         this.poiTypes = poiTypes;
         this.portalPredicate = portalPredicate;
@@ -94,7 +95,7 @@ public class TeleportToNetherLikePortalPoiAction extends PortalAction<TeleportTo
     }
 
     //TODO: refactor
-    private static Optional<BlockUtil.FoundRectangle> findPortalAround(final ServerLevel level, TagKey<PoiType> poiType, int i, BlockPos searchPos, WorldBorder worldBorder, BlockPredicate predicate) {
+    private static Optional<BlockUtil.FoundRectangle> findPortalAround(final ServerLevel level, TagKey<PoiType> poiType, int i, BlockPos searchPos, WorldBorder worldBorder, AgnosticPredicate predicate) {
         PoiManager poiManager = level.getPoiManager();
         poiManager.ensureLoadedAndValid(level, searchPos, i);
         Optional<PoiRecord> optional = poiManager.getInSquare(holder -> holder.is(poiType), searchPos, i, PoiManager.Occupancy.ANY)
@@ -102,7 +103,7 @@ public class TeleportToNetherLikePortalPoiAction extends PortalAction<TeleportTo
                 .sorted(Comparator.comparingDouble((PoiRecord poiRecord) -> poiRecord.getPos().distSqr(searchPos)).thenComparingInt((PoiRecord poiRecord) -> poiRecord.getPos().getY()))
                 .filter(poiRecord -> {
                     level.getBlockState(poiRecord.getPos());
-                    return predicate.test(level, poiRecord.getPos());
+                    return predicate.test((Level) level, poiRecord.getPos());
                 })
                 .findFirst();
         return optional.map(
@@ -130,7 +131,7 @@ public class TeleportToNetherLikePortalPoiAction extends PortalAction<TeleportTo
         return poiTypes;
     }
 
-    public BlockPredicate getPortalPredicate() {
+    public AgnosticPredicate getPortalPredicate() {
         return portalPredicate;
     }
 

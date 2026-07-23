@@ -21,7 +21,7 @@ import java.util.Set;
 
 public class NetherLikePortalGenerator extends PortalGenerator<NetherLikePortalGenerator> {
     //$ map_codec_swap NetherLikePortalGenerator
-    public static final MapCodec<NetherLikePortalGenerator> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+    public static final com.mojang.serialization.MapCodec<NetherLikePortalGenerator> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             PortalTriggers.CODEC.listOf().fieldOf("triggers").forGetter(NetherLikePortalGenerator::getTriggers),
             CodecHelper.DIMENSION_SET_CODEC.optionalFieldOf("valid_in", Set.of()).forGetter(NetherLikePortalGenerator::getValidDimensions),
             BlockEntityPair.CODEC.fieldOf("portal_block").forGetter(NetherLikePortalGenerator::getPortalBlock)

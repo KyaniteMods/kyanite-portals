@@ -73,7 +73,7 @@ public final class CodecHelper {
     public static final Codec<CompoundTag> FLATTENED_TAG_CODEC = TagParser.FLATTENED_CODEC;
 
     //? if <1.21 {
-    /*public static final Codec<Holder<Potion>> POTION_CODEC = codec(ResourceLocation.CODEC, BuiltInRegistries.POTION::get, BuiltInRegistries.POTION::getKey).xmap(Holder::direct, Holder::value);
+    /*public static final Codec<Holder<Potion>> POTION_CODEC = codec(Identifier.CODEC, BuiltInRegistries.POTION::get, BuiltInRegistries.POTION::getKey).xmap(Holder::direct, Holder::value);
     *///? } else
     public static final Codec<Holder<Potion>> POTION_CODEC = Potion.CODEC;
 

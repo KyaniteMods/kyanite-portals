@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SpawnNetherLikePortalParticlesAction extends PortalAction<SpawnNetherLikePortalParticlesAction> {
     //$ map_codec_swap SpawnNetherLikePortalParticlesAction
-    public static final MapCodec<SpawnNetherLikePortalParticlesAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+    public static final com.mojang.serialization.MapCodec<SpawnNetherLikePortalParticlesAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Settings.optionalLocation(),
             IntProvider.POSITIVE_CODEC.fieldOf("amount").forGetter(SpawnNetherLikePortalParticlesAction::getAmount),
             ParticleTypes.CODEC.fieldOf("particle_options").forGetter(SpawnNetherLikePortalParticlesAction::getParticleOptions)

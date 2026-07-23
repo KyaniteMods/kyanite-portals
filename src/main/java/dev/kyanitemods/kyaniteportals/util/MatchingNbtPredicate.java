@@ -17,7 +17,7 @@ import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicateType;
 
 public class MatchingNbtPredicate implements BlockPredicate {
     //$ map_codec_swap MatchingNbtPredicate
-    public static final MapCodec<MatchingNbtPredicate> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+    public static final com.mojang.serialization.MapCodec<MatchingNbtPredicate> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Vec3i.offsetCodec(16).optionalFieldOf("offset", Vec3i.ZERO).forGetter(predicate -> predicate.offset),
             CompoundTag.CODEC.fieldOf("nbt").forGetter(predicate -> predicate.nbt)
     ).apply(instance, MatchingNbtPredicate::new));

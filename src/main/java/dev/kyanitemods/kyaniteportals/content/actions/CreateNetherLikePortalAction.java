@@ -31,7 +31,7 @@ import java.util.Optional;
 
 public class CreateNetherLikePortalAction extends PortalAction<CreateNetherLikePortalAction> {
     //$ map_codec_swap CreateNetherLikePortalAction
-    public static final MapCodec<CreateNetherLikePortalAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+    public static final com.mojang.serialization.MapCodec<CreateNetherLikePortalAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Settings.optionalLocation(),
             BlockEntityPair.CODEC.fieldOf("frame_block").forGetter(CreateNetherLikePortalAction::getFrameBlock),
             BlockEntityPair.CODEC.fieldOf("portal_block").forGetter(CreateNetherLikePortalAction::getPortalBlock),

@@ -12,7 +12,7 @@ import net.minecraft.world.level.Level;
 
 public class StoreActionLocationAction extends PortalAction<StoreActionLocationAction> {
     //$ map_codec_swap StoreActionLocationAction
-    public static final MapCodec<StoreActionLocationAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+    public static final com.mojang.serialization.MapCodec<StoreActionLocationAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Settings.optionalLocation(),
             Codec.STRING.fieldOf("key").forGetter(StoreActionLocationAction::getKey)
     ).apply(instance, StoreActionLocationAction::new));

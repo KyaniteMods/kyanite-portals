@@ -19,7 +19,7 @@ public class LevelEventTrigger extends SimplePortalTrigger<LevelEventTrigger.Lev
         return LevelEventTriggerInstance.CODEC;
     }
 
-    public TriggerResult trigger(ServerLevel level, int type, BlockPos pos, int data) {
+    public TriggerResult trigger(Level level, int type, BlockPos pos, int data) {
         return trigger(level, pos, null, instance -> LevelEventTriggerInstance.POSITIONS, (instance, triggerPos) -> instance.matches(type, triggerPos, data), (instance, triggerPos) -> instance.beforeTrigger(level, type, triggerPos, data), (instance, triggerPos, result) -> instance.onTrigger(result, level, type, triggerPos, data));
     }
 
@@ -35,7 +35,7 @@ public class LevelEventTrigger extends SimplePortalTrigger<LevelEventTrigger.Lev
         public static final List<Vec3i> POSITIONS = List.of(Vec3i.ZERO);
 
         //$ map_codec_swap LevelEventTriggerInstance
-        public static final MapCodec<LevelEventTriggerInstance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+        public static final com.mojang.serialization.MapCodec<LevelEventTriggerInstance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Codec.INT.fieldOf("type").forGetter(i -> i.type),
                 Codec.INT.optionalFieldOf("data").forGetter(i -> i.data)
         ).apply(instance, LevelEventTriggerInstance::new));

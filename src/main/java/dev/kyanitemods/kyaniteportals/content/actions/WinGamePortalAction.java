@@ -18,7 +18,7 @@ import java.util.Optional;
 
 public class WinGamePortalAction extends PortalAction<WinGamePortalAction> {
     //$ map_codec_swap WinGamePortalAction
-    public static final MapCodec<WinGamePortalAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+    public static final com.mojang.serialization.MapCodec<WinGamePortalAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Settings.optionalLocation(),
             Codec.BOOL.optionalFieldOf("show_credits").forGetter(WinGamePortalAction::shouldShowCredits)
     ).apply(instance, WinGamePortalAction::new));

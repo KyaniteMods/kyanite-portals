@@ -56,7 +56,7 @@ public class CustomPortalBlockEntity extends BlockEntity {
     ^///? }
 
         if (tag.contains("portal", net.minecraft.nbt.Tag.TAG_STRING)) {
-            ResourceLocation id = ResourceLocation.tryParse(tag.getString("portal"));
+            Identifier id = Identifier.tryParse(tag.getString("portal"));
             if (id != null) {
                 portalKey = ResourceKey.create(KyanitePortals.RESOURCE_KEY, id);
             }

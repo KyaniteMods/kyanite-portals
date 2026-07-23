@@ -202,7 +202,7 @@ public abstract class EntityMixin implements EntityInPortal {
         setPortalTeleportTime(tag.getInt("kyanite_portals:portal_teleport_time"));
         setTimeInPortal(tag.getInt("kyanite_portals:time_in_portal"));
         if (tag.contains("kyanite_portals:portal", Tag.TAG_STRING)) {
-            setPortal(ResourceKey.create(KyanitePortals.RESOURCE_KEY, ResourceLocation.tryParse(tag.getString("kyanite_portals:portal"))));
+            setPortal(ResourceKey.create(KyanitePortals.RESOURCE_KEY, Identifier.tryParse(tag.getString("kyanite_portals:portal"))));
         }
     }
     *///? } else {

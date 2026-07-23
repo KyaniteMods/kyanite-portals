@@ -37,7 +37,7 @@ public abstract class SimplePortalTrigger<I extends PortalTriggerInstance<I>> im
     public void onListenersRemoved() {
     }
 
-    protected TriggerResult trigger(ServerLevel level, BlockPos pos, @Nullable Player player, Function<I, List<Vec3i>> positions, BiPredicate<I, BlockPos> predicate, BiConsumer<I, BlockPos> beforeAction, TriConsumer<I, BlockPos, TriggerResult> onAction) {
+    protected TriggerResult trigger(Level level, BlockPos pos, @Nullable Player player, Function<I, List<Vec3i>> positions, BiPredicate<I, BlockPos> predicate, BiConsumer<I, BlockPos> beforeAction, TriConsumer<I, BlockPos, TriggerResult> onAction) {
         TriggerResult result = TriggerResult.FAIL;
         if (!listeners.isEmpty()) {
             BlockPos.MutableBlockPos mutableBlockPos = pos.mutable();
