@@ -1,4 +1,5 @@
 {
   "block.kyanite_portals.custom_portal": "Portal",
-  "kyanite_portals.spectator.cannot_teleport": "Unable to teleport. The other side is not generated yet."
+  "kyanite_portals.spectator.cannot_teleport": "Unable to teleport. The other side is not generated yet.",
+  "kyanite_portals.discord": "Discord"
 }

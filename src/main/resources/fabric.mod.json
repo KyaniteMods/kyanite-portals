@@ -28,6 +28,14 @@
       "environment": "client"
     }
   ],
+  "custom": {
+    "modmenu": {
+      "links": {
+        "kyanite_portals.discord": "https://discord.gg/GDNRd5yvxa"
+      }
+    }
+  },
+
   "accessWidener": "kyaniteportals.classtweaker",
   "depends": {
     "fabricloader": ">=0.18.2",
