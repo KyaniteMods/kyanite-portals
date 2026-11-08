@@ -1,6 +1,7 @@
 package dev.kyanitemods.kyaniteportals.content;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.kyanitemods.kyaniteportals.content.generators.PortalGenerator;
 import dev.kyanitemods.kyaniteportals.content.actions.ActionExecutionData;
@@ -33,6 +34,20 @@ public record Portal(Optional<PortalGenerator<?>> generator, Optional<PortalTest
             PortalTesters.CODEC.optionalFieldOf("tester").forGetter(Portal::tester),
             Codec.BOOL.optionalFieldOf("test_validity_after_generation", true).forGetter(Portal::testValidityAfterGeneration),
             CodecHelper.ENTITY_PREDICATE_CODEC.optionalFieldOf("entity_predicate").forGetter(Portal::entityPredicate),
+            TravelTime.CODEC.optionalFieldOf("travel_time", TravelTime.DEFAULT).forGetter(Portal::travelTime),
+            PortalActions.CODEC.listOf().optionalFieldOf("enter_actions", List.of()).forGetter(Portal::enterActions),
+            PortalActions.CODEC.listOf().optionalFieldOf("travel_actions", List.of()).forGetter(Portal::travelActions),
+            PortalActions.CODEC.listOf().optionalFieldOf("tick_actions", List.of()).forGetter(Portal::tickActions),
+            PortalActions.CODEC.listOf().optionalFieldOf("random_tick_actions", List.of()).forGetter(Portal::randomTickActions),
+            PortalActions.CODEC.listOf().optionalFieldOf("animation_tick_actions", List.of()).forGetter(Portal::animationTickActions),
+            Codec.BOOL.optionalFieldOf("spectators_can_use", SPECTATORS_CAN_USE_DEFAULT).forGetter(Portal::spectatorsCanUse)
+    ).apply(instance, Portal::new));
+
+    public static final Codec<Portal> NETWORK_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            PortalGenerators.CODEC.optionalFieldOf("generator").forGetter(Portal::generator),
+            PortalTesters.CODEC.optionalFieldOf("tester").forGetter(Portal::tester),
+            Codec.BOOL.optionalFieldOf("test_validity_after_generation", true).forGetter(Portal::testValidityAfterGeneration),
+            MapCodec.unit(Optional.<EntityPredicate>empty()).forGetter(Portal::entityPredicate),
             TravelTime.CODEC.optionalFieldOf("travel_time", TravelTime.DEFAULT).forGetter(Portal::travelTime),
             PortalActions.CODEC.listOf().optionalFieldOf("enter_actions", List.of()).forGetter(Portal::enterActions),
             PortalActions.CODEC.listOf().optionalFieldOf("travel_actions", List.of()).forGetter(Portal::travelActions),

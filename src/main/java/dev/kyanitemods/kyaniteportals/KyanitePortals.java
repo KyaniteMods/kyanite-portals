@@ -98,7 +98,7 @@ public class KyanitePortals implements ModInitializer {
         });
 
         PointOfInterestHelper.register(id("custom_portal"), 0, 1, KyanitePortalsBlocks.CUSTOM_PORTAL);
-        DynamicRegistries.registerSynced(RESOURCE_KEY, Portal.CODEC);
+        DynamicRegistries.registerSynced(RESOURCE_KEY, Portal.CODEC, Portal.NETWORK_CODEC);
 
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
             SimplePortalBuilder.create()
