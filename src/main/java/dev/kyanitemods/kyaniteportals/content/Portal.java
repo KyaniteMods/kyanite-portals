@@ -3,6 +3,7 @@ package dev.kyanitemods.kyaniteportals.content;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.kyanitemods.kyaniteportals.KyanitePortals;
 import dev.kyanitemods.kyaniteportals.content.generators.PortalGenerator;
 import dev.kyanitemods.kyaniteportals.content.actions.ActionExecutionData;
 import dev.kyanitemods.kyaniteportals.content.actions.FailureReason;
@@ -43,9 +44,9 @@ public record Portal(Optional<PortalGenerator<?>> generator, Optional<PortalTest
             Codec.BOOL.optionalFieldOf("spectators_can_use", SPECTATORS_CAN_USE_DEFAULT).forGetter(Portal::spectatorsCanUse)
     ).apply(instance, Portal::new));
 
-    public static final Codec<Portal> NETWORK_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            PortalGenerators.CODEC.optionalFieldOf("generator").forGetter(Portal::generator),
-            PortalTesters.CODEC.optionalFieldOf("tester").forGetter(Portal::tester),
+    public static final Codec<Portal> NETWORK_CODEC = RecordCodecBuilder.<Portal>create(instance -> instance.group(
+            MapCodec.unit(Optional.<PortalGenerator<?>>empty()).forGetter(Portal::generator),
+            MapCodec.unit(Optional.<PortalTester<?>>empty()).forGetter(Portal::tester),
             Codec.BOOL.optionalFieldOf("test_validity_after_generation", true).forGetter(Portal::testValidityAfterGeneration),
             MapCodec.unit(Optional.<EntityPredicate>empty()).forGetter(Portal::entityPredicate),
             TravelTime.CODEC.optionalFieldOf("travel_time", TravelTime.DEFAULT).forGetter(Portal::travelTime),
@@ -55,7 +56,7 @@ public record Portal(Optional<PortalGenerator<?>> generator, Optional<PortalTest
             PortalActions.CODEC.listOf().optionalFieldOf("random_tick_actions", List.of()).forGetter(Portal::randomTickActions),
             PortalActions.CODEC.listOf().optionalFieldOf("animation_tick_actions", List.of()).forGetter(Portal::animationTickActions),
             Codec.BOOL.optionalFieldOf("spectators_can_use", SPECTATORS_CAN_USE_DEFAULT).forGetter(Portal::spectatorsCanUse)
-    ).apply(instance, Portal::new));
+    ).apply(instance, Portal::new)).xmap(p -> p, p -> { KyanitePortals.LOGGER.info("network encode {}", p); return p; });
 
     public static void executeAll(Level level, BlockPos pos, @Nullable Entity entity, List<PortalAction<?>> actions) {
         Deque<PortalAction<?>> deque = new ArrayDeque<>(actions);
