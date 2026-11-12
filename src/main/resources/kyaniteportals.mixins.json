@@ -7,6 +7,7 @@
     "ContextAwarePredicateAccessor",
     "EntityAccessor",
     "EntityMixin",
+    "FlowingFluidMixin",
     "ItemAccessor",
     "LevelChunkMixin",
     "PlayerMixin",
