@@ -1,8 +1,8 @@
 # See https://stonecutter.kikugie.dev/wiki/config/properties#centralized-properties
-mod.id = "template"
-mod.name = "Template"
-mod.group = "com.example"
-mod.version = "0.1.0"
+mod.id = "kyanite-portals"
+mod.name = "Kyanite Portals"
+mod.group = "dev.kyanitemods"
+mod.version = "0.1.11"
 
 deps.fabric_loader = "0.20.1"
 loomx.loom_version = "1.19-SNAPSHOT"
