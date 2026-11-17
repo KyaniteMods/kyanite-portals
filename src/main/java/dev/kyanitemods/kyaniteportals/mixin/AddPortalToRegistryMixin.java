@@ -13,12 +13,15 @@ import net.minecraft.resources.*;
 import net.minecraft.server.packs.resources.ResourceManager;
 import com.mojang.serialization.Lifecycle;
 //? }
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Map;
+import java.util.concurrent.Executor;
 import java.util.function.Function;
 
 //? if <26.1 {
