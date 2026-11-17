@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.Minecraft;
+//~ if >=26.1 'GuiGraphics' -> 'GuiGraphicsExtractor'
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 //? if >=1.21.5
@@ -44,6 +45,7 @@ public class NetherLikeLoadingBackgroundOptions extends LoadingBackgroundOptions
     }
 
     @Override
+    //~ if >=26.1 'GuiGraphics' -> 'GuiGraphicsExtractor'
     public boolean render(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {
         //? if <1.20.2 {
         /*guiGraphics.setColor(((getTint() >> 16) & 0xFF) / 255.0f, ((getTint() >> 8) & 0xFF) / 255.0f, (getTint() & 0xFF) / 255.0f, 1.0f);

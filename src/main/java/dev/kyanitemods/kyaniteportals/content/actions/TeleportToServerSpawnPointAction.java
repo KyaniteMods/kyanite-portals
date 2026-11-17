@@ -81,12 +81,12 @@ public class TeleportToServerSpawnPointAction extends PortalAction<TeleportToSer
         LevelData.RespawnData respawnData = serverLevel.getRespawnData();
         ResourceKey<Level> resourceKey = respawnData.dimension();
         BlockPos blockPos = respawnData.pos();
-        Vec3 vec3 = blockPos.getBottomCenter();
+        Vec3 vec3 = Vec3.atBottomCenterOf(blockPos);
 
         float f = respawnData.yaw();
         float g = respawnData.pitch();
         Set<Relative> set = Relative.union(Relative.DELTA, Relative.ROTATION);
-        vec3 = entity.adjustSpawnLocation(serverLevel, blockPos).getBottomCenter();
+        vec3 = Vec3.atBottomCenterOf(entity.adjustSpawnLocation(serverLevel, blockPos));
         entity.teleport(new TeleportTransition(serverLevel, vec3, Vec3.ZERO, f, g, set, TeleportTransition.PLAY_PORTAL_SOUND.then(TeleportTransition.PLACE_PORTAL_TICKET)));
         //? }
         return PortalActionResult.SUCCESS;

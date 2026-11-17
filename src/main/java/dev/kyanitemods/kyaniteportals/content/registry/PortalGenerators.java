@@ -15,6 +15,7 @@ public final class PortalGenerators {
     private PortalGenerators() {}
 
     public static final ResourceKey<Registry<PortalGeneratorType<?>>> RESOURCE_KEY = ResourceKey.createRegistryKey(KyanitePortals.id("portal_generator"));
+    //~ if >=26.1 'createSimple' -> 'create'
     public static final Registry<PortalGeneratorType<?>> REGISTRY = FabricRegistryBuilder.createSimple(RESOURCE_KEY).buildAndRegister();
     public static final Codec<PortalGenerator<?>> CODEC = REGISTRY.byNameCodec().dispatch("type", PortalGenerator::getType, PortalGeneratorType::codec);
 

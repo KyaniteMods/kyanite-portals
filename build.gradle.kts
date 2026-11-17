@@ -1,19 +1,23 @@
 plugins {
-    id("net.fabricmc.fabric-loom-remap")
-
-    // `maven-publish`
-    // id("me.modmuss50.mod-publish-plugin")
+    // This plugin applies the correct loom variant based on the Minecraft version
+    id("dev.kikugie.loom-back-compat")
 }
 
-version = "${property("mod.version")}+${sc.current.version}"
-base.archivesName = property("mod.id") as String
+// DO NOT set group = ...!
+version = "${sc.properties["mod.version"]}+${sc.current.version}"
+base.archivesName = sc.properties["mod.id"]
 
-val requiredJava = when {
-    sc.current.parsed >= "1.20.6" -> JavaVersion.VERSION_21
+val requiredJava: JavaVersion = when {
+    sc.current.parsed >= "26.1" -> JavaVersion.VERSION_25
+    sc.current.parsed >= "1.20.5" -> JavaVersion.VERSION_21
     sc.current.parsed >= "1.18" -> JavaVersion.VERSION_17
     sc.current.parsed >= "1.17" -> JavaVersion.VERSION_16
     else -> JavaVersion.VERSION_1_8
 }
+
+// This can be used for publishing on Modrinth and Curseforge
+val compatibleVersions: List<String> = sc.properties.rawOrNull("mod", "mc_releases")
+    ?.asList().orEmpty().map { it.toString() }
 
 repositories {
     /**
@@ -34,31 +38,38 @@ dependencies {
      * @see <a href="https://github.com/FabricMC/fabric">List of Fabric API modules</a>
      */
 //    fun fapi(vararg modules: String) {
-//        for (it in modules) modImplementation(fabricApi.module(it, property("deps.fabric_api") as String))
+//        for (it in modules) modImplementation(fabricApi.module(it, sc.properties["deps.fabric_api"]))
 //    }
 
     minecraft("com.mojang:minecraft:${sc.current.version}")
-    mappings(loom.officialMojangMappings())
-    modImplementation("net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
+    // Applies Mojang Mappings on obfuscated versions
+    loomx.applyMojangMappings()
 
-    modApi("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric_api")}")
-//    fapi("fabric-lifecycle-events-v1", "fabric-resource-loader-v0", "fabric-content-registries-v0")
+    // Use `mod{dependency type}` even on 26.1+ - loom-back-compat converts them
+    modImplementation("net.fabricmc:fabric-loader:${sc.properties["deps.fabric_loader"]}")
+
+    modApi("net.fabricmc.fabric-api:fabric-api:${sc.properties["deps.fabric_api"]}")
+//    fapi("fabric-lifecycle-events-v1", "fabric-resource-loader-v0", "fabric-content-registries-v0", "fabric-registry-sync-v0")
 }
 
 loom {
     splitEnvironmentSourceSets()
 
     fabricModJsonPath = rootProject.file("src/main/resources/fabric.mod.json") // Useful for interface injection
-    accessWidenerPath = rootProject.file("src/main/resources/kyaniteportals.classtweaker")
+    accessWidenerPath = sc.process(
+        rootProject.file("src/main/resources/kyaniteportals.classtweaker"),
+        "build/processed.classtweaker"
+    )
 
     decompilerOptions.named("vineflower") {
         options.put("mark-corresponding-synthetics", "1") // Adds names to lambdas - useful for mixins
     }
 
     runConfigs.all {
-        ideConfigGenerated(true)
-        vmArgs("-Dmixin.debug.export=true") // Exports transformed classes for debugging
-        runDir = "../../run" // Shares the run directory between versions
+        preferGradleTask = true
+        generateRunConfig = true
+        runDirectory = rootProject.file("run") // Shares the run directory between versions
+        jvmArguments.add("-Dmixin.debug.export=true") // Exports transformed classes for debugging
     }
 }
 
@@ -66,21 +77,27 @@ java {
     withSourcesJar()
     targetCompatibility = requiredJava
     sourceCompatibility = requiredJava
+
+    toolchain {
+        vendor = JvmVendorSpec.ADOPTIUM
+        languageVersion = JavaLanguageVersion.of(requiredJava.majorVersion)
+    }
 }
 
 tasks {
     processResources {
-        inputs.property("id", project.property("mod.id"))
-        inputs.property("name", project.property("mod.name"))
-        inputs.property("version", project.property("mod.version"))
-        inputs.property("minecraft", project.property("mod.mc_dep"))
+        fun MutableMap<String, String>.register(key: String, value: String) {
+            inputs.property(key, value)
+            set(key, value)
+        }
 
-        val props = mapOf(
-            "id" to project.property("mod.id"),
-            "name" to project.property("mod.name"),
-            "version" to project.property("mod.version"),
-            "minecraft" to project.property("mod.mc_dep")
-        )
+        val props = buildMap {
+            register("id", sc.properties["mod.id"])
+            register("name", sc.properties["mod.name"])
+            register("version", sc.properties["mod.version"])
+            register("minecraft", sc.properties["mod.mc_compat"])
+            register("loader", Regex("\\d+\\.\\d+").find(sc.properties["deps.fabric_loader"])!!.value)
+        }
 
         filesMatching("fabric.mod.json") { expand(props) }
 
@@ -88,71 +105,20 @@ tasks {
         filesMatching("*.mixins.json") { expand("java" to mixinJava) }
     }
 
-    // Builds the version into a shared folder in `build/libs/${mod version}/`
+    // Includes the license file in the built mod
+    withType<Jar> {
+        val name = sc.properties["mod.id"]
+        inputs.property("mod_id", name)
+        from("../../LICENSE") { rename { "$it-$name" } }
+    }
+
     register<Copy>("buildAndCollect") {
         group = "build"
-        from(remapJar.map { it.archiveFile }, remapSourcesJar.map { it.archiveFile })
-        into(rootProject.layout.buildDirectory.file("libs/${project.property("mod.version")}"))
-        dependsOn("build")
+        description = "Builds mod jars and copies results to `build/libs/{mod version}/`"
+
+        inputs.property("version", sc.properties["mod.version"])
+        // loomx.mod(Sources)Jar returns the jar task for the applied loom variant
+        from(loomx.modJar.flatMap { it.archiveFile }, loomx.modSourcesJar.flatMap { it.archiveFile })
+        into(rootProject.layout.buildDirectory.file("libs/${sc.properties["mod.version"]}"))
     }
 }
-
-/*
-// Publishes builds to Modrinth and Curseforge with changelog from the CHANGELOG.md file
-publishMods {
-    file = tasks.remapJar.map { it.archiveFile.get() }
-    additionalFiles.from(tasks.remapSourcesJar.map { it.archiveFile.get() })
-    displayName = "${property("mod.name")} ${property("mod.version")} for ${property("mod.mc_title")}"
-    version = property("mod.version") as String
-    changelog = rootProject.file("CHANGELOG.md").readText()
-    type = STABLE
-    modLoaders.add("fabric")
-
-    dryRun = providers.environmentVariable("MODRINTH_TOKEN").getOrNull() == null
-        || providers.environmentVariable("CURSEFORGE_TOKEN").getOrNull() == null
-
-    modrinth {
-        projectId = property("publish.modrinth") as String
-        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
-        minecraftVersions.addAll(property("mod.mc_targets").toString().split(' '))
-        requires {
-            slug = "fabric-api"
-        }
-    }
-
-    curseforge {
-        projectId = property("publish.curseforge") as String
-        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
-        minecraftVersions.addAll(property("mod.mc_targets").toString().split(' '))
-        requires {
-            slug = "fabric-api"
-        }
-    }
-}
- */
-/*
-// Publishes builds to a maven repository under `com.example:template:0.1.0+mc`
-publishing {
-    repositories {
-        maven("https://maven.example.com/releases") {
-            name = "myMaven"
-            // To authenticate, create `myMavenUsername` and `myMavenPassword` properties in your Gradle home properties.
-            // See https://stonecutter.kikugie.dev/wiki/tips/properties#defining-properties
-            credentials(PasswordCredentials::class.java)
-            authentication {
-                create<BasicAuthentication>("basic")
-            }
-        }
-    }
-
-    publications {
-        create<MavenPublication>("mavenJava") {
-            groupId = "${property("mod.group")}.${property("mod.id")}"
-            artifactId = property("mod.id") as String
-            version = project.version
-
-            from(components["java"])
-        }
-    }
-}
- */

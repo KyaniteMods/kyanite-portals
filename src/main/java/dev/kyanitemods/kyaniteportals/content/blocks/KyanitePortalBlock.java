@@ -15,6 +15,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -68,8 +69,8 @@ public abstract class KyanitePortalBlock extends Block {
             //? if <1.21.5 {
     /*public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
      *///? } else if <1.21.10 {
-    //public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, net.minecraft.world.entity.InsideBlockEffectApplier insideBlockEffectApplier) {
-            //? } else
+    /*public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, net.minecraft.world.entity.InsideBlockEffectApplier insideBlockEffectApplier) {
+            *///? } else
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, net.minecraft.world.entity.InsideBlockEffectApplier insideBlockEffectApplier, boolean bl) {
         //? if <1.21 {
         /*if (!entity.canChangeDimensions()) return;
@@ -80,7 +81,7 @@ public abstract class KyanitePortalBlock extends Block {
         Optional<Portal> portal = getPortal(level, pos);
         if (portal.isEmpty() || portalKey.isEmpty()) return;
 
-        if (portal.get().entityPredicate().isEmpty() || (!level.isClientSide() && portal.get().entityPredicate().get().matches((ServerLevel) level, pos.getCenter(), entity))) {
+        if (portal.get().entityPredicate().isEmpty() || (!level.isClientSide() && portal.get().entityPredicate().get().matches((ServerLevel) level, Vec3.atCenterOf(pos), entity))) {
             ((EntityInPortal) entity).tick(level, pos, portalKey.get());
         }
     }

@@ -48,7 +48,15 @@ public class SendMessageAction extends PortalAction<SendMessageAction> {
     @Override
     public PortalActionResult execute(Level level, BlockPos pos, @Nullable Entity entity, ActionExecutionData data) {
         if (!(entity instanceof Player player)) return PortalActionResult.FAILURE;
+        //? if >=26.1 {
+        /*if (isOverlay()) {
+            player.sendOverlayMessage(getText());
+        } else {
+            player.sendSystemMessage(getText());
+        }
+        *///? } else {
         player.displayClientMessage(getText(), isOverlay());
+        //? }
         return PortalActionResult.SUCCESS;
     }
 }

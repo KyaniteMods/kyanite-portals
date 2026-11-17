@@ -83,7 +83,7 @@ public class LocalPlayerMixin implements PortalOverlayPlayer {
     /*@Inject(method = "handleNetherPortalClient", at = @At(value = "HEAD"))
     private void kyanitePortals$setDistortionIntensity(CallbackInfo ci) {
     *///? } else if <1.21.5 {
-    /*@Inject(method = "handleConfusionTransitionEffect()V", at = @At("HEAD"))
+    /*@Inject(method = "handleConfusionTransitionEffect", at = @At("HEAD"))
     private void kyanitePortals$setDistortionIntensity(CallbackInfo ci) {
     *///? } else {
     @Inject(method = "handlePortalTransitionEffect(Z)V", at = @At("HEAD"))
@@ -100,11 +100,18 @@ public class LocalPlayerMixin implements PortalOverlayPlayer {
         if (((EntityInPortal) this).isInsidePortal()) {
             if (((EntityInPortal) this).getPortal() != null) {
                 if (PortalEffects.get(((EntityInPortal) this).getPortal(), PortalEffects.CLOSE_SCREENS).isPresent()) {
+                    //~ if >=26.1 'getMinecraft().screen' -> 'getMinecraft().gui.screen()' {
                     if (((MinecraftAccessor) this).getMinecraft().screen != null && /*? if <1.21.9 {*//*!((MinecraftAccessor) this).getMinecraft().screen.isPauseScreen() && !(((MinecraftAccessor) this).getMinecraft().screen instanceof DeathScreen) && !(((MinecraftAccessor) this).getMinecraft().screen instanceof WinScreen) *//*? } else {*/!((MinecraftAccessor) this).getMinecraft().screen.isAllowedInPortal()/*? }*/) {
+                    //~ }
+                        //~ if >=26.1 'getMinecraft().screen' -> 'getMinecraft().gui.screen()'
                         if (((MinecraftAccessor) this).getMinecraft().screen instanceof AbstractContainerScreen) {
                             ((LocalPlayer) (Object) this).closeContainer();
                         }
+                        //? if <26.1 {
                         ((MinecraftAccessor) this).getMinecraft().setScreen(null);
+                        //? } else {
+                        /*((MinecraftAccessor) this).getMinecraft().gui.setScreen(null);
+                        *///? }
                     }
                 }
             }

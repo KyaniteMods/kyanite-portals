@@ -13,6 +13,7 @@ public final class PortalTriggers {
     private PortalTriggers() {}
 
     public static final ResourceKey<Registry<PortalTrigger<?>>> RESOURCE_KEY = ResourceKey.createRegistryKey(KyanitePortals.id("portal_trigger"));
+    //~ if >=26.1 'createSimple' -> 'create'
     public static final Registry<PortalTrigger<?>> REGISTRY = FabricRegistryBuilder.createSimple(RESOURCE_KEY).buildAndRegister();
     public static final Codec<PortalTriggerInstance<?>> CODEC = REGISTRY.byNameCodec().dispatch("type", PortalTriggerInstance::getTrigger, PortalTrigger::codec);
 

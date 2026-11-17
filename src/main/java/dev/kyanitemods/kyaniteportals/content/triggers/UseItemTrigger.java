@@ -93,8 +93,8 @@ public class UseItemTrigger extends SimplePortalTrigger<UseItemTrigger.UseItemTr
                     //? if <1.20.6 {
                     /*stack.hurt(damageItemBy, level.getRandom(), ((ServerPlayer) player));
                     *///? } else if <1.21 {
-                    //stack.hurtAndBreak(damageItemBy, level.getRandom(), ((ServerPlayer) player), () -> {});
-                    //? } else
+                    /*stack.hurtAndBreak(damageItemBy, level.getRandom(), ((ServerPlayer) player), () -> {});
+                    *///? } else
                     stack.hurtAndBreak(damageItemBy, ((net.minecraft.server.level.ServerLevel) level), ((ServerPlayer) player), item -> {});
                 }
             }

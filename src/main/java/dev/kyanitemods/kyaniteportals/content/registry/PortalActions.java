@@ -12,6 +12,7 @@ public final class PortalActions {
     private PortalActions() {}
 
     public static final ResourceKey<Registry<PortalActionType<?>>> RESOURCE_KEY = ResourceKey.createRegistryKey(KyanitePortals.id("portal_action"));
+    //~ if >=26.1 'createSimple' -> 'create'
     public static final Registry<PortalActionType<?>> REGISTRY = FabricRegistryBuilder.createSimple(RESOURCE_KEY).buildAndRegister();
     public static final Codec<PortalAction<?>> CODEC = REGISTRY.byNameCodec().dispatch("action", PortalAction::getType, PortalActionType::codec);
 

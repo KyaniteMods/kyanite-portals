@@ -8,6 +8,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import dev.kyanitemods.kyaniteportals.client.PortalOverlayPlayer;
 import dev.kyanitemods.kyaniteportals.client.content.effects.PortalEffects;
 import dev.kyanitemods.kyaniteportals.content.interfaces.EntityInPortal;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
@@ -18,7 +19,8 @@ import org.spongepowered.asm.mixin.injection.At;
 public class NauseaMixin {
     @WrapOperation(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;lerp(FFF)F", ordinal = 0))
     private float kyanitePortals$applyNausea(float tickDelta, float oldNetherPortalIntensity, float newNetherPortalIntensity, Operation<Float> original) {
-        LocalPlayer player = ((GameRenderer) (Object) this).getMinecraft().player;
+//        LocalPlayer player = ((GameRenderer) (Object) this).getMinecraft().player;
+        LocalPlayer player = Minecraft.getInstance().player;
         if (player == null || ((EntityInPortal) player).getPortal() == null || PortalEffects.get(((EntityInPortal) player).getPortal(), PortalEffects.NAUSEA).isEmpty()) return original.call(tickDelta, oldNetherPortalIntensity, newNetherPortalIntensity);
         float intensity = Mth.lerp(tickDelta, ((PortalOverlayPlayer) player).getOldPortalIntensity(), ((PortalOverlayPlayer) player).getPortalIntensity());
         return intensity == 0.0f ? original.call(tickDelta, oldNetherPortalIntensity, newNetherPortalIntensity) : Math.max(original.call(tickDelta, oldNetherPortalIntensity, newNetherPortalIntensity), intensity);
@@ -30,7 +32,8 @@ public class NauseaMixin {
     @Expression("localPlayer.portalEffectIntensity")
     @WrapOperation(method = "tick", at = @At("MIXINEXTRAS:EXPRESSION"))
     private float kyanitePortals$applyNauseaSpeed(LocalPlayer instance, Operation<Float> original) {
-        LocalPlayer player = ((GameRenderer) (Object) this).getMinecraft().player;
+//        LocalPlayer player = ((GameRenderer) (Object) this).getMinecraft().player;
+        LocalPlayer player = Minecraft.getInstance().player;
         if (player == null || ((EntityInPortal) player).getPortal() == null || PortalEffects.get(((EntityInPortal) player).getPortal(), PortalEffects.NAUSEA).isEmpty()) return original.call(instance);
         float intensity = ((PortalOverlayPlayer) player).getPortalIntensity();
         return intensity == 0.0f ? original.call(instance) : Math.max(original.call(instance), intensity);

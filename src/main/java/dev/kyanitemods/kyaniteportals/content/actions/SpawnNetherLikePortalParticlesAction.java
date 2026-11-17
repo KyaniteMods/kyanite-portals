@@ -12,6 +12,9 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.valueproviders.IntProvider;
+//? if >=26.1 {
+/*import net.minecraft.util.valueproviders.IntProviders;
+*///? }
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -22,7 +25,9 @@ public class SpawnNetherLikePortalParticlesAction extends PortalAction<SpawnNeth
     //$ map_codec_swap SpawnNetherLikePortalParticlesAction
     public static final com.mojang.serialization.MapCodec<SpawnNetherLikePortalParticlesAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Settings.optionalLocation(),
+            //~ if >=26.1 'IntProvider' -> 'IntProviders' {
             IntProvider.POSITIVE_CODEC.fieldOf("amount").forGetter(SpawnNetherLikePortalParticlesAction::getAmount),
+            //~ }
             ParticleTypes.CODEC.fieldOf("particle_options").forGetter(SpawnNetherLikePortalParticlesAction::getParticleOptions)
     ).apply(instance, SpawnNetherLikePortalParticlesAction::new));
 

@@ -3,20 +3,25 @@ package dev.kyanitemods.kyaniteportals.mixin.client;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.blaze3d.systems.RenderSystem;
 import dev.kyanitemods.kyaniteportals.client.PortalOverlayPlayer;
 import dev.kyanitemods.kyaniteportals.client.content.effects.PortalEffects;
 import dev.kyanitemods.kyaniteportals.client.content.effects.TextureOverlayPortalEffectOptions;
 import dev.kyanitemods.kyaniteportals.content.interfaces.EntityInPortal;
-//? if >=1.21
+//? if >=1.21 {
 import net.minecraft.client.DeltaTracker;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+//? }
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
-//? if >=1.21.5
+//? if >=1.21.5 {
 import net.minecraft.client.renderer.RenderPipelines;
+//? }
+//? if >=26.1 {
+/*import net.minecraft.client.gui.Hud;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+*///? } else {
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.gui.GuiGraphics;
+//? }
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -31,14 +36,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Optional;
 
+//? if <26.1 {
 @Mixin(Gui.class)
+//? } else {
+/*@Mixin(Hud.class)
+*///? }
 public class PortalOverlayMixin {
-    @Mixin(Gui.class)
-    private interface GuiAccessor {
-        @Accessor("minecraft")
-        Minecraft getMinecraft();
-    }
-
     @Mixin(Entity.class)
     private interface EntityAccessor {
         //? if <1.21 {
@@ -47,11 +50,12 @@ public class PortalOverlayMixin {
         *///? }
     }
 
+    //? if <26.1 {
     @WrapOperation(method = /*? if <1.20.6 {*//*"render"*//*? } else {*/"renderCameraOverlays"/*? }*/, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderPortalOverlay(Lnet/minecraft/client/gui/GuiGraphics;F)V"))
     private void kyanitePortals$checkPortalOverlay(Gui instance, GuiGraphics guiGraphics, float f, Operation<Void> original, @Local(argsOnly = true) /*? if <1.21 {*//*float tickDelta*//*? } else {*/DeltaTracker deltaTracker/*? }*/) {
         //? if >=1.21
         float tickDelta = deltaTracker.getGameTimeDeltaPartialTick(false);
-        Player player = ((GuiAccessor) this).getMinecraft().player;
+        Player player = Minecraft.getInstance().player;
         if (player == null) {
             original.call(instance, guiGraphics, f);
             return;
@@ -68,7 +72,7 @@ public class PortalOverlayMixin {
     private void kyanitePortals$renderPortalOverlay(GuiGraphics guiGraphics, /*? if <1.21 {*//*float tickDelta*//*? } else {*/DeltaTracker deltaTracker/*? }*/, CallbackInfo ci) {
         //? if >=1.21
         float tickDelta = deltaTracker.getGameTimeDeltaPartialTick(false);
-        Player player = ((GuiAccessor) this).getMinecraft().player;
+        Player player = Minecraft.getInstance().player;
         float lerp = Mth.lerp(tickDelta, ((PortalOverlayPlayer) player).getOldPortalIntensity(), ((PortalOverlayPlayer) player).getPortalIntensity());
         if (lerp > 0.0f) {
             Optional<TextureOverlayPortalEffectOptions> optional = PortalEffects.get(((EntityInPortal) player).getPortal(), PortalEffects.TEXTURE_OVERLAY);
@@ -85,9 +89,9 @@ public class PortalOverlayMixin {
         }
 
         //? if <1.21.9 {
-        /*TextureAtlasSprite sprite = ((GuiAccessor) this).getMinecraft().getTextureAtlas(atlas).apply(id);
+        /*TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(atlas).apply(id);
         *///? } else
-        TextureAtlasSprite sprite = ((GuiAccessor) this).getMinecraft().getAtlasManager().getAtlasOrThrow(atlas).getSprite(id);
+        TextureAtlasSprite sprite = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(atlas).getSprite(id);
 
         //? if <1.21.5 {
         /*RenderSystem.disableDepthTest();
@@ -108,4 +112,42 @@ public class PortalOverlayMixin {
         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, 0, 0, guiGraphics.guiWidth(), guiGraphics.guiHeight(), (tint & (0x00FFFFFF)) | (((int) (f * 255.0f)) << 24));
         //? }
     }
+    //? } else {
+    /*@WrapOperation(method = "extractCameraOverlays", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Hud;extractPortalOverlay(Lnet/minecraft/client/gui/GuiGraphicsExtractor;F)V"))
+    private void kyanitePortals$checkPortalOverlay(Hud instance, GuiGraphicsExtractor graphics, float alpha, Operation<Void> original, @Local(argsOnly = true) DeltaTracker deltaTracker) {
+        float tickDelta = deltaTracker.getGameTimeDeltaPartialTick(false);
+        Player player = Minecraft.getInstance().player;
+        if (player == null) {
+            original.call(instance, graphics, alpha);
+            return;
+        }
+        float lerp = Mth.lerp(tickDelta, ((PortalOverlayPlayer) player).getOldPortalIntensity(), ((PortalOverlayPlayer) player).getPortalIntensity());
+        if (lerp == 0.0f && player.portalProcess != null && (player.portalProcess.isInsidePortalThisTick() || player.isOnPortalCooldown())) original.call(instance, graphics, alpha);
+    }
+
+    @Inject(method = "extractCameraOverlays", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;lerp(FFF)F", ordinal = 1))
+    private void kyanitePortals$extractPortalOverlay(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+        //? if >=1.21
+        float tickDelta = deltaTracker.getGameTimeDeltaPartialTick(false);
+        Player player = Minecraft.getInstance().player;
+        float lerp = Mth.lerp(tickDelta, ((PortalOverlayPlayer) player).getOldPortalIntensity(), ((PortalOverlayPlayer) player).getPortalIntensity());
+        if (lerp > 0.0f) {
+            Optional<TextureOverlayPortalEffectOptions> optional = PortalEffects.get(((EntityInPortal) player).getPortal(), PortalEffects.TEXTURE_OVERLAY);
+            optional.ifPresent(options -> extractPortalOverlay(graphics, options.getAtlas(), options.getTexture(), options.getTint(), lerp));
+        }
+    }
+
+    @Unique
+    private void extractPortalOverlay(GuiGraphicsExtractor guiGraphics, Identifier atlas, Identifier id, int tint, float f) {
+        if (f < 1.0f) {
+            f *= f;
+            f *= f;
+            f = f * 0.8f + 0.2f;
+        }
+
+        TextureAtlasSprite sprite = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(atlas).getSprite(id);
+
+        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, 0, 0, guiGraphics.guiWidth(), guiGraphics.guiHeight(), (tint & (0x00FFFFFF)) | (((int) (f * 255.0f)) << 24));
+    }
+    *///? }
 }

@@ -14,7 +14,6 @@
     "NauseaMixin",
     "PortalOverlayMixin",
     "PortalOverlayMixin$EntityAccessor",
-    "PortalOverlayMixin$GuiAccessor",
     "ReceivingLevelScreenMixin",
     "SpectatorGameRendererMixin",
     "SpectatorGuiMixin"

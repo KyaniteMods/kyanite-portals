@@ -6,15 +6,23 @@ import dev.kyanitemods.kyaniteportals.content.Portal;
 import dev.kyanitemods.kyaniteportals.content.blocks.KyanitePortalBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+//? if >=26.1 {
+/*import net.minecraft.client.gui.Hud;
+*///? }
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
+//? if <26.1 {
 @Mixin(Gui.class)
+//? } else {
+/*@Mixin(Hud.class)
+*///? }
 public class SpectatorGuiMixin {
     @ModifyReturnValue(method = "canRenderCrosshairForSpectator", at = @At(value = "RETURN", ordinal = 2))
     private boolean kyanitePortals$renderCrosshairWhenPortal(boolean original, @Local(argsOnly = true) HitResult hitResult) {

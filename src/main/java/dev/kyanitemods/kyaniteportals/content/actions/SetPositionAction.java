@@ -10,6 +10,9 @@ import dev.kyanitemods.kyaniteportals.content.registry.PortalActions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.valueproviders.FloatProvider;
+//? if >=26.1 {
+/*import net.minecraft.util.valueproviders.FloatProviders;
+*///? }
 import net.minecraft.world.entity.Entity;
 //? if <1.21.2 {
 /*import net.minecraft.world.entity.RelativeMovement;
@@ -29,8 +32,10 @@ public final class SetPositionAction extends PortalAction<SetPositionAction> {
     //$ map_codec_swap SetPositionAction
     public static final com.mojang.serialization.MapCodec<SetPositionAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Settings.REQUIRED_LOCATION_CODEC.fieldOf("settings").forGetter(SetPositionAction::getSettings),
+            //~ if >=26.1 'FloatProvider' -> 'FloatProviders' {
             FloatProvider.CODEC.optionalFieldOf("yaw").forGetter(SetPositionAction::getYRot),
             FloatProvider.CODEC.optionalFieldOf("pitch").forGetter(SetPositionAction::getXRot)
+            //~ }
     ).apply(instance, SetPositionAction::new));
 
     private final Optional<FloatProvider> yRot;

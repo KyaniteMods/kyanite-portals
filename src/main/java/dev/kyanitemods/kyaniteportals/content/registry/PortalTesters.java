@@ -15,6 +15,7 @@ public final class PortalTesters {
     private PortalTesters() {}
 
     public static final ResourceKey<Registry<PortalTesterType<?>>> RESOURCE_KEY = ResourceKey.createRegistryKey(KyanitePortals.id("portal_tester"));
+    //~ if >=26.1 'createSimple' -> 'create'
     public static final Registry<PortalTesterType<?>> REGISTRY = FabricRegistryBuilder.createSimple(RESOURCE_KEY).buildAndRegister();
     public static final Codec<PortalTester<?>> CODEC = REGISTRY.byNameCodec().dispatch("type", PortalTester::getType, PortalTesterType::codec);
 

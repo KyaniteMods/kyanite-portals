@@ -10,10 +10,14 @@ import dev.kyanitemods.kyaniteportals.util.MatchingNbtPredicate;
 import io.netty.util.internal.UnstableApi;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+//~ if >=26.1 'ServerWorldEvents' -> 'ServerLevelEvents' {
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
+//~ }
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
+//~ if >=26.1 'PointOfInterestHelper' -> 'PoiHelper' {
 import net.fabricmc.fabric.api.object.builder.v1.world.poi.PointOfInterestHelper;
+//~ }
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.*;
 import net.minecraft.resources.RegistryOps;
@@ -89,15 +93,19 @@ public class KyanitePortals implements ModInitializer {
             return InteractionResult.SUCCESS;
         });
 
+        //~ if >=26.1 'ServerWorldEvents' -> 'ServerLevelEvents' {
         ServerWorldEvents.LOAD.register((server, world) -> {
             reloadListeners(server.registryAccess());
         });
+        //~ }
 
         ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
             reloadListeners(server.registryAccess());
         });
 
+        //~ if >=26.1 'PointOfInterestHelper' -> 'PoiHelper' {
         PointOfInterestHelper.register(id("custom_portal"), 0, 1, KyanitePortalsBlocks.CUSTOM_PORTAL);
+        //~ }
         DynamicRegistries.registerSynced(RESOURCE_KEY, Portal.CODEC, Portal.NETWORK_CODEC);
 
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {

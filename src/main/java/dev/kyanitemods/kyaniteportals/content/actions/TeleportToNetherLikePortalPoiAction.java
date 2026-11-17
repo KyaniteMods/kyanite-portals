@@ -111,8 +111,9 @@ public class TeleportToNetherLikePortalPoiAction extends PortalAction<TeleportTo
                     BlockPos poiPos = poiRecord.getPos();
                     //? if <1.21.3 {
                     /*level.getChunkSource().addRegionTicket(TicketType.PORTAL, new ChunkPos(poiPos), 3, poiPos);
-                    *///? } else
-                    level.getChunkSource().addTicketWithRadius(TicketType.PORTAL, new ChunkPos(poiPos), 3);
+                    *///? } else {
+                    level.getChunkSource().addTicketWithRadius(TicketType.PORTAL, /*? if >=26.1 {*//*new ChunkPos(poiPos.getX(), poiPos.getZ())*//*? } else {*/new ChunkPos(poiPos)/*? }*/, 3);
+                    //? }
                     BlockState blockState = level.getBlockState(poiPos);
                     Direction.Axis axis = blockState.getOptionalValue(BlockStateProperties.AXIS).orElse(blockState.getOptionalValue(BlockStateProperties.HORIZONTAL_AXIS).orElse(Direction.Axis.X));
                     return BlockUtil.getLargestRectangleAround(

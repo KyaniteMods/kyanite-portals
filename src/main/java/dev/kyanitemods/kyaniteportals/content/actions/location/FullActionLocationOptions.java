@@ -338,7 +338,7 @@ public record FullActionLocationOptions(DimensionContext dimension, PositionCont
             }
 
             public Vec3 get(Level level, BlockPos pos, @Nullable Entity entity) {
-                if (this == PORTAL) return pos.getCenter();
+                if (this == PORTAL) return Vec3.atCenterOf(pos);
                 else if (this == ENTITY) {
                     if (entity == null) throw new UnsupportedOperationException("Cannot use position context from entity without entity context (tick actions)");
                     return entity.position();

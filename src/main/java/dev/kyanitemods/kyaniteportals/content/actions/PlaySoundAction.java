@@ -13,6 +13,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.valueproviders.FloatProvider;
+//? if >=26.1 {
+/*import net.minecraft.util.valueproviders.FloatProviders;
+*///? }
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
@@ -24,8 +27,10 @@ public class PlaySoundAction extends PortalAction<PlaySoundAction> {
     public static final com.mojang.serialization.MapCodec<PlaySoundAction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Settings.optionalLocation(),
             SoundEvent.CODEC.fieldOf("sound_event").forGetter(PlaySoundAction::soundEvent),
+            //~ if >=26.1 'FloatProvider' -> 'FloatProviders' {
             FloatProvider.CODEC.fieldOf("volume").forGetter(PlaySoundAction::volume),
             FloatProvider.CODEC.fieldOf("pitch").forGetter(PlaySoundAction::pitch)
+            //~ }
     ).apply(instance, PlaySoundAction::new));
 
     private final Holder<SoundEvent> soundEvent;

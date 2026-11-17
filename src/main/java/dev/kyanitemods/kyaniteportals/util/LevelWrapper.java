@@ -92,6 +92,7 @@ public class LevelWrapper implements WorldGenLevel, LevelReader {
             return 0;
         }
 
+        //? if <26.1 {
         @Override
         public long getDayTime() {
             return 0;
@@ -111,6 +112,7 @@ public class LevelWrapper implements WorldGenLevel, LevelReader {
         public void setRaining(boolean bl) {
 
         }
+        //? }
 
         @Override
         public boolean isHardcore() {
@@ -235,7 +237,9 @@ public class LevelWrapper implements WorldGenLevel, LevelReader {
         if (level instanceof ServerLevelAccessor serverLevelAccessor) {
             return serverLevelAccessor.getCurrentDifficultyAt(blockPos);
         } else if (level instanceof Level level1) {
+            //~ if >=26.1 'getDayTime()' -> 'getOverworldClockTime()' {
             return new DifficultyInstance(level1.getDifficulty(), level1.getDayTime(), 0L, 0.0f);
+            //~ }
         } else if (level instanceof LevelAccessor levelAccessor) {
             return new DifficultyInstance(levelAccessor.getDifficulty(), 0L, 0L, 0.0f);
         }
@@ -379,10 +383,12 @@ public class LevelWrapper implements WorldGenLevel, LevelReader {
     }
     //? }
 
+    //? if <26.1 {
     @Override
     public float getShade(Direction direction, boolean bl) {
         return level.getShade(direction, bl);
     }
+    //? }
 
     @Override
     public LevelLightEngine getLightEngine() {
