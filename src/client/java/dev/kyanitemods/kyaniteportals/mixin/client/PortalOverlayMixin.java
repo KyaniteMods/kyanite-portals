@@ -15,9 +15,11 @@ import net.minecraft.client.gui.Gui;
 //? if >=1.21.5 {
 import net.minecraft.client.renderer.RenderPipelines;
 //? }
-//? if >=26.1 {
+//? if >=26.2 {
 /*import net.minecraft.client.gui.Hud;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+*///? }
+//? if >=26.1 {
+/*import net.minecraft.client.gui.GuiGraphicsExtractor;
 *///? } else {
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
@@ -36,7 +38,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Optional;
 
-//? if <26.1 {
+//? if <26.2 {
 @Mixin(Gui.class)
 //? } else {
 /*@Mixin(Hud.class)
@@ -113,8 +115,13 @@ public class PortalOverlayMixin {
         //? }
     }
     //? } else {
-    /*@WrapOperation(method = "extractCameraOverlays", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Hud;extractPortalOverlay(Lnet/minecraft/client/gui/GuiGraphicsExtractor;F)V"))
+    /*//? if <26.2 {
+    @WrapOperation(method = "extractCameraOverlays", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractPortalOverlay(Lnet/minecraft/client/gui/GuiGraphicsExtractor;F)V"))
+    private void kyanitePortals$checkPortalOverlay(Gui instance, GuiGraphicsExtractor graphics, float alpha, Operation<Void> original, @Local(argsOnly = true) DeltaTracker deltaTracker) {
+    //? } else {
+    /^@WrapOperation(method = "extractCameraOverlays", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Hud;extractPortalOverlay(Lnet/minecraft/client/gui/GuiGraphicsExtractor;F)V"))
     private void kyanitePortals$checkPortalOverlay(Hud instance, GuiGraphicsExtractor graphics, float alpha, Operation<Void> original, @Local(argsOnly = true) DeltaTracker deltaTracker) {
+    ^///? }
         float tickDelta = deltaTracker.getGameTimeDeltaPartialTick(false);
         Player player = Minecraft.getInstance().player;
         if (player == null) {

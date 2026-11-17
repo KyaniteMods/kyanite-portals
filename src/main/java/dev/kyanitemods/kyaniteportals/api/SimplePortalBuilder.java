@@ -41,7 +41,7 @@ import net.minecraft.util.valueproviders.ConstantFloat;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.util.valueproviders.UniformFloat;
 import net.minecraft.world.entity.EntityType;
-//? if >=26.1 {
+//? if >=26.2 {
 /*import net.minecraft.world.entity.EntityTypes;
 *///? }
 import net.minecraft.world.entity.ai.village.poi.PoiType;
@@ -308,10 +308,10 @@ public final class SimplePortalBuilder {
 
             PortalAction.Settings.Builder createPortalSettings = PortalAction.Settings.Builder.create()
                     .predicate(ContextAwarePredicate.create(AllOfCondition.allOf(
-                            //~ if >=26.1 'EntityType' -> 'EntityTypes' {
+                            //~ if >=26.2 'EntityType' -> 'EntityTypes' {
                             LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, EntityPredicate.Builder.entity().of(/*? if >=1.21.3 {*/entityLookup, /*? }*/EntityType.PLAYER)),
                             //~ }
-                            //~ if >=26.1 'EntityPredicate.Builder.entity().subPredicate' -> 'EntityPredicate.Builder.entity().player'
+                            //~ if >=26.2 'EntityPredicate.Builder.entity().subPredicate' -> 'EntityPredicate.Builder.entity().player'
                             InvertedLootItemCondition.invert(LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, EntityPredicate.Builder.entity().subPredicate(PlayerPredicate.Builder.player().setGameType(/*? if <1.21 {*//*GameType.SPECTATOR*//*? } else {*/GameTypePredicate.of(GameType.SPECTATOR)/*? }*/).build()).build()))
                     ).build()))
                     .locationOptions(new LoadActionLocationOptions("location"));
@@ -328,8 +328,9 @@ public final class SimplePortalBuilder {
                             ),
                             new SendMessageAction(
                                     PortalAction.Settings.Builder.create()
-                                            //~ if >=26.1 'EntityPredicate.Builder.entity().subPredicate' -> 'EntityPredicate.Builder.entity().player'
+                                            //~ if >=26.2 'EntityPredicate.Builder.entity().subPredicate' -> 'EntityPredicate.Builder.entity().player' {
                                             .predicate(ContextAwarePredicate.create(LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, EntityPredicate.Builder.entity().subPredicate(PlayerPredicate.Builder.player().setGameType(/*? if <1.21 {*//*GameType.SPECTATOR*//*? } else {*/GameTypePredicate.of(GameType.SPECTATOR)/*? }*/).build()).build()).build()))
+                                            //~ }
                                             .build(),
                                     Component.translatable(/*? if <26.3 {*/"kyanite_portals.spectator.cannot_teleport"/*? } else {*//*"spectator.cannot_teleport"*//*? }*/).withStyle(ChatFormatting.RED),
                                     true

@@ -6,7 +6,7 @@ import dev.kyanitemods.kyaniteportals.content.Portal;
 import dev.kyanitemods.kyaniteportals.content.blocks.KyanitePortalBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-//? if >=26.1 {
+//? if >=26.2 {
 /*import net.minecraft.client.gui.Hud;
 *///? }
 import net.minecraft.core.BlockPos;
@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-//? if <26.1 {
+//? if <26.2 {
 @Mixin(Gui.class)
 //? } else {
 /*@Mixin(Hud.class)

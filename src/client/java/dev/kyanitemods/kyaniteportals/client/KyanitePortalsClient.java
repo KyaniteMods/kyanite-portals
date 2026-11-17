@@ -16,9 +16,10 @@ import net.minecraft.client.renderer.RenderType;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockRenderLayerMap;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 //? } else if <26.2 {
-/*import net.fabricmc.fabric.api.client.rendering.v1.ChunkSectionLayerMap;
+/*//import net.fabricmc.fabric.api.client.rendering.v1.ChunkSectionLayerMap;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
-*///? } else {
+*///? }
+//? if >=26.1 {
 /*import net.fabricmc.fabric.api.client.rendering.v1.BlockColorRegistry;
 *///? }
 import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents;
@@ -48,9 +49,7 @@ public class KyanitePortalsClient implements ClientModInitializer {
         /*BlockRenderLayerMap.INSTANCE.putBlock(KyanitePortalsBlocks.CUSTOM_PORTAL, RenderType.translucent());
         *///? } else if <26.1 {
         BlockRenderLayerMap.putBlock(KyanitePortalsBlocks.CUSTOM_PORTAL, ChunkSectionLayer.TRANSLUCENT);
-        //? } else if <26.2 {
-        /*BlockRenderLayerMap.putBlock(KyanitePortalsBlocks.CUSTOM_PORTAL, ChunkSectionLayer.TRANSLUCENT);
-        *///? }
+        //? }
 
         //? if <26.1 {
         ColorProviderRegistry.BLOCK.register((blockState, blockAndTintGetter, blockPos, i) -> {
